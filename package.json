@@ -23,5 +23,9 @@
 	"devDependencies": {
 		"@types/node": "26.6.5",
 		"typescript": "7.0.2"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/mncoffeenord/extra-life-2026-widgets.git"
 	}
 }

@@ -1,0 +1,7 @@
+{
+	"version": "0.0.1",
+	"configurations": [
+		{ "name": "widgets-mock", "runtimeExecutable": "npm", "runtimeArgs": ["run", "mock"], "port": 4242 },
+		{ "name": "widgets-live", "runtimeExecutable": "npm", "runtimeArgs": ["start"], "port": 4242 }
+	]
+}
