@@ -1,0 +1,31 @@
+{
+	"fundraisingGoal": 5000,
+	"eventName": "Extra Life 2026",
+	"links": {
+		"page": "https://dd.extra-life.org/",
+		"donate": "https://dd.extra-life.org/"
+	},
+	"hasActivityTracking": true,
+	"isTeamCoCaptain": false,
+	"participantID": 900001,
+	"teamName": "GamePlan42",
+	"streamIsLive": false,
+	"numIncentives": 0,
+	"sumActivityUnits": 0,
+	"streamingPlatform": "Twitch",
+	"activityGoal": 100,
+	"isCustomAvatarImage": true,
+	"displayName": "Person 1",
+	"sumDonations": 0,
+	"eventID": 562,
+	"createdDateUTC": "2026-10-21T18:29:21.17Z",
+	"numMilestones": 5,
+	"participantTypeCode": "P",
+	"avatarImageURL": "https://static.donordrive.com/clients/extralife/img/avatar-constituent-default.gif",
+	"teamID": 90001,
+	"isTeamCaptain": false,
+	"streamIsEnabled": true,
+	"sumPledges": 0,
+	"streamingChannel": "sample_channel",
+	"numDonations": 0
+}

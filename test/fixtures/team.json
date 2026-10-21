@@ -1,0 +1,27 @@
+{
+	"numParticipants": 5,
+	"fundraisingGoal": 14242,
+	"eventName": "Extra Life 2026",
+	"links": {
+		"page": "https://dd.extra-life.org/",
+		"donate": "https://dd.extra-life.org/"
+	},
+	"hasActivityTracking": false,
+	"hasExclusiveCode": false,
+	"captainDisplayName": "Person 2",
+	"hasTeamOnlyDonations": false,
+	"isCustomAvatarImage": false,
+	"teamGroupNameData": null,
+	"eventID": 562,
+	"sumDonations": 280,
+	"createdDateUTC": "2026-03-19T03:07:32.507Z",
+	"teamGroupName": null,
+	"sourceTeamID": 90001,
+	"name": "GamePlan42",
+	"isInviteOnly": false,
+	"numMilestones": 0,
+	"avatarImageURL": "https://static.donordrive.com/clients/extralife/img/avatar-constituent-default.gif",
+	"teamID": 90001,
+	"sumPledges": 0,
+	"numDonations": 7
+}

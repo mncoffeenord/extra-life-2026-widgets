@@ -1,0 +1,27 @@
+{
+	"fundraisingGoal": 10000,
+	"eventName": "Extra Life 2026",
+	"links": {
+		"page": "https://dd.extra-life.org/",
+		"donate": "https://dd.extra-life.org/"
+	},
+	"hasActivityTracking": true,
+	"isTeamCoCaptain": false,
+	"participantID": 900006,
+	"teamName": "Awesome Hardware 2026",
+	"numIncentives": 0,
+	"sumActivityUnits": 0,
+	"activityGoal": 100,
+	"isCustomAvatarImage": true,
+	"displayName": "Person 7",
+	"sumDonations": 18851.81,
+	"eventID": 562,
+	"createdDateUTC": "2026-08-20T23:59:09.47Z",
+	"numMilestones": 0,
+	"participantTypeCode": "I",
+	"avatarImageURL": "https://static.donordrive.com/clients/extralife/img/avatar-constituent-default.gif",
+	"teamID": 90002,
+	"isTeamCaptain": false,
+	"sumPledges": 0,
+	"numDonations": 298
+}
