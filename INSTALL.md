@@ -45,6 +45,11 @@ Add each one with **+ Add Source → Browser Source**:
 | EL My Goal | `http://localhost:4242/widgets/participant-goal` | 488 × 82 | 533, 987 |
 | EL Team Goal | `http://localhost:4242/widgets/team-goal` | 488 × 82 | 1043, 987 |
 | EL Donations | `http://localhost:4242/widgets/donation-rotator` | 314 × 58 | 1583, 59 |
+| *or* EL Donations + messages | `http://localhost:4242/widgets/donation-messages` | 314 × 116 | 1583, 59 |
+
+Pick **one** EL Donations source. The messages version shows up to 3 lines of each donor's message, and needs a
+taller Donations box in your overlay: 320 × 154 at x 1580, y 24, with the 32px header. Messages that match a word
+list are hidden automatically (see `messageFilter` in the README).
 
 For each source:
 

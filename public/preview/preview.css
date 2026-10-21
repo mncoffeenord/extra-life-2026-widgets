@@ -15,7 +15,13 @@ html, body.preview-page {
 }
 .preview-page h1 { font-size: 18px; margin: 0 8px 0 0; font-weight: 800; }
 .preview-page h2 { font-size: 14px; margin: 0 0 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--light-blue); }
-.toggle { font-size: 14px; display: inline-flex; gap: 6px; align-items: center; margin-left: auto; }
+.toggle { font-size: 14px; display: inline-flex; gap: 6px; align-items: center; }
+.toggle:first-of-type { margin-left: auto; }
+.toggle select { font: inherit; padding: 2px 4px; border-radius: 4px; }
+.panel input[name='message'] { width: 260px; }
+/* the taller "with messages" Donations box, drawn over the overlay art */
+.msg-box { position: absolute; z-index: 1; }
+.stage iframe { z-index: 2; }
 
 #mode.mock { background: var(--yellow); color: var(--dark); }
 #mode.live { background: var(--cmn-blue); color: #fff; }

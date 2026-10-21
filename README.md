@@ -9,7 +9,8 @@ Streamlabs / OBS **Browser Sources**, get live updates from that server.
 | Stream countdown | `/widgets/countdown` | 488 × 82 | `Starts in 2d 04h 12m` → `07:42 of 36:00` (live) → `Overtime 00:12` |
 | My Extra Life goal | `/widgets/participant-goal` | 488 × 82 | `$1,250 / $2,000`, %, progress bar |
 | Team goal | `/widgets/team-goal` | 488 × 82 | same, for the team |
-| Donations received | `/widgets/donation-rotator` | 314 × 58 | Alternates your recent donations and your team's every 30 s. New donations show immediately. |
+| Donations received | `/widgets/donation-rotator` | 314 × 58 | Alternates your recent donations and your team's every 45 s. New donations show immediately. |
+| Donations received, with messages (optional) | `/widgets/donation-messages` | 314 × 116 | Same, plus up to 3 lines of the donor's message. Long messages shrink a step, then scroll. |
 
 Why a server instead of widgets calling the API directly (as the 2022 tracker did):
 
@@ -38,7 +39,9 @@ Edit `config.json` (it is git-ignored):
 - `extraLife.teamId`: your team's numeric ID or URL alias, e.g. `dd.extra-life.org/teams/YourTeam` → `"YourTeam"`.
 - `event.start` / `event.end`: local wall-clock times in `event.timeZone`, e.g. `"2026-11-12T13:00"`. Use an IANA
   zone name (`America/Chicago`), not a fixed offset, so daylight saving time is handled for you.
-- `rotation.intervalSeconds`: how long each donation stays on screen (default 30).
+- `rotation.intervalSeconds`: how long each donation stays on screen (default 45, so four donations every 3 minutes).
+- `messageFilter`: donor messages matching a built-in word list are hidden (the donation still shows). Add words
+  with `"extraWords": ["spoiler"]`; turn it off with `"enabled": false`.
 
 The server checks the config at startup and lists every problem it finds.
 
@@ -83,6 +86,7 @@ For each widget: **Add Source → Browser Source**, then:
 | My Extra Life goal | `http://localhost:4242/widgets/participant-goal` | 488 × 82 | 533, 987 |
 | GamePlan42 goal | `http://localhost:4242/widgets/team-goal` | 488 × 82 | 1043, 987 |
 | Donations received | `http://localhost:4242/widgets/donation-rotator` | 314 × 58 | 1583, 59 |
+| *or* Donations received, with messages | `http://localhost:4242/widgets/donation-messages` | 314 × 116 | 1583, 59 |
 
 These positions put each widget inside the white body of its overlay box, below the blue header and inside the 3px
 border, on a 1920 × 1080 canvas. The footer sizes assume the taller footer boxes (494 × 128, bottom at y 1072) from
@@ -96,6 +100,10 @@ Browser Source settings:
 - **Refresh browser when scene becomes active**: off (optional). The widgets recover on their own.
 - If a widget is blank because the server was not running when Streamlabs started it, start the server and click
   **Refresh cache of current page** in the source's properties.
+
+Use **one** of the two Donations sources. The with-messages version needs a taller Donations box in the overlay:
+320 × 154 at x 1580, y 24, with the same 32px blue header, which leaves a 314 × 116 white area for the widget. In
+`/preview`, the **Donations box** selector shows it in place.
 
 The preview page has the same table with copyable URLs. Text and spacing scale with the source **height**
 (designed at 82px for the footer, 58px for the rotator). If a box in your overlay gets taller, make the source

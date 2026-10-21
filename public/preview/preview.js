@@ -9,6 +9,9 @@ const SOURCES = [
 	{ name: 'GamePlan42 goal', path: '/widgets/team-goal', x: 1043, y: 987, w: 488, h: 82 },
 	{ name: 'Donations received', path: '/widgets/donation-rotator', x: 1583, y: 59, w: 314, h: 58 },
 ];
+/** Optional replacement for the Donations source: the version with messages, in a taller box (320 x 154). */
+const MESSAGES_SOURCE = { name: 'Donations received (with messages)', path: '/widgets/donation-messages', x: 1583, y: 59, w: 314, h: 116 };
+const MESSAGES_BOX = { x: 1580, y: 24, w: 320, h: 154, head: 32, font: 18, title: 'Donations received' };
 /** Fallback boxes (outer geometry from the overlay generator). */
 const BOXES = [
 	{ x: 20, y: 944, w: 494, h: 128, head: 40, font: 22, title: 'Stream countdown' },
@@ -22,12 +25,36 @@ const stage = $('stage');
 const wrap = $('stage-wrap');
 
 // --- stage ---------------------------------------------------------------------
-for (const s of SOURCES) {
+// ?donations=messages (or the header selector) swaps in the with-messages Donations widget and its taller box.
+const params = new URLSearchParams(location.search);
+const variantSelect = /** @type {HTMLSelectElement} */ ($('donations-variant'));
+variantSelect.value = params.get('donations') === 'messages' ? 'messages' : 'standard';
+const withMessages = variantSelect.value === 'messages';
+variantSelect.addEventListener('change', () => {
+	params.set('donations', variantSelect.value);
+	location.search = params.toString();
+});
+const activeSources = withMessages ? [...SOURCES.slice(0, 3), MESSAGES_SOURCE] : SOURCES;
+for (const s of activeSources) {
 	const frame = document.createElement('iframe');
 	frame.src = s.path;
 	frame.title = s.name;
 	Object.assign(frame.style, { left: `${s.x}px`, top: `${s.y}px`, width: `${s.w}px`, height: `${s.h}px` });
 	stage.append(frame);
+}
+if (withMessages) stage.append(box(MESSAGES_BOX, 'fb-box msg-box'));
+
+/** @param {{ x: number, y: number, w: number, h: number, head: number, font: number, title: string }} b @param {string} className */
+function box(b, className) {
+	const el = document.createElement('div');
+	el.className = className;
+	Object.assign(el.style, { left: `${b.x}px`, top: `${b.y}px`, width: `${b.w}px`, height: `${b.h}px` });
+	const head = document.createElement('div');
+	head.className = 'fb-head';
+	Object.assign(head.style, { height: `${b.head}px`, fontSize: `${b.font}px` });
+	head.textContent = b.title;
+	el.append(head);
+	return el;
 }
 
 const overlay = /** @type {HTMLImageElement} */ ($('overlay'));
@@ -37,15 +64,8 @@ overlay.addEventListener('error', () => {
 	fb.hidden = false;
 	fb.innerHTML = '<div class="fb-game">Game capture 1440×810</div><div class="fb-rule"></div>';
 	for (const b of BOXES) {
-		const box = document.createElement('div');
-		box.className = 'fb-box';
-		Object.assign(box.style, { left: `${b.x}px`, top: `${b.y}px`, width: `${b.w}px`, height: `${b.h}px` });
-		const head = document.createElement('div');
-		head.className = 'fb-head';
-		Object.assign(head.style, { height: `${b.head}px`, fontSize: `${b.font}px` });
-		head.textContent = b.title;
-		box.append(head);
-		fb.append(box);
+		if (withMessages && b.title === 'Donations received') continue; // drawn above, taller
+		fb.append(box(b, 'fb-box'));
 	}
 });
 
@@ -66,7 +86,7 @@ outline.addEventListener('change', () => stage.classList.toggle('outline', outli
 
 // --- source table ----------------------------------------------------------------
 const sourceRows = /** @type {HTMLElement} */ (document.querySelector('#sources tbody'));
-for (const s of SOURCES) {
+for (const s of [...SOURCES, MESSAGES_SOURCE]) {
 	const tr = document.createElement('tr');
 	for (const v of [s.name, `${location.origin}${s.path}`, s.x, s.y, s.w, s.h]) {
 		const td = document.createElement('td');
@@ -138,6 +158,7 @@ for (const form of document.querySelectorAll('#mock-panel form')) {
 				scope: data.scope,
 				donorName: String(data.donorName ?? '').trim() || null,
 				amount: String(data.amount ?? '') === '' ? null : Number(data.amount),
+				message: String(data.message ?? '').trim() || null,
 			});
 		} else {
 			mock(action, { raised: data.raised === '' ? undefined : Number(data.raised), goal: data.goal === '' ? undefined : Number(data.goal) });

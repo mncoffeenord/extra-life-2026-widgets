@@ -61,10 +61,20 @@ pages to Streamlabs (macOS) as Browser Sources. Owner streams for team GamePlan4
   desktop preview pane (its hidden-page throttling stops the observer); verify in mock mode if boxes get taller.
 - **Goal display:** whole dollars, rounded down (never overstate), with a percent and a bar. The bar turns yellow at
   100% or more. The number tweens over 1.2 s; the first render is instant (no tween from 0 on scene switch).
-- **Donation rotator:** round-robin between "my page" and "team" (team excludes my own donations), every 30 s,
+- **Donation rotator:** round-robin between "my page" and "team" (team excludes my own donations), every 45 s (owner, 2026-10-21),
   cycling the 10 most recent of each. New donations, detected by `donationID`, interrupt immediately with a flash.
   The first snapshot is a baseline, so reloads do not replay alerts. Anonymous donors show as `Mysterious Hero`;
   hidden amounts show as `Private donation`.
+- **Donations with messages (optional, 2026-10-21):** `/widgets/donation-messages` is 314×116 (taller Donations box,
+  320×154 at 1580,24, with a 32px header). It reuses `donation-rotator/rotator.js` (`<body data-messages="on">`) plus
+  `messages.css` (`--design-h: 116`). The message sits between the name/amount line and the tag line, up to 3 lines at
+  13u. If it overflows, it drops to 12u; if it still overflows, it scrolls (4 s hold, about 0.5 line/s, 3 s hold, always
+  within the turn) with faded edges. No text is cut. Sizing came from 305 real donations: 12% have messages, median
+  49 chars, p90 129, max 326. The owner is reworking the sidebar (mascot slot removed), so the overlay art for the
+  taller box is theirs; `/preview` draws the box itself.
+- **Message filter:** `src/message-filter.ts` runs on the server, so flagged messages never reach a widget. It uses a
+  built-in list plus `messageFilter.extraWords`, matches whole words, and handles leetspeak, stretched letters, accents
+  and simple endings. It is a safety net, not moderation.
 - **Widget sizes** are the white bodies of the overlay boxes. Footer boxes were made taller on 2026-10-21 (owner's
   choice): 494×128 (top 944, bottom 1072) with a 3px border and a 40px header, so the body is 488×82 at (23/533/1043, 987).
   The new layer is in the Asset Library folder `2026-10-21-bottom-bar-82px/`; the original checkpoint has 116px boxes (70px body). The Donations box is 320×96 with a 32px header, so the body is
