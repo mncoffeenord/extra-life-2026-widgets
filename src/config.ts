@@ -14,6 +14,7 @@ export interface Config {
 		maxBackoffSeconds: number;
 	};
 	rotation: { intervalSeconds: number; recentCount: number; unknownDonorName: string; privateAmountText: string };
+	messageFilter: { enabled: boolean; extraWords: string[] };
 	mock: boolean;
 }
 
@@ -31,7 +32,8 @@ const DEFAULTS = {
 	extraLife: { baseUrl: 'https://dd.extra-life.org/api', apiVersion: '1.6', participantId: '', teamId: '' },
 	event: { timeZone: 'America/Chicago', start: '', end: '' },
 	polling: { participantSeconds: 15, teamSeconds: 30, donationsSeconds: 120, minGapMs: 2000, timeoutMs: 10000, maxBackoffSeconds: 300 },
-	rotation: { intervalSeconds: 30, recentCount: 10, unknownDonorName: 'Mysterious Hero', privateAmountText: 'Private donation' },
+	rotation: { intervalSeconds: 45, recentCount: 10, unknownDonorName: 'Mysterious Hero', privateAmountText: 'Private donation' },
+	messageFilter: { enabled: true, extraWords: [] as string[] },
 };
 
 type Section = keyof typeof DEFAULTS;
@@ -60,6 +62,7 @@ export function parseConfig(raw: unknown, options: { mock?: boolean } = {}): Con
 	const event = section('event');
 	const polling = section('polling');
 	const rotation = section('rotation');
+	const messageFilter = section('messageFilter');
 
 	const positive = (path: string, v: unknown, { integer = false, min = 0 } = {}) => {
 		if (typeof v !== 'number' || !Number.isFinite(v) || v <= min || (integer && !Number.isInteger(v))) {
@@ -118,6 +121,11 @@ export function parseConfig(raw: unknown, options: { mock?: boolean } = {}): Con
 	text('rotation.unknownDonorName', rotation.unknownDonorName);
 	text('rotation.privateAmountText', rotation.privateAmountText);
 
+	if (typeof messageFilter.enabled !== 'boolean') problems.push('messageFilter.enabled must be true or false');
+	if (!Array.isArray(messageFilter.extraWords) || !messageFilter.extraWords.every((w) => typeof w === 'string' && w.trim() !== '')) {
+		problems.push('messageFilter.extraWords must be a list of words, e.g. ["spoiler"]');
+	}
+
 	if (problems.length > 0) throw new ConfigError(problems);
 
 	return {
@@ -126,6 +134,7 @@ export function parseConfig(raw: unknown, options: { mock?: boolean } = {}): Con
 		event: { ...event, startMs, endMs },
 		polling,
 		rotation,
+		messageFilter,
 		mock,
 	};
 }

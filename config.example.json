@@ -23,9 +23,13 @@
 		"maxBackoffSeconds": 300
 	},
 	"rotation": {
-		"intervalSeconds": 30,
+		"intervalSeconds": 45,
 		"recentCount": 10,
 		"unknownDonorName": "Mysterious Hero",
 		"privateAmountText": "Private donation"
+	},
+	"messageFilter": {
+		"enabled": true,
+		"extraWords": []
 	}
 }

@@ -46,7 +46,8 @@ test('missing sections fall back to defaults', () => {
 	const c = parseConfig({ extraLife: { participantId: '1', teamId: '2' }, event: { start: '2026-11-12T13:00', end: '2026-11-14T01:00' } });
 	assert.equal(c.server.port, 4242);
 	assert.equal(c.polling.participantSeconds, 15);
-	assert.equal(c.rotation.intervalSeconds, 30);
+	assert.equal(c.rotation.intervalSeconds, 45);
+	assert.deepEqual(c.messageFilter, { enabled: true, extraWords: [] });
 	assert.equal(c.event.timeZone, 'America/Chicago');
 });
 
@@ -67,6 +68,14 @@ test('end before start, skipped DST time, and bad formats are reported', () => {
 	const d = valid();
 	d.event.start = '2026-03-08T02:30';
 	assert.ok(problemsOf(() => parseConfig(d)).some((p) => p.includes('does not exist')));
+});
+
+test('messageFilter is validated', () => {
+	const c = valid();
+	c.messageFilter = { enabled: 'yes', extraWords: ['ok', ''] };
+	const problems = problemsOf(() => parseConfig(c));
+	assert.ok(problems.some((p) => p.includes('messageFilter.enabled')));
+	assert.ok(problems.some((p) => p.includes('messageFilter.extraWords')));
 });
 
 test('trailing slash on baseUrl is trimmed', () => {

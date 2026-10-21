@@ -6,6 +6,7 @@ import { createApp, createClock } from './app.ts';
 import { ConfigError, loadConfig, type Config } from './config.ts';
 import { ExtraLifeClient } from './extralife/client.ts';
 import { parseDonations, parseParticipant, parseTeam } from './extralife/parse.ts';
+import { createMessageFilter, DEFAULT_BLOCKED_WORDS, hideFlaggedMessages } from './message-filter.ts';
 import { MockApi } from './mock.ts';
 import { Poller, type Resource } from './poller.ts';
 import { Store } from './store.ts';
@@ -35,6 +36,11 @@ const client = mock ?? new ExtraLifeClient({ ...config.extraLife, timeoutMs: con
 // Mock mode polls quickly so preview changes show up in a couple of seconds.
 const seconds = (live: number) => (mockMode ? Math.min(live, 2) : live) * 1000;
 const limit = config.rotation.recentCount;
+const isFlagged = createMessageFilter([...DEFAULT_BLOCKED_WORDS, ...config.messageFilter.extraWords]);
+const donations = (data: unknown) => {
+	const list = parseDonations(data);
+	return config.messageFilter.enabled ? hideFlaggedMessages(list, isFlagged) : list;
+};
 
 const resources: Resource[] = [
 	{
@@ -63,13 +69,13 @@ const resources: Resource[] = [
 		key: 'participantDonations',
 		path: `participants/${participantId || 'mock'}/donations?limit=${limit}`,
 		intervalMs: seconds(config.polling.donationsSeconds),
-		apply: (data) => store.setDonations('participant', parseDonations(data)),
+		apply: (data) => store.setDonations('participant', donations(data)),
 	},
 	{
 		key: 'teamDonations',
 		path: `teams/${teamId || 'mock'}/donations?limit=${limit}`,
 		intervalMs: seconds(config.polling.donationsSeconds),
-		apply: (data) => store.setDonations('team', parseDonations(data)),
+		apply: (data) => store.setDonations('team', donations(data)),
 	},
 ];
 

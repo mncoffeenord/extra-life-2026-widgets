@@ -69,7 +69,7 @@ test('JSON endpoints expose polled data', async () => {
 		const team = await t.getJson('/api/team');
 		assert.equal(team.data.name, 'GamePlan42');
 		const d = await t.getJson('/api/donations');
-		assert.equal(d.participant.length, 3);
+		assert.equal(d.participant.length, 5);
 		assert.ok(d.team.length >= 3);
 		assert.equal((await t.getJson('/api/health')).ok, true);
 	} finally {
@@ -115,12 +115,13 @@ test('mock donation flows through polling into totals and donation lists', async
 	const t = await start();
 	try {
 		await t.pollAll();
-		await t.post('/api/mock/donation', { scope: 'mine', donorName: 'Test Donor', amount: 42 });
+		await t.post('/api/mock/donation', { scope: 'mine', donorName: 'Test Donor', amount: 42, message: '  Go team!  ' });
 		await t.pollAll();
 		const s = await t.getJson('/api/state');
 		assert.equal(s.participant.raised, 1292);
 		assert.equal(s.donations.participant[0].donorName, 'Test Donor');
 		assert.equal(s.donations.participant[0].amount, 42);
+		assert.equal(s.donations.participant[0].message, 'Go team!');
 		await t.post('/api/mock/donation', { scope: 'team', donorName: null, amount: null });
 		await t.pollAll();
 		const s2 = await t.getJson('/api/state');

@@ -196,7 +196,8 @@ export function createApp(deps: AppDeps): Server {
 			case 'donation': {
 				const scope = body.scope === 'team' ? 'team' : 'mine';
 				const amount = body.amount === null ? null : num(body.amount);
-				mock.addDonation({ scope, donorName: body.donorName === null ? null : typeof body.donorName === 'string' ? body.donorName : undefined, amount });
+				const message = typeof body.message === 'string' && body.message.trim() !== '' ? body.message.trim().slice(0, 500) : null;
+				mock.addDonation({ scope, donorName: body.donorName === null ? null : typeof body.donorName === 'string' ? body.donorName : undefined, amount, message });
 				for (const key of ['participant', 'team', 'participantDonations', 'teamDonations'] as const) poller?.trigger(key);
 				break;
 			}

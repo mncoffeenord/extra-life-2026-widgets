@@ -15,6 +15,7 @@ export interface MockDonationInput {
 	scope: 'mine' | 'team';
 	donorName?: string | null;
 	amount?: number | null;
+	message?: string | null;
 }
 
 export class MockApi {
@@ -41,9 +42,15 @@ export class MockApi {
 			return { ...d, displayName: ['Alex P.', 'Aunt Bea', 'Jordan K.', 'Casey L.', 'Pat from work', 'Taylor B.', 'Morgan D.'][i % 7], recipientName: recipients.get(d.participantID) };
 		});
 		this.participantDonations = [];
-		for (const [donorName, amount] of [['Grandma Jo', 50], [null, 25], ['Chris from work', 100]] as const) {
-			this.addDonation({ scope: 'mine', donorName, amount }, { adjustTotals: false });
-		}
+		// A spread of message lengths (real messages: median ~50 chars, 90% under ~130, longest seen 326).
+		const seed: Array<[string | null, number, string | null]> = [
+			['Grandma Jo', 50, 'So proud of you! Have fun and stay hydrated 💙'],
+			[null, 25, null],
+			['Chris from work', 100, 'For the kids at the children\'s hospital. My nephew spent three weeks there last spring and the nurses were incredible. Thank you for doing this, GamePlan42, and good luck staying awake for all 36 hours!'],
+			['Pat', 20, 'Go team!'],
+			['Speedrunner42', 42, 'holy shit what a run'], // hidden by the message filter
+		];
+		for (const [donorName, amount, message] of seed) this.addDonation({ scope: 'mine', donorName, amount, message }, { adjustTotals: false });
 	}
 
 	addDonation(input: MockDonationInput, { adjustTotals = true } = {}): Raw {
@@ -60,6 +67,7 @@ export class MockApi {
 			isRegFee: false,
 		};
 		if (input.donorName !== null) donation.displayName = input.donorName ?? 'Friendly Donor';
+		if (input.message) donation.message = input.message;
 		const amount = typeof donation.amount === 'number' ? donation.amount : 0;
 		this.teamDonations.unshift(donation);
 		if (adjustTotals) this.team = { ...this.team, sumDonations: (this.team.sumDonations as number) + amount, numDonations: (this.team.numDonations as number) + 1 };
