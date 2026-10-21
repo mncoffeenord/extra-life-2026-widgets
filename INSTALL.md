@@ -1,76 +1,103 @@
 # Install guide
 
 The short version: **one small server runs on your computer, and each widget is its own Browser Source in Streamlabs**
-(four sources, each with its own URL, size, and position). The server does all the talking to Extra Life; the sources
-only display what it sends them.
+(or OBS). The server does all the talking to Extra Life; the sources only display what it sends them.
 
-## 1. One-time setup (about 10 minutes)
+## 1. Install (about 10 minutes, once)
 
 1. **Install Node.js 24 or newer** from <https://nodejs.org> (the LTS download is fine).
 2. **Get the code.** Either `git clone https://github.com/mncoffeenord/extra-life-2026-widgets.git`, or download the
    ZIP from GitHub (**Code → Download ZIP**) and unzip it.
-3. **Install it.** Open Terminal (Mac) or PowerShell (Windows) in that folder and run:
+3. Open Terminal (Mac) or PowerShell (Windows) in that folder and run:
 
    ```bash
    npm install
    ```
 
-4. **Configure it.** Copy `config.example.json` to `config.json`, then edit:
-   - `participantId`: the number at the end of your Extra Life page URL (`dd.extra-life.org/participants/123456`)
-   - `teamId`: your team's number or URL name (`dd.extra-life.org/teams/GamePlan42` → `"GamePlan42"`)
-   - `start` / `end`: your stream times in your local time, for example `"2026-11-12T13:00"`
-   - `timeZone`: for example `"America/Chicago"`
+   ```bash
+   npm run setup
+   ```
+
+`npm run setup` asks a few questions. Press Enter to keep the suggested answer.
+
+| Question | Notes |
+| --- | --- |
+| Participant ID or page URL | Paste your Extra Life page link. It is checked live, and your team is filled in from it. |
+| Time zone, stream start and end | Local times, e.g. `2026-11-12T13:00`. Daylight saving is handled for you. |
+| Style | **framed**: each widget draws its own box, so you can drop it anywhere (no overlay art needed). **transparent**: widgets fill the white areas of boxes in your own overlay art. |
+| Donations widget | **standard**, or **messages** (also shows the donor's message, in a taller box). |
+| Seconds per donation | How long each donation stays up in the rotation (default 45). |
+| Box titles | Header text on framed boxes. `{team}` becomes your team's name. |
+| Colors | A preset (`extra-life`, `midnight`, `mono`), optionally with your own hex codes. |
+
+It writes `config.json` (your settings), **`MY-SOURCES.md`** (your browser sources, with URLs and sizes), and
+launchers. Run it again any time to change something; it keeps your other settings and backs up the old file.
 
 ## 2. Start the server (every stream)
 
-```bash
-npm start
-```
+Double-click **`start-widgets.command`** (Mac; it also keeps the Mac awake) or **`start-widgets.bat`** (Windows).
+Or run `npm start`. Leave that window open for the whole stream.
 
-On a Mac, use `caffeinate -is npm start` so the computer doesn't sleep. Leave that window open for the whole stream.
-
-Then open <http://localhost:4242/preview/> in a browser. You should see **Live data** and **API OK**, with numbers
-that match your Extra Life page.
+Then open <http://localhost:4242/preview/>. You should see **Live data** and **API OK**, with numbers that match your
+Extra Life page.
 
 > Start the server **before** opening Streamlabs. If a widget is blank, open that source's properties and click
 > **Refresh cache of current page**.
 
-## 3. Add the widgets to Streamlabs (one time)
+## 3. Add the widgets (once)
 
-Add each one with **+ Add Source → Browser Source**:
+Open **`MY-SOURCES.md`**: it lists each source for your choices. For each one, use **+ Add Source → Browser
+Source**, then:
 
-| Source name | URL | Width × Height | Position X, Y |
-| --- | --- | --- | --- |
-| EL Countdown | `http://localhost:4242/widgets/countdown` | 488 × 82 | 23, 987 |
-| EL My Goal | `http://localhost:4242/widgets/participant-goal` | 488 × 82 | 533, 987 |
-| EL Team Goal | `http://localhost:4242/widgets/team-goal` | 488 × 82 | 1043, 987 |
-| EL Donations | `http://localhost:4242/widgets/donation-rotator` | 314 × 58 | 1583, 325 |
-| *or* EL Donations + messages | `http://localhost:4242/widgets/donation-messages` | 314 × 105 | 1583, 325 |
-
-Pick **one** EL Donations source. The messages version shows each donor's message under their name (long ones shrink, then scroll), and needs a
-taller Donations box in your overlay: 320 × 143 at x 1580, y 290, with the 32px header. Messages that match a word
-list are hidden automatically (see `messageFilter` in the README).
-
-For each source:
-
-- Leave **Local file** off and **Custom CSS** at its default (the widgets are already transparent).
+- Leave **Local file** off and paste the URL.
+- Set **Width** and **Height** from the list.
+- Leave **Custom CSS** at its default.
 - Turn **Shutdown source when not visible** off.
-- Set the position under **right-click → Transform → Edit Transform**, at 100% scale.
+- Place it. Framed boxes can go anywhere; the listed positions match the GamePlan42 overlay. To type exact
+  positions, use **right-click → Transform → Edit Transform**, at 100% scale.
 
-The positions match the GamePlan42 overlay on a 1920 × 1080 canvas, using the **taller footer boxes** (the bottom-bar
-layer from 2026-10-21, with boxes 128px tall). On a different overlay, set each source to the size of the white area
-it should fill. The widgets scale to the height you give them.
+For reference, the sizes:
 
-**Set them up once, use them everywhere:** put the four sources in one scene, for example "Extra Life widgets", then
-add that scene as a source to each of your other scenes. A change to the widgets scene then shows up in all of them.
+| Widget | URL path | Framed | Transparent |
+| --- | --- | --- | --- |
+| Stream countdown | `/widgets/countdown` | 494 × 128 | 488 × 82 |
+| My Extra Life goal | `/widgets/participant-goal` | 494 × 128 | 488 × 82 |
+| Team goal | `/widgets/team-goal` | 494 × 128 | 488 × 82 |
+| Donations | `/widgets/donation-rotator` | 320 × 96 | 314 × 58 |
+| *or* Donations + messages | `/widgets/donation-messages` | 320 × 143 | 314 × 105 |
+
+Use **one** of the two Donations widgets. Any source can switch style on its own by adding `?style=framed` or
+`?style=transparent` to its URL, and `?title=Your%20Title` sets its header text.
+
+**Set them up once, use them everywhere:** put the sources in one scene, for example "Extra Life widgets", then add
+that scene as a source to your other scenes.
 
 ## 4. Before going live
 
 - [ ] Server is running, and `/preview` shows **API OK**.
-- [ ] All four widgets show data in Streamlabs.
+- [ ] All widgets show data in Streamlabs.
 - [ ] The countdown shows the right time to your start.
 
 Want to rehearse? Stop the server and run `npm run mock` instead. `/preview` then gets buttons for fake donations,
-jumping the clock, and simulating an outage. Stop it and run `npm start` again before you go live.
+jumping the clock, and simulating an outage. Stop it and start the server normally before you go live.
+
+## Changing colors later
+
+Re-run `npm run setup`, or edit the `theme` section of `config.json`, then restart the server:
+
+```json
+"theme": { "preset": "extra-life", "colors": { "primary": "#6A1B9A", "accent": "#FFB300" } }
+```
+
+| Color | Used for |
+| --- | --- |
+| `primary` | Box border and header, active numbers (raised, clock), MY PAGE tag, progress bar |
+| `primaryLight` | End of the progress bar gradient |
+| `accent` | Over-goal bar, TEAM tag, Overtime tag, new-donation flash |
+| `text` | Main text (names, goal amounts) |
+| `muted` | Secondary text (time ago, private amounts) |
+| `track` | Progress bar background, "Starts in" tag |
+| `surface` | Box background (framed style) |
+| `headerText` | Header text and text on primary-colored tags |
 
 More detail (how it works, troubleshooting, development) is in the [README](README.md).

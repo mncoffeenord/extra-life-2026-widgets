@@ -24,8 +24,8 @@ pages to Streamlabs (macOS) as Browser Sources. Owner streams for team GamePlan4
 - Widgets must render something sensible with no data, stale data, or a missing goal. Never show blank or `NaN`.
   Treat repeated snapshots as no-ops.
 - Tabs for indentation (see `.editorconfig`). Small commits with a clear "why" in the body.
-- The source table (name, URL, x, y, w, h) appears in both `public/preview/preview.js` (`SOURCES`) and README.md.
-  Keep them in sync.
+- Widget geometry is defined once in `src/sources.ts`; the preview and MY-SOURCES.md read it. The size tables in
+  README.md and INSTALL.md are hand-written copies, so update them when sizes change.
 
 ## Never commit
 
@@ -73,6 +73,23 @@ pages to Streamlabs (macOS) as Browser Sources. Owner streams for team GamePlan4
   hold, about 0.5 line/s, 3 s hold, always within the turn) with faded edges. No text is cut. Real data: 12% of
   donations have messages, median 49 chars, p90 129, max 326. The owner is reworking the sidebar, so the overlay art
   for the taller box is theirs; `/preview` draws the box itself.
+- **Two styles (2026-10-21):** `transparent` (the widget fills a box drawn in overlay art) and `framed` (the widget
+  draws its own box: 3px border, header, surface, at the box size: footer 494×128, Donations 320×96/143). One codebase:
+  `public/shared/frame.js` (a classic script, run before the widget module) wraps `.widget` when the style is framed.
+  The default comes from `config.display.style`, with per-source `?style=`/`?framed`/`?title=` overrides. In framed
+  mode, `--u` comes from `--frame-u` (100vh / box height), so the content lays out exactly as when transparent. New
+  setups default to framed; the owner's config is transparent.
+- **Themes:** `src/theme.ts` has presets (extra-life, midnight, mono) plus hex overrides for 8 colors. The server
+  injects `:root{--primary...}` and `window.EL_DISPLAY` (style, frame spec with the team title resolved) into each
+  widget page (`serveWidget` in app.ts), so first paint is right. Widget CSS must use only the theme variables
+  (`--primary --primary-light --accent --text --muted --track --surface --header-text`), never raw colors.
+- **Geometry lives in `src/sources.ts`** (box + body per widget, GamePlan42 layout positions). It feeds the injection,
+  `/api/display` (the preview builds its stage and source table from it), and setup's `MY-SOURCES.md`. Don't
+  hard-code positions elsewhere.
+- **Installer:** `npm run setup` (`scripts/setup.ts` prompts; `src/setup-core.ts` holds the tested pure parts). It
+  checks IDs live, writes config.json (backup in config.backup.json, other keys kept), MY-SOURCES.md, and the
+  launchers (all git-ignored). It uses its own line queue instead of readline.question() because piped answers
+  arriving during the network check were dropped.
 - **Message filter:** `src/message-filter.ts` runs on the server, so flagged messages never reach a widget. It uses a
   built-in list plus `messageFilter.extraWords`, matches whole words, and handles leetspeak, stretched letters, accents
   and simple endings. It is a safety net, not moderation.

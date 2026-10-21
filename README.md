@@ -30,10 +30,14 @@ Requires **Node.js 24+** (developed on 26). No build step: Node runs the TypeScr
 git clone https://github.com/mncoffeenord/extra-life-2026-widgets.git
 cd extra-life-2026-widgets
 npm install
-cp config.example.json config.json
+npm run setup
 ```
 
-Edit `config.json` (it is git-ignored):
+`npm run setup` asks for your participant (checked live), event times, style, Donations version, rotation time, box
+titles, and colors, then writes `config.json` (git-ignored), **`MY-SOURCES.md`** (your browser sources with URLs and
+sizes), and `start-widgets.command` / `.bat` launchers. Re-run it to change anything. For scripted setups:
+`npm run setup -- --defaults --participant 123456 --style framed --theme midnight` (add `--offline` to skip the
+check). You can also copy `config.example.json` to `config.json` and edit it by hand. The main settings:
 
 - `extraLife.participantId`: the number at the end of your page URL, e.g. `dd.extra-life.org/participants/123456`.
 - `extraLife.teamId`: your team's numeric ID or URL alias, e.g. `dd.extra-life.org/teams/YourTeam` → `"YourTeam"`.
@@ -42,6 +46,13 @@ Edit `config.json` (it is git-ignored):
 - `rotation.intervalSeconds`: how long each donation stays on screen (default 45, so four donations every 3 minutes).
 - `messageFilter`: donor messages matching a built-in word list are hidden (the donation still shows). Add words
   with `"extraWords": ["spoiler"]`; turn it off with `"enabled": false`.
+- `display.style`: `"framed"` (each widget draws its own box, so it can go anywhere) or `"transparent"` (widgets fill
+  boxes drawn in your overlay art). Any source can override it with `?style=framed` / `?style=transparent`.
+- `display.donations`: `"standard"` or `"messages"`. This sets which Donations widget `MY-SOURCES.md` and the preview use.
+- `display.titles`: header text on framed boxes (`{team}` becomes the team name); `?title=` overrides it per source.
+- `theme`: `{ "preset": "extra-life" | "midnight" | "mono", "colors": { "primary": "#6A1B9A", ... } }`. Hex overrides
+  for `primary`, `primaryLight`, `accent`, `text`, `muted`, `track`, `surface`, `headerText` (see INSTALL.md for what
+  each one colors). The server injects the theme into every widget page.
 
 The server checks the config at startup and lists every problem it finds.
 
