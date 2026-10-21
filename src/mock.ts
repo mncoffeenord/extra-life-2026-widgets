@@ -33,7 +33,13 @@ export class MockApi {
 		this.team = { ...(fixture('team') as Raw) };
 		this.participantId = this.participant.participantID as number;
 		const teammates = (fixture('team-donations') as Raw[]).filter((d) => d.participantID !== this.participantId);
-		this.teamDonations = teammates.map((d, i) => ({ ...d, displayName: ['Alex P.', 'Sam R.', 'Jordan K.', 'Casey L.', 'Riley M.', 'Taylor B.', 'Morgan D.'][i % 7] }));
+		// Fixture names are anonymized ("Person 2"); give the fake team readable donor and teammate names.
+		const recipients = new Map<unknown, string>();
+		const teammateNames = ['Sam', 'Jordan', 'Riley', 'Casey'];
+		this.teamDonations = teammates.map((d, i) => {
+			if (!recipients.has(d.participantID)) recipients.set(d.participantID, teammateNames[recipients.size % teammateNames.length]!);
+			return { ...d, displayName: ['Alex P.', 'Aunt Bea', 'Jordan K.', 'Casey L.', 'Pat from work', 'Taylor B.', 'Morgan D.'][i % 7], recipientName: recipients.get(d.participantID) };
+		});
 		this.participantDonations = [];
 		for (const [donorName, amount] of [['Grandma Jo', 50], [null, 25], ['Chris from work', 100]] as const) {
 			this.addDonation({ scope: 'mine', donorName, amount }, { adjustTotals: false });
@@ -50,7 +56,7 @@ export class MockApi {
 			teamID: this.team.teamID,
 			amount: input.amount === undefined ? 20 : input.amount,
 			createdDateUTC: new Date(this.#now()).toISOString(),
-			recipientName: mine ? this.participant.displayName : 'Teammate',
+			recipientName: mine ? this.participant.displayName : 'Jordan',
 			isRegFee: false,
 		};
 		if (input.donorName !== null) donation.displayName = input.donorName ?? 'Friendly Donor';
