@@ -21,6 +21,8 @@ Why a server instead of widgets calling the API directly (as the 2022 tracker di
 
 ## Setup
 
+**New here? The [install guide](INSTALL.md) has the short version.**
+
 Requires **Node.js 24+** (developed on 26). No build step: Node runs the TypeScript directly.
 
 ```bash
