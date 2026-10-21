@@ -51,6 +51,14 @@ pages to Streamlabs (macOS) as Browser Sources. Owner streams for team GamePlan4
   Widgets tick locally using the server's clock offset, so mock time travel works too.
 - **Countdown phases** (owner's spec): before start, `Starts in` with `Xd HHh MMm` (24 h or more) or `HH:MM:SS`;
   during, `Live HH:MM of 36:00` (elapsed, counting up); after the end, `Overtime HH:MM` (counting up, no done message).
+- **Scalable sizing (2026-10-21):** widget CSS uses design pixels, `calc(N * var(--u))`, where
+  `--u = 100vh / --design-h` (70 for footer widgets, 58 for the rotator). Size changes only need the Streamlabs
+  source height to change. Don't write raw `px` sizes in widget CSS.
+- **Type scale:** the countdown time matches the goal's raised amount (32u). Secondary text is 20–22u and pills 13u.
+- **Goal layout:** a 3-column grid with the amounts centered over the bar and the percent pinned right. A `.tight`
+  fallback left-aligns the amounts if they would collide with the percent (only possible with 5–6 digit totals in a
+  box taller than about 80px). The check runs on each data render and on ResizeObserver. It was NOT verified in the
+  desktop preview pane (its hidden-page throttling stops the observer); verify in mock mode if boxes get taller.
 - **Goal display:** whole dollars, rounded down (never overstate), with a percent and a bar. The bar turns yellow at
   100% or more. The number tweens over 1.2 s; the first render is instant (no tween from 0 on scene switch).
 - **Donation rotator:** round-robin between "my page" and "team" (team excludes my own donations), every 30 s,

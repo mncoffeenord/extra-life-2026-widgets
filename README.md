@@ -58,6 +58,13 @@ Mock mode adds controls to `/preview`: set totals, send fake donations (named, a
 clock (before start / live / near end / overtime), and simulate an API outage. Mock mode runs the real poller
 against a fake API, so it exercises the same code that runs on stream night.
 
+To see the live clock (`Live HH:MM of 36:00`) with real data before the event, run against a copy of your config
+with an earlier start time, e.g. `"start": "2026-10-21T12:00"` and `"end": "2026-10-23T00:00"`:
+
+```bash
+npm start -- --config my-test-window.json
+```
+
 Keep your Mac awake during the stream:
 
 ```bash
@@ -87,8 +94,10 @@ Browser Source settings:
 - If a widget is blank because the server was not running when Streamlabs started it, start the server and click
   **Refresh cache of current page** in the source's properties.
 
-The preview page has the same table with copyable URLs. Teammates with a different layout can use any size;
-the widgets fill whatever box they are given, but are tuned for these sizes.
+The preview page has the same table with copyable URLs. Text and spacing scale with the source **height**
+(designed at 70px for the footer, 58px for the rotator). If a box in your overlay gets taller, make the source
+taller to match and the widget grows with it. Very large totals in a tall goal box switch to left-aligned amounts
+so they never run into the percent.
 
 ## Pre-stream checklist
 
