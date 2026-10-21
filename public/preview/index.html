@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Widget preview</title>
+	<link rel="stylesheet" href="/shared/theme.css">
+	<link rel="stylesheet" href="/preview/preview.css">
+</head>
+<body class="preview-page">
+	<header>
+		<h1>Extra Life widgets · preview</h1>
+		<span class="pill" id="mode">…</span>
+		<span class="pill" id="health">…</span>
+		<label class="toggle"><input type="checkbox" id="outline"> Outline sources</label>
+	</header>
+
+	<div class="stage-wrap" id="stage-wrap">
+		<div class="stage" id="stage">
+			<img id="overlay" src="/local-assets/overlay-preview.png" alt="">
+			<div id="fallback" hidden></div>
+		</div>
+	</div>
+
+	<section class="panels">
+		<div class="panel" id="mock-panel" hidden>
+			<h2>Fake data</h2>
+			<form data-action="participant">
+				<strong>My page</strong>
+				<label>Raised <input name="raised" type="number" step="0.01" min="0"></label>
+				<label>Goal <input name="goal" type="number" step="1" min="0"></label>
+				<button>Set</button>
+			</form>
+			<form data-action="team">
+				<strong>Team</strong>
+				<label>Raised <input name="raised" type="number" step="0.01" min="0"></label>
+				<label>Goal <input name="goal" type="number" step="1" min="0"></label>
+				<button>Set</button>
+			</form>
+			<form data-action="donation">
+				<strong>Donation</strong>
+				<select name="scope"><option value="mine">to my page</option><option value="team">to a teammate</option></select>
+				<label>Donor <input name="donorName" placeholder="blank = anonymous"></label>
+				<label>Amount <input name="amount" type="number" step="0.01" min="0" placeholder="blank = private"></label>
+				<button>Send</button>
+			</form>
+			<div class="buttons">
+				<strong>Quick</strong>
+				<button data-quick="mine" data-amount="25">+$25 to me</button>
+				<button data-quick="mine" data-amount="250">+$250 to me</button>
+				<button data-quick="team" data-amount="100">+$100 to team</button>
+			</div>
+			<div class="buttons">
+				<strong>Clock</strong>
+				<button data-clock="before-days">2 days before</button>
+				<button data-clock="before-10s">10 s before start</button>
+				<button data-clock="live">Live +7:42</button>
+				<button data-clock="before-end">10 s before end</button>
+				<button data-clock="overtime">Overtime +12 min</button>
+				<button data-clock="real">Real time</button>
+			</div>
+			<div class="buttons">
+				<strong>API</strong>
+				<button id="outage">Simulate outage</button>
+			</div>
+		</div>
+		<div class="panel" id="live-panel" hidden>
+			<h2>Live mode</h2>
+			<p>Showing real Extra Life data. Run <code>npm run mock</code> to get fake-data and clock controls.</p>
+		</div>
+		<div class="panel">
+			<h2>Streamlabs browser sources</h2>
+			<table id="sources"><thead><tr><th>Source</th><th>URL</th><th>X</th><th>Y</th><th>W</th><th>H</th></tr></thead><tbody></tbody></table>
+			<h2>Data status</h2>
+			<table id="status"><thead><tr><th>Resource</th><th>Last success</th><th>Failures</th><th>Last error</th></tr></thead><tbody></tbody></table>
+		</div>
+	</section>
+
+	<script type="module" src="/preview/preview.js"></script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+html, body.preview-page {
+	overflow: auto;
+	height: auto;
+	background: #1b2731;
+	color: #e8eef2;
+	font-weight: 500;
+	user-select: auto;
+}
+.preview-page header {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	flex-wrap: wrap;
+	padding: 12px 16px;
+}
+.preview-page h1 { font-size: 18px; margin: 0 8px 0 0; font-weight: 800; }
+.preview-page h2 { font-size: 14px; margin: 0 0 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--light-blue); }
+.toggle { font-size: 14px; display: inline-flex; gap: 6px; align-items: center; margin-left: auto; }
+
+#mode.mock { background: var(--yellow); color: var(--dark); }
+#mode.live { background: var(--cmn-blue); color: #fff; }
+#health.ok { background: #2e7d4f; color: #fff; }
+#health.bad { background: #b3402e; color: #fff; }
+
+.stage-wrap { position: relative; margin: 0 16px; overflow: hidden; border-radius: 6px; }
+.stage {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 1920px;
+	height: 1080px;
+	transform-origin: 0 0;
+	background: #E3F6FC;
+}
+.stage > img, #fallback { position: absolute; inset: 0; width: 1920px; height: 1080px; }
+.stage iframe {
+	position: absolute;
+	border: 0;
+	background: transparent;
+	color-scheme: normal;
+}
+.stage.outline iframe { outline: 2px dashed #e0245e; outline-offset: -1px; }
+
+/* fallback boxes when local-assets/overlay-preview.png is missing (same geometry as the overlay) */
+.fb-box {
+	position: absolute;
+	box-sizing: border-box;
+	border: 3px solid var(--cmn-blue);
+	border-radius: 6px;
+	background: #fff;
+	overflow: hidden;
+}
+.fb-head {
+	background: var(--cmn-blue);
+	color: #fff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+}
+.fb-game {
+	position: absolute;
+	left: 88px; top: 107px; width: 1440px; height: 810px;
+	background: #3A4856;
+	display: flex; align-items: center; justify-content: center;
+	color: #fff; font-size: 36px;
+}
+.fb-rule { position: absolute; left: 0; top: 932px; width: 1556px; height: 6px; background: var(--yellow); }
+
+.panels { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 16px; padding: 16px; }
+.panel { background: #24343f; border-radius: 8px; padding: 14px 16px; font-size: 14px; }
+.panel form, .panel .buttons { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 10px; }
+.panel strong { min-width: 70px; }
+.panel input, .panel select { font: inherit; width: 110px; padding: 4px 6px; border-radius: 4px; border: 1px solid #47606f; background: #142028; color: inherit; }
+.panel input[name='donorName'] { width: 150px; }
+.panel button { font: inherit; font-weight: 700; padding: 5px 10px; border-radius: 4px; border: 0; background: var(--cmn-blue); color: #fff; cursor: pointer; }
+.panel button:hover { background: var(--light-blue); }
+#outage.on { background: #b3402e; }
+table { border-collapse: collapse; width: 100%; margin-bottom: 14px; font-size: 13px; }
+th, td { text-align: left; padding: 4px 6px; border-bottom: 1px solid #34495a; vertical-align: top; }
+body.bare header, body.bare .panels { display: none; }
+body.bare .stage-wrap { margin: 0; border-radius: 0; width: 1920px; }
+td code, p code { font-size: 12px; background: #142028; padding: 1px 4px; border-radius: 3px; }
