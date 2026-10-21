@@ -1,7 +1,7 @@
 // Record live API responses as anonymized test fixtures.
 //
 //   npm run record-fixtures                      # uses IDs from config.json
-//   npm run record-fixtures -- --sample 579147   # also record a busy participant's donations
+//   npm run record-fixtures -- --sample <participant-id>   # also record a busy participant's donations
 //
 // Raw responses go to scripts/raw/ (git-ignored). Anonymized copies go to test/fixtures/.
 // Person names, donor IDs, messages, and avatar URLs are scrubbed, and numeric IDs are remapped.
@@ -67,6 +67,7 @@ function scrub(value: unknown): unknown {
 			case 'links': out[k] = { page: 'https://dd.extra-life.org/', donate: 'https://dd.extra-life.org/' }; break;
 			case 'streamingChannel': out[k] = v ? 'sample_channel' : v; break;
 			case 'urlAlias': out[k] = v ? 'sample-alias' : v; break;
+			case 'teamName': case 'name': out[k] = typeof v === 'string' && !teamNames.has(v) ? 'Sample Team' : v; break;
 			default: out[k] = scrub(v);
 		}
 	}
@@ -87,7 +88,9 @@ for (const [name, path] of targets) {
 	if (res.ok) raw.push([name, JSON.parse(body)]);
 	await sleep(3000); // be polite: the API asks for <= 1 request / 15s sustained
 }
-teamNames = new Set(raw.flatMap(([, d]) => (Array.isArray(d) ? d : [d]).map((x) => (x as Record<string, unknown>).teamName ?? (x as Record<string, unknown>).name)).filter((x): x is string => typeof x === 'string'));
+// Keep only the configured team's name; other teams (e.g. the --sample participant's) are scrubbed too.
+const ownTeam = raw.find(([name]) => name === 'team')?.[1] as Record<string, unknown> | undefined;
+teamNames = new Set(typeof ownTeam?.name === 'string' ? [ownTeam.name] : []);
 for (const [name, data] of raw) {
 	writeFileSync(new URL(`test/fixtures/${name}.json`, root), `${JSON.stringify(scrub(data), null, '\t')}\n`);
 }

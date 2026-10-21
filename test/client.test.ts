@@ -9,8 +9,8 @@ function client(f: typeof fetch, timeoutMs = 1000) {
 
 test('builds versioned URLs and returns JSON with etag and num-records', async () => {
 	const f = fakeFetch(jsonResponse(fixture('team-donations'), { headers: { etag: '"abc"', 'num-records': '7' } }));
-	const r = await client(f.fetch).get('teams/74105/donations');
-	assert.equal(f.calls[0]!.url, 'https://dd.extra-life.org/api/teams/74105/donations?version=1.6');
+	const r = await client(f.fetch).get('teams/90001/donations');
+	assert.equal(f.calls[0]!.url, 'https://dd.extra-life.org/api/teams/90001/donations?version=1.6');
 	assert.equal(r.kind, 'ok');
 	if (r.kind === 'ok') {
 		assert.equal(r.etag, '"abc"');
