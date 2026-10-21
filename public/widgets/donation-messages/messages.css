@@ -1,19 +1,31 @@
 /*
- * "With messages" version of the donations rotator: 314 x 116 (taller Donations box, 320 x 154 with its 32px header).
- * Loaded after rotator.css. Name and amount, then up to 3 lines of message, then the tag line.
+ * "With messages" version of the donations rotator: 314 x 105 (taller Donations box, 320 x 143 with its 32px header).
+ * Loaded after rotator.css. Name, amount and message are centered vertically; the tag line is a footer at the bottom.
  */
 
-.rotator { --design-h: 116; }
+.rotator { --design-h: 105; }
 
 .slide {
-	padding: calc(7 * var(--u)) calc(12 * var(--u));
-	gap: calc(6 * var(--u));
+	justify-content: space-between;
+	padding: calc(6 * var(--u)) calc(12 * var(--u)) calc(7 * var(--u));
+	gap: calc(5 * var(--u));
 }
 
+.center {
+	flex: 1;
+	min-height: 0;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: calc(5 * var(--u));
+}
+
+.slide > .line2 { flex: none; }
+
 .msg {
-	/* up to 3 lines at the current message size; shorter messages take less room */
+	/* rotator.js sets max-height to the whole lines that fit above the footer */
 	--msg-size: calc(13 * var(--u));
-	max-height: calc(var(--msg-size) * 1.25 * 3);
 	overflow: hidden;
 	flex: none;
 }

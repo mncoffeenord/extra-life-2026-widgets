@@ -65,13 +65,14 @@ pages to Streamlabs (macOS) as Browser Sources. Owner streams for team GamePlan4
   cycling the 10 most recent of each. New donations, detected by `donationID`, interrupt immediately with a flash.
   The first snapshot is a baseline, so reloads do not replay alerts. Anonymous donors show as `Mysterious Hero`;
   hidden amounts show as `Private donation`.
-- **Donations with messages (optional, 2026-10-21):** `/widgets/donation-messages` is 314×116 (taller Donations box,
-  320×154 at 1580,24, with a 32px header). It reuses `donation-rotator/rotator.js` (`<body data-messages="on">`) plus
-  `messages.css` (`--design-h: 116`). The message sits between the name/amount line and the tag line, up to 3 lines at
-  13u. If it overflows, it drops to 12u; if it still overflows, it scrolls (4 s hold, about 0.5 line/s, 3 s hold, always
-  within the turn) with faded edges. No text is cut. Sizing came from 305 real donations: 12% have messages, median
-  49 chars, p90 129, max 326. The owner is reworking the sidebar (mascot slot removed), so the overlay art for the
-  taller box is theirs; `/preview` draws the box itself.
+- **Donations with messages (optional, 2026-10-21):** `/widgets/donation-messages` is 314×105 (taller Donations box,
+  320×143 at 1580,24, with a 32px header). The owner chose 116 first, then 105. It reuses `donation-rotator/rotator.js`
+  (`<body data-messages="on">`) plus `messages.css` (`--design-h: 105`). The tag/time line is a footer pinned to the
+  bottom; name/amount and message are centered vertically above it (`.center`). rotator.js gives the message as many
+  whole lines as fit (2 at 13u, the same at 12u). On overflow it drops to 12u; if it still overflows, it scrolls (4 s
+  hold, about 0.5 line/s, 3 s hold, always within the turn) with faded edges. No text is cut. Real data: 12% of
+  donations have messages, median 49 chars, p90 129, max 326. The owner is reworking the sidebar, so the overlay art
+  for the taller box is theirs; `/preview` draws the box itself.
 - **Message filter:** `src/message-filter.ts` runs on the server, so flagged messages never reach a widget. It uses a
   built-in list plus `messageFilter.extraWords`, matches whole words, and handles leetspeak, stretched letters, accents
   and simple endings. It is a safety net, not moderation.

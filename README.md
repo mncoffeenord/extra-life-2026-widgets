@@ -10,7 +10,7 @@ Streamlabs / OBS **Browser Sources**, get live updates from that server.
 | My Extra Life goal | `/widgets/participant-goal` | 488 × 82 | `$1,250 / $2,000`, %, progress bar |
 | Team goal | `/widgets/team-goal` | 488 × 82 | same, for the team |
 | Donations received | `/widgets/donation-rotator` | 314 × 58 | Alternates your recent donations and your team's every 45 s. New donations show immediately. |
-| Donations received, with messages (optional) | `/widgets/donation-messages` | 314 × 116 | Same, plus up to 3 lines of the donor's message. Long messages shrink a step, then scroll. |
+| Donations received, with messages (optional) | `/widgets/donation-messages` | 314 × 105 | Same, plus the donor's message (2 lines at 13px). Long messages shrink a step, then scroll. The tag line is a footer. |
 
 Why a server instead of widgets calling the API directly (as the 2022 tracker did):
 
@@ -86,7 +86,7 @@ For each widget: **Add Source → Browser Source**, then:
 | My Extra Life goal | `http://localhost:4242/widgets/participant-goal` | 488 × 82 | 533, 987 |
 | GamePlan42 goal | `http://localhost:4242/widgets/team-goal` | 488 × 82 | 1043, 987 |
 | Donations received | `http://localhost:4242/widgets/donation-rotator` | 314 × 58 | 1583, 59 |
-| *or* Donations received, with messages | `http://localhost:4242/widgets/donation-messages` | 314 × 116 | 1583, 59 |
+| *or* Donations received, with messages | `http://localhost:4242/widgets/donation-messages` | 314 × 105 | 1583, 59 |
 
 These positions put each widget inside the white body of its overlay box, below the blue header and inside the 3px
 border, on a 1920 × 1080 canvas. The footer sizes assume the taller footer boxes (494 × 128, bottom at y 1072) from
@@ -102,7 +102,7 @@ Browser Source settings:
   **Refresh cache of current page** in the source's properties.
 
 Use **one** of the two Donations sources. The with-messages version needs a taller Donations box in the overlay:
-320 × 154 at x 1580, y 24, with the same 32px blue header, which leaves a 314 × 116 white area for the widget. In
+320 × 143 at x 1580, y 24, with the same 32px blue header, which leaves a 314 × 105 white area for the widget. In
 `/preview`, the **Donations box** selector shows it in place.
 
 The preview page has the same table with copyable URLs. Text and spacing scale with the source **height**

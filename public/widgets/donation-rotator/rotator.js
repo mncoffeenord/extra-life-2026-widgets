@@ -60,16 +60,29 @@ async function fitMessage(slide) {
 	const text = /** @type {HTMLElement | null} */ (box?.querySelector('.msg-text') ?? null);
 	if (!box || !text) return;
 	await document.fonts.ready;
+	// Give the message as many whole lines as fit in the centered area above the footer.
+	const center = /** @type {HTMLElement} */ (slide.querySelector('.center'));
+	const line1 = /** @type {HTMLElement} */ (slide.querySelector('.line1'));
+	const lineHeight = () => parseFloat(getComputedStyle(text).lineHeight) || 15;
+	const fitLines = () => {
+		box.style.maxHeight = 'none';
+		const gap = parseFloat(getComputedStyle(center).rowGap) || 0;
+		const lines = Math.max(1, Math.floor((center.clientHeight - line1.offsetHeight - gap) / lineHeight()));
+		box.style.maxHeight = `${lines * lineHeight()}px`;
+	};
 	const overflow = () => text.scrollHeight - box.clientHeight;
-	if (overflow() > 1) slide.classList.add('msg-small');
+	fitLines();
+	if (overflow() > 1) {
+		slide.classList.add('msg-small');
+		fitLines();
+	}
 	const distance = overflow();
 	if (distance <= 1) return;
 	slide.classList.add('msg-scroll');
-	const lineHeight = parseFloat(getComputedStyle(text).lineHeight) || 15;
 	const holdStart = 4000;
 	const holdEnd = 3000;
 	// half a line per second, but always finish within the donation's turn
-	const scroll = Math.min((distance / (lineHeight * 0.5)) * 1000, Math.max(2000, intervalMs - holdStart - holdEnd - 2000));
+	const scroll = Math.min((distance / (lineHeight() * 0.5)) * 1000, Math.max(2000, intervalMs - holdStart - holdEnd - 2000));
 	const total = holdStart + scroll + holdEnd;
 	text.animate(
 		[
@@ -104,7 +117,14 @@ function donationSlide({ donation, source, isNew }) {
 	parts.push(timeAgo(Date.parse(donation.createdAt)));
 	line2.append(el('span', 'meta', parts.join(' · ')));
 
-	slide.append(...(msg ? [line1, msg, line2] : [line1, line2]));
+	if (showMessages) {
+		// Name and message centered in the space above; tag and time pinned to the bottom as a footer.
+		const center = el('div', 'center');
+		center.append(...(msg ? [line1, msg] : [line1]));
+		slide.append(center, line2);
+	} else {
+		slide.append(line1, line2);
+	}
 	return slide;
 }
 

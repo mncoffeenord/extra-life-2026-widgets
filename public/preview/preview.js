@@ -9,9 +9,9 @@ const SOURCES = [
 	{ name: 'GamePlan42 goal', path: '/widgets/team-goal', x: 1043, y: 987, w: 488, h: 82 },
 	{ name: 'Donations received', path: '/widgets/donation-rotator', x: 1583, y: 59, w: 314, h: 58 },
 ];
-/** Optional replacement for the Donations source: the version with messages, in a taller box (320 x 154). */
-const MESSAGES_SOURCE = { name: 'Donations received (with messages)', path: '/widgets/donation-messages', x: 1583, y: 59, w: 314, h: 116 };
-const MESSAGES_BOX = { x: 1580, y: 24, w: 320, h: 154, head: 32, font: 18, title: 'Donations received' };
+/** Optional replacement for the Donations source: the version with messages, in a taller box (320 x 143). */
+const MESSAGES_SOURCE = { name: 'Donations received (with messages)', path: '/widgets/donation-messages', x: 1583, y: 59, w: 314, h: 105 };
+const MESSAGES_BOX = { x: 1580, y: 24, w: 320, h: 143, head: 32, font: 18, title: 'Donations received' };
 /** Fallback boxes (outer geometry from the overlay generator). */
 const BOXES = [
 	{ x: 20, y: 944, w: 494, h: 128, head: 40, font: 22, title: 'Stream countdown' },
