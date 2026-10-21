@@ -1,4 +1,7 @@
-/* Type sizes match the goal widgets: the time is the same size as the raised amount. */
+/*
+ * Same two-color scheme as the goal widgets: the active number (time) is CMN blue like the raised amount,
+ * and the target ("of 36:00") is dark gray like the goal amount. The time is a little larger (38u vs 32u).
+ */
 
 .countdown {
 	justify-content: center;
@@ -9,22 +12,9 @@
 	padding: calc(5 * var(--u)) calc(10 * var(--u));
 }
 .countdown[data-phase='before'] .pill { background: var(--sky-mist); color: var(--cmn-blue); }
-.countdown[data-phase='live'] .pill { background: var(--cmn-blue); color: #fff; }
 .countdown[data-phase='overtime'] .pill { background: var(--yellow); color: var(--dark); }
-
-/* pulsing "on air" dot while live */
-.countdown[data-phase='live'] .pill::before {
-	content: '';
-	width: calc(7 * var(--u));
-	height: calc(7 * var(--u));
-	border-radius: 50%;
-	background: var(--yellow);
-	animation: pulse 1.6s ease-in-out infinite;
-}
-@keyframes pulse {
-	0%, 100% { opacity: 1; }
-	50% { opacity: 0.35; }
-}
+/* anyone seeing the overlay while live already knows the stream is live */
+.countdown[data-phase='live'] .pill { display: none; }
 
 .countdown .time {
 	display: inline-flex;
@@ -34,15 +24,14 @@
 	line-height: 1;
 }
 #primary {
-	font-size: calc(32 * var(--u));
+	font-size: calc(38 * var(--u));
 	font-weight: 800;
 	letter-spacing: -0.01em;
-	color: var(--dark);
+	color: var(--cmn-blue);
 }
-.countdown[data-phase='overtime'] #primary { color: var(--cmn-blue); }
 #secondary {
-	font-size: calc(20 * var(--u));
+	font-size: calc(22 * var(--u));
 	font-weight: 700;
-	color: var(--muted);
+	color: var(--dark);
 }
 #secondary:empty { display: none; }
