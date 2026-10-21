@@ -31,5 +31,19 @@
 	"messageFilter": {
 		"enabled": true,
 		"extraWords": []
+	},
+	"display": {
+		"style": "framed",
+		"donations": "standard",
+		"titles": {
+			"countdown": "Stream countdown",
+			"participantGoal": "My Extra Life goal",
+			"teamGoal": "{team} goal",
+			"donations": "Donations received"
+		}
+	},
+	"theme": {
+		"preset": "extra-life",
+		"colors": {}
 	}
 }

@@ -11,8 +11,8 @@
 .countdown .pill {
 	padding: calc(5 * var(--u)) calc(10 * var(--u));
 }
-.countdown[data-phase='before'] .pill { background: var(--sky-mist); color: var(--cmn-blue); }
-.countdown[data-phase='overtime'] .pill { background: var(--yellow); color: var(--dark); }
+.countdown[data-phase='before'] .pill { background: var(--track); color: var(--primary); }
+.countdown[data-phase='overtime'] .pill { background: var(--accent); color: var(--text); }
 /* anyone seeing the overlay while live already knows the stream is live */
 .countdown[data-phase='live'] .pill { display: none; }
 
@@ -27,11 +27,11 @@
 	font-size: calc(38 * var(--u));
 	font-weight: 800;
 	letter-spacing: -0.01em;
-	color: var(--cmn-blue);
+	color: var(--primary);
 }
 #secondary {
 	font-size: calc(22 * var(--u));
 	font-weight: 700;
-	color: var(--dark);
+	color: var(--text);
 }
 #secondary:empty { display: none; }

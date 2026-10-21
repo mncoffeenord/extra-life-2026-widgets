@@ -14,7 +14,7 @@ html, body.preview-page {
 	padding: 12px 16px;
 }
 .preview-page h1 { font-size: 18px; margin: 0 8px 0 0; font-weight: 800; }
-.preview-page h2 { font-size: 14px; margin: 0 0 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--light-blue); }
+.preview-page h2 { font-size: 14px; margin: 0 0 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--primary-light); }
 .toggle { font-size: 14px; display: inline-flex; gap: 6px; align-items: center; }
 .toggle:first-of-type { margin-left: auto; }
 .toggle select { font: inherit; padding: 2px 4px; border-radius: 4px; }
@@ -23,8 +23,8 @@ html, body.preview-page {
 .msg-box { position: absolute; z-index: 1; }
 .stage iframe { z-index: 2; }
 
-#mode.mock { background: var(--yellow); color: var(--dark); }
-#mode.live { background: var(--cmn-blue); color: #fff; }
+#mode.mock { background: var(--accent); color: var(--text); }
+#mode.live { background: var(--primary); color: #fff; }
 #health.ok { background: #2e7d4f; color: #fff; }
 #health.bad { background: #b3402e; color: #fff; }
 
@@ -51,13 +51,13 @@ html, body.preview-page {
 .fb-box {
 	position: absolute;
 	box-sizing: border-box;
-	border: 3px solid var(--cmn-blue);
+	border: 3px solid var(--primary);
 	border-radius: 6px;
 	background: #fff;
 	overflow: hidden;
 }
 .fb-head {
-	background: var(--cmn-blue);
+	background: var(--primary);
 	color: #fff;
 	display: flex;
 	align-items: center;
@@ -73,7 +73,7 @@ html, body.preview-page {
 	display: flex; align-items: center; justify-content: center;
 	color: #fff; font-size: 36px;
 }
-.fb-rule { position: absolute; left: 0; top: 932px; width: 1556px; height: 6px; background: var(--yellow); }
+.fb-rule { position: absolute; left: 0; top: 932px; width: 1556px; height: 6px; background: var(--accent); }
 
 .panels { display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 16px; padding: 16px; }
 .panel { background: #24343f; border-radius: 8px; padding: 14px 16px; font-size: 14px; }
@@ -81,8 +81,8 @@ html, body.preview-page {
 .panel strong { min-width: 70px; }
 .panel input, .panel select { font: inherit; width: 110px; padding: 4px 6px; border-radius: 4px; border: 1px solid #47606f; background: #142028; color: inherit; }
 .panel input[name='donorName'] { width: 150px; }
-.panel button { font: inherit; font-weight: 700; padding: 5px 10px; border-radius: 4px; border: 0; background: var(--cmn-blue); color: #fff; cursor: pointer; }
-.panel button:hover { background: var(--light-blue); }
+.panel button { font: inherit; font-weight: 700; padding: 5px 10px; border-radius: 4px; border: 0; background: var(--primary); color: #fff; cursor: pointer; }
+.panel button:hover { background: var(--primary-light); }
 #outage.on { background: #b3402e; }
 table { border-collapse: collapse; width: 100%; margin-bottom: 14px; font-size: 13px; }
 th, td { text-align: left; padding: 4px 6px; border-bottom: 1px solid #34495a; vertical-align: top; }

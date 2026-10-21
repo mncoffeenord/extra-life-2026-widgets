@@ -36,7 +36,7 @@
 .donor {
 	font-size: calc(19 * var(--u));
 	font-weight: 700;
-	color: var(--dark);
+	color: var(--text);
 	overflow: hidden;
 	text-overflow: ellipsis;
 	min-width: 0;
@@ -45,7 +45,7 @@
 	flex: none;
 	font-size: calc(24 * var(--u));
 	font-weight: 800;
-	color: var(--cmn-blue);
+	color: var(--primary);
 }
 .amount.private {
 	font-size: calc(13 * var(--u));
@@ -66,7 +66,7 @@
 	align-items: center;
 	font-size: calc(18 * var(--u));
 	font-weight: 700;
-	color: var(--cmn-blue);
+	color: var(--primary);
 }
 
 /* a donation that just arrived */
@@ -74,7 +74,7 @@
 	content: '';
 	position: absolute;
 	inset: 0;
-	background: var(--yellow);
+	background: var(--accent);
 	opacity: 0;
 	animation: flash 2.4s ease-out;
 	pointer-events: none;
@@ -85,6 +85,6 @@
 	100% { opacity: 0; }
 }
 @keyframes glow {
-	0%, 40% { color: var(--dark); }
-	100% { color: var(--cmn-blue); }
+	0%, 40% { color: var(--text); }
+	100% { color: var(--primary); }
 }

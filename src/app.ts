@@ -1,6 +1,6 @@
 // HTTP layer: JSON API, server-sent events, mock controls, and static widget pages.
 
-import { createReadStream, statSync } from 'node:fs';
+import { createReadStream, readFileSync, statSync } from 'node:fs';
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
 import { extname, join, normalize, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -8,6 +8,8 @@ import { clockView } from '../public/shared/countdown.js';
 import type { Config } from './config.ts';
 import type { MockApi } from './mock.ts';
 import type { Poller } from './poller.ts';
+import { isWidgetId, sourcesFor, titleFor, WIDGETS, type WidgetId } from './sources.ts';
+import { themeCss } from './theme.ts';
 import { RESOURCE_KEYS, type Store } from './store.ts';
 
 const ROOT = fileURLToPath(new URL('../', import.meta.url));
@@ -133,13 +135,18 @@ export function createApp(deps: AppDeps): Server {
 						const now = clock.now();
 						return json(res, { serverNow: now, ...snapshot(deps).event, ...clockView(now, config.event.startMs, config.event.endMs) });
 					}
+					case '/api/display':
+						return json(res, display(deps));
 					case '/api/health':
 						return json(res, health(deps, clients.size));
 					case '/api/stream':
 						return openStream(req, res);
 				}
 				const widget = /^\/widgets\/([a-z0-9-]+)\/?$/.exec(path);
-				if (widget) return serveFile(res, join(STATIC_DIRS['/widgets/']!, widget[1]!, 'index.html'));
+				if (widget) {
+					const id = widget[1]!;
+					return isWidgetId(id) ? serveWidget(res, id, deps) : notFound(res);
+				}
 				if (path === '/preview') {
 					res.writeHead(302, { Location: '/preview/' }).end();
 					return;
@@ -231,6 +238,40 @@ function json(res: ServerResponse, body: unknown, status = 200) {
 
 function notFound(res: ServerResponse) {
 	res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' }).end('Not found');
+}
+
+/** Style, theme, titles and geometry for /api/display (preview, setup). */
+export function display({ config, store }: AppDeps) {
+	const team = store.data.team?.name ?? null;
+	return {
+		style: config.display.style,
+		donations: config.display.donations,
+		theme: config.theme.resolved,
+		widgets: Object.values(WIDGETS).map((w) => ({ id: w.id, name: w.name, title: titleFor(w, config.display.titles, team), box: w.box, body: w.body })),
+		sources: sourcesFor(config),
+	};
+}
+
+/**
+ * Serve a widget page with the configured theme and frame settings injected, so pages render right on first paint.
+ * frame.js applies the frame when the style is "framed" (config default, or ?style= / ?framed in the URL).
+ */
+function serveWidget(res: ServerResponse, id: WidgetId, { config, store }: AppDeps) {
+	let html: string;
+	try {
+		html = readFileSync(join(STATIC_DIRS['/widgets/']!, id, 'index.html'), 'utf8');
+	} catch {
+		return notFound(res);
+	}
+	const spec = WIDGETS[id];
+	const settings = {
+		style: config.display.style,
+		frame: { title: titleFor(spec, config.display.titles, store.data.team?.name ?? null), h: spec.box.h, head: spec.head, headSize: spec.headSize, align: spec.align },
+	};
+	const inject = `<style id="el-theme">${themeCss(config.theme.resolved)}</style>\n<script>window.EL_DISPLAY = ${JSON.stringify(settings).replace(/</g, '\\u003c')};</script>\n`;
+	const body = html.replace('</head>', `${inject}</head>`);
+	res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' });
+	res.end(body);
 }
 
 function serveFile(res: ServerResponse, file: string) {

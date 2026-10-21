@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import { resolveTheme, type ThemeColors } from './theme.ts';
 import { isValidTimeZone, parseEventTime } from './time.ts';
 
 export interface Config {
@@ -15,8 +16,25 @@ export interface Config {
 	};
 	rotation: { intervalSeconds: number; recentCount: number; unknownDonorName: string; privateAmountText: string };
 	messageFilter: { enabled: boolean; extraWords: string[] };
+	display: { style: 'framed' | 'transparent'; donations: 'standard' | 'messages'; titles: Titles };
+	theme: { preset: string; colors: Partial<Record<string, string>>; resolved: ThemeColors };
 	mock: boolean;
 }
+
+export interface Titles {
+	countdown: string;
+	participantGoal: string;
+	/** "{team}" is replaced with the team's name from Extra Life. */
+	teamGoal: string;
+	donations: string;
+}
+
+export const DEFAULT_TITLES: Titles = {
+	countdown: 'Stream countdown',
+	participantGoal: 'My Extra Life goal',
+	teamGoal: '{team} goal',
+	donations: 'Donations received',
+};
 
 export class ConfigError extends Error {
 	readonly problems: string[];
@@ -34,6 +52,8 @@ const DEFAULTS = {
 	polling: { participantSeconds: 15, teamSeconds: 30, donationsSeconds: 120, minGapMs: 2000, timeoutMs: 10000, maxBackoffSeconds: 300 },
 	rotation: { intervalSeconds: 45, recentCount: 10, unknownDonorName: 'Mysterious Hero', privateAmountText: 'Private donation' },
 	messageFilter: { enabled: true, extraWords: [] as string[] },
+	display: { style: 'framed' as string, donations: 'standard' as string, titles: DEFAULT_TITLES as Partial<Titles> },
+	theme: { preset: 'extra-life', colors: {} as Partial<Record<string, string>> },
 };
 
 type Section = keyof typeof DEFAULTS;
@@ -63,6 +83,8 @@ export function parseConfig(raw: unknown, options: { mock?: boolean } = {}): Con
 	const polling = section('polling');
 	const rotation = section('rotation');
 	const messageFilter = section('messageFilter');
+	const display = section('display');
+	const theme = section('theme');
 
 	const positive = (path: string, v: unknown, { integer = false, min = 0 } = {}) => {
 		if (typeof v !== 'number' || !Number.isFinite(v) || v <= min || (integer && !Number.isInteger(v))) {
@@ -126,6 +148,18 @@ export function parseConfig(raw: unknown, options: { mock?: boolean } = {}): Con
 		problems.push('messageFilter.extraWords must be a list of words, e.g. ["spoiler"]');
 	}
 
+	if (display.style !== 'framed' && display.style !== 'transparent') problems.push('display.style must be "framed" or "transparent"');
+	if (display.donations !== 'standard' && display.donations !== 'messages') problems.push('display.donations must be "standard" or "messages"');
+	const titles: Titles = { ...DEFAULT_TITLES, ...(isRecord(display.titles) ? display.titles : {}) };
+	for (const [key, value] of Object.entries(titles)) text(`display.titles.${key}`, value);
+	let resolved: ThemeColors | null = null;
+	try {
+		if (!isRecord(theme.colors)) throw new Error('theme.colors must be an object of hex colors');
+		resolved = resolveTheme(String(theme.preset), theme.colors as Record<string, string>);
+	} catch (err) {
+		problems.push(`theme: ${(err as Error).message}`);
+	}
+
 	if (problems.length > 0) throw new ConfigError(problems);
 
 	return {
@@ -135,6 +169,8 @@ export function parseConfig(raw: unknown, options: { mock?: boolean } = {}): Con
 		polling,
 		rotation,
 		messageFilter,
+		display: { style: display.style as 'framed' | 'transparent', donations: display.donations as 'standard' | 'messages', titles },
+		theme: { preset: String(theme.preset), colors: theme.colors, resolved: resolved! },
 		mock,
 	};
 }

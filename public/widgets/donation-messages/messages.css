@@ -40,7 +40,7 @@
 	font-size: var(--msg-size);
 	line-height: 1.25;
 	font-weight: 500;
-	color: var(--dark);
+	color: var(--text);
 	overflow-wrap: anywhere; /* long URLs or strings without spaces still wrap */
 	will-change: transform;
 }

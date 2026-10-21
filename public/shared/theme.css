@@ -18,12 +18,15 @@
 }
 
 :root {
-	--cmn-blue: #0E7CA2;
-	--yellow: #FFCB05;
-	--dark: #253746;
-	--light-blue: #1C9ED6;
-	--sky-mist: #E3F6FC;
+	/* Default "extra-life" theme. The server injects the configured theme (config.json "theme") over these. */
+	--primary: #0E7CA2;
+	--primary-light: #1C9ED6;
+	--accent: #FFCB05;
+	--text: #253746;
 	--muted: #5B6B78;
+	--track: #E3F6FC;
+	--surface: #FFFFFF;
+	--header-text: #FFFFFF;
 	--ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -40,7 +43,7 @@ body {
 body {
 	font-family: 'Inter', system-ui, sans-serif;
 	font-weight: 700;
-	color: var(--dark);
+	color: var(--text);
 	font-feature-settings: 'tnum' 1, 'cv11' 1; /* tabular digits so numbers do not jitter */
 	-webkit-font-smoothing: antialiased;
 	user-select: none;
@@ -53,7 +56,8 @@ body {
  */
 .widget {
 	--design-h: 82; /* footer box body: 488 x 82 */
-	--u: calc(100vh / var(--design-h));
+	/* framed: the source is the whole box, so units come from the frame height instead */
+	--u: var(--frame-u, calc(100vh / var(--design-h)));
 	box-sizing: border-box;
 	width: 100%;
 	height: 100%;
@@ -77,6 +81,45 @@ body {
 	line-height: 1;
 	white-space: nowrap;
 }
-.pill.blue { background: var(--cmn-blue); color: #fff; }
-.pill.yellow { background: var(--yellow); color: var(--dark); }
-.pill.mist { background: var(--sky-mist); color: var(--cmn-blue); }
+.pill.blue { background: var(--primary); color: var(--header-text); }
+.pill.yellow { background: var(--accent); color: var(--text); }
+.pill.mist { background: var(--track); color: var(--primary); }
+
+/*
+ * Framed style (frame.js): the widget draws its own box. Sizes follow the box's design height (--frame-h), e.g. the
+ * footer box 494 x 128 = 3px border + 40px header + 82px body, so the widget inside lays out exactly as when
+ * transparent.
+ */
+body.framed { --frame-u: calc(100vh / var(--frame-h)); }
+.frame {
+	box-sizing: border-box;
+	width: 100vw;
+	height: 100vh;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	background: var(--surface);
+	border: calc(3 * var(--frame-u)) solid var(--primary);
+	border-radius: calc(6 * var(--frame-u));
+}
+.frame-head {
+	flex: none;
+	box-sizing: border-box;
+	height: calc(var(--frame-head) * var(--frame-u));
+	padding: 0 calc(14 * var(--frame-u));
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--primary);
+	color: var(--header-text);
+	font-size: calc(var(--frame-head-size) * var(--frame-u));
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.frame-left .frame-head { justify-content: flex-start; }
+.frame-body { flex: 1; min-height: 0; position: relative; }
+.frame-body > .widget { width: 100%; height: 100%; }

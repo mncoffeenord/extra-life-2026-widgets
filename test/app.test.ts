@@ -166,6 +166,29 @@ test('SSE sends a snapshot on connect and again on change', async () => {
 	}
 });
 
+test('widget pages get the theme and frame settings injected; /api/display describes them', async () => {
+	const t = await start();
+	try {
+		await t.pollAll();
+		const html = await (await fetch(`${t.base}/widgets/team-goal`)).text();
+		assert.match(html, /<style id="el-theme">:root\{--primary:#0E7CA2;/);
+		const m = /window\.EL_DISPLAY = (\{.*?\});<\/script>/.exec(html);
+		assert.ok(m, 'EL_DISPLAY injected');
+		const settings = JSON.parse(m![1]!);
+		assert.equal(settings.style, 'framed');
+		assert.deepEqual(settings.frame, { title: 'GamePlan42 goal', h: 128, head: 40, headSize: 22, align: 'center' });
+		assert.ok(html.indexOf('el-theme') < html.indexOf('</head>'));
+		assert.equal((await fetch(`${t.base}/widgets/not-a-widget`)).status, 404);
+		const d = await t.getJson('/api/display');
+		assert.equal(d.style, 'framed');
+		assert.equal(d.widgets.length, 5);
+		assert.equal(d.sources.length, 4);
+		assert.equal(d.theme.accent, '#FFCB05');
+	} finally {
+		await t.close();
+	}
+});
+
 test('mock controls are refused outside mock mode', async () => {
 	const t = await start({ withMock: false });
 	try {
