@@ -12,6 +12,9 @@
 		<h1>Extra Life widgets · preview</h1>
 		<span class="pill" id="mode">…</span>
 		<span class="pill" id="health">…</span>
+		<label class="toggle">Style
+			<select id="style-variant"><option value="framed">Framed</option><option value="transparent">Transparent</option></select>
+		</label>
 		<label class="toggle">Donations box
 			<select id="donations-variant"><option value="standard">Standard</option><option value="messages">With messages</option></select>
 		</label>
@@ -73,7 +76,8 @@
 			<p>Showing real Extra Life data. Run <code>npm run mock</code> to get fake-data and clock controls.</p>
 		</div>
 		<div class="panel">
-			<h2>Streamlabs browser sources</h2>
+			<h2>Streamlabs browser sources (<span id="sources-style"></span> style)</h2>
+			<p>Positions are for the GamePlan42 overlay on a 1920 × 1080 canvas. Framed sources can go anywhere. Use one of the two Donations sources.</p>
 			<table id="sources"><thead><tr><th>Source</th><th>URL</th><th>X</th><th>Y</th><th>W</th><th>H</th></tr></thead><tbody></tbody></table>
 			<h2>Data status</h2>
 			<table id="status"><thead><tr><th>Resource</th><th>Last success</th><th>Failures</th><th>Last error</th></tr></thead><tbody></tbody></table>

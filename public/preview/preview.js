@@ -1,86 +1,87 @@
 // @ts-check
 // Preview of every widget at its exact Streamlabs position, plus mock-mode controls.
+// The layout comes from /api/display (src/sources.ts), so it always matches the server's config.
 // It polls /api/health instead of opening its own event stream, which leaves browser connections free for the widgets.
 
-/** Streamlabs browser sources on the 1920x1080 canvas. Keep in sync with the README table. */
-const SOURCES = [
-	{ name: 'Stream countdown', path: '/widgets/countdown', x: 23, y: 987, w: 488, h: 82 },
-	{ name: 'My Extra Life goal', path: '/widgets/participant-goal', x: 533, y: 987, w: 488, h: 82 },
-	{ name: 'GamePlan42 goal', path: '/widgets/team-goal', x: 1043, y: 987, w: 488, h: 82 },
-	{ name: 'Donations received', path: '/widgets/donation-rotator', x: 1583, y: 325, w: 314, h: 58 },
-];
-/** Optional replacement for the Donations source: the version with messages, in a taller box (320 x 143). */
-const MESSAGES_SOURCE = { name: 'Donations received (with messages)', path: '/widgets/donation-messages', x: 1583, y: 325, w: 314, h: 105 };
-const MESSAGES_BOX = { x: 1580, y: 290, w: 320, h: 143, head: 32, font: 18, title: 'Donations received' };
-/** Fallback boxes (outer geometry from the overlay generator). */
-const BOXES = [
-	{ x: 20, y: 944, w: 494, h: 128, head: 40, font: 22, title: 'Stream countdown' },
-	{ x: 530, y: 944, w: 494, h: 128, head: 40, font: 22, title: 'My Extra Life goal' },
-	{ x: 1040, y: 944, w: 494, h: 128, head: 40, font: 22, title: 'GamePlan42 goal' },
-	{ x: 1580, y: 290, w: 320, h: 96, head: 32, font: 18, title: 'Donations received' },
-];
+/** @typedef {{ x: number, y: number, w: number, h: number }} Rect */
+/** @typedef {{ id: string, name: string, title: string, box: Rect, body: Rect }} WidgetInfo */
 
 const $ = (/** @type {string} */ id) => /** @type {HTMLElement} */ (document.getElementById(id));
 const stage = $('stage');
 const wrap = $('stage-wrap');
 
+const display = /** @type {{ style: string, donations: string, widgets: WidgetInfo[] }} */ (
+	await (await fetch('/api/display', { cache: 'no-store' })).json()
+);
+const byId = /** @type {Record<string, WidgetInfo>} */ (Object.fromEntries(display.widgets.map((w) => [w.id, w])));
+
 // --- stage ---------------------------------------------------------------------
-// ?donations=messages (or the header selector) swaps in the with-messages Donations widget and its taller box.
+// Header selectors (or ?style= / ?donations=) pick the style and the Donations version; defaults come from config.
 const params = new URLSearchParams(location.search);
+const styleSelect = /** @type {HTMLSelectElement} */ ($('style-variant'));
 const variantSelect = /** @type {HTMLSelectElement} */ ($('donations-variant'));
-variantSelect.value = params.get('donations') === 'messages' ? 'messages' : 'standard';
+styleSelect.value = ['framed', 'transparent'].includes(params.get('style') ?? '') ? /** @type {string} */ (params.get('style')) : display.style;
+variantSelect.value = (params.get('donations') ?? display.donations) === 'messages' ? 'messages' : 'standard';
+for (const [select, key] of /** @type {const} */ ([[styleSelect, 'style'], [variantSelect, 'donations']])) {
+	select.addEventListener('change', () => {
+		params.set(key, select.value);
+		location.search = params.toString();
+	});
+}
+const framed = styleSelect.value === 'framed';
 const withMessages = variantSelect.value === 'messages';
-variantSelect.addEventListener('change', () => {
-	params.set('donations', variantSelect.value);
-	location.search = params.toString();
-});
-const activeSources = withMessages ? [...SOURCES.slice(0, 3), MESSAGES_SOURCE] : SOURCES;
-for (const s of activeSources) {
+const active = ['countdown', 'participant-goal', 'team-goal', withMessages ? 'donation-messages' : 'donation-rotator'].map((id) => /** @type {WidgetInfo} */ (byId[id]));
+const rectOf = (/** @type {WidgetInfo} */ w) => (framed ? w.box : w.body);
+const headOf = (/** @type {WidgetInfo} */ w) => w.box.h - w.body.h - 6;
+
+for (const w of active) {
 	const frame = document.createElement('iframe');
-	frame.src = s.path;
-	frame.title = s.name;
-	Object.assign(frame.style, { left: `${s.x}px`, top: `${s.y}px`, width: `${s.w}px`, height: `${s.h}px` });
+	frame.src = `/widgets/${w.id}?style=${framed ? 'framed' : 'transparent'}`;
+	frame.title = w.name;
+	const r = rectOf(w);
+	Object.assign(frame.style, { left: `${r.x}px`, top: `${r.y}px`, width: `${r.w}px`, height: `${r.h}px` });
 	stage.append(frame);
 }
-/** @param {{ x: number, y: number, w: number, h: number, head: number, font: number, title: string }} b @param {string} className */
-function box(b, className) {
+
+/** A plain overlay box (border, header) like the overlay art draws. @param {WidgetInfo} w @param {string} className */
+function box(w, className) {
 	const el = document.createElement('div');
 	el.className = className;
-	Object.assign(el.style, { left: `${b.x}px`, top: `${b.y}px`, width: `${b.w}px`, height: `${b.h}px` });
+	Object.assign(el.style, { left: `${w.box.x}px`, top: `${w.box.y}px`, width: `${w.box.w}px`, height: `${w.box.h}px` });
 	const head = document.createElement('div');
 	head.className = 'fb-head';
-	Object.assign(head.style, { height: `${b.head}px`, fontSize: `${b.font}px` });
-	head.textContent = b.title;
+	Object.assign(head.style, { height: `${headOf(w)}px`, fontSize: `${headOf(w) >= 40 ? 22 : 18}px` });
+	head.textContent = w.title;
 	el.append(head);
 	return el;
 }
 
 // Overlay art (git-ignored, in local-assets/): overlay-preview-messages.png has the taller Donations box. If it is
-// missing, use overlay-preview.png and draw the taller box on top; if that is missing too, draw plain boxes.
+// missing, use overlay-preview.png and (transparent style) draw the taller box on top; if that is missing too, draw
+// plain boxes. Framed widgets draw their own boxes, so they need none.
 const overlay = /** @type {HTMLImageElement} */ ($('overlay'));
 let messagesArt = withMessages;
 if (messagesArt) overlay.src = '/local-assets/overlay-preview-messages.png';
-const drawMessagesBox = () => stage.append(box(MESSAGES_BOX, 'fb-box msg-box'));
+const messagesBox = () => {
+	if (!framed && !stage.querySelector('.msg-box')) stage.append(box(/** @type {WidgetInfo} */ (byId['donation-messages']), 'fb-box msg-box'));
+};
 overlay.addEventListener('error', () => {
 	if (messagesArt) {
 		messagesArt = false;
 		overlay.src = '/local-assets/overlay-preview.png';
-		drawMessagesBox();
+		messagesBox();
 		return;
 	}
 	overlay.remove();
 	const fb = $('fallback');
 	fb.hidden = false;
 	fb.innerHTML = '<div class="fb-game">Game capture 1440×810</div><div class="fb-rule"></div>';
-	for (const b of BOXES) {
-		if (withMessages && b.title === 'Donations received') continue; // the taller box is drawn instead
-		fb.append(box(b, 'fb-box'));
-	}
-	if (withMessages && !stage.querySelector('.msg-box')) drawMessagesBox();
+	if (!framed) for (const w of active) if (w.id !== 'donation-messages') fb.append(box(w, 'fb-box'));
+	if (withMessages) messagesBox();
 });
 
 // ?bare=1 shows only the 1920x1080 stage at 1:1 (for full-frame screenshots).
-const bare = new URLSearchParams(location.search).has('bare');
+const bare = params.has('bare');
 document.body.classList.toggle('bare', bare);
 
 function fit() {
@@ -94,11 +95,15 @@ fit();
 const outline = /** @type {HTMLInputElement} */ ($('outline'));
 outline.addEventListener('change', () => stage.classList.toggle('outline', outline.checked));
 
-// --- source table ----------------------------------------------------------------
+// --- source table (for the selected style) ----------------------------------------
+$('sources-style').textContent = framed ? 'framed' : 'transparent';
 const sourceRows = /** @type {HTMLElement} */ (document.querySelector('#sources tbody'));
-for (const s of [...SOURCES, MESSAGES_SOURCE]) {
+for (const w of display.widgets) {
+	const r = rectOf(w);
+	const style = framed ? 'framed' : 'transparent';
+	const url = `${location.origin}/widgets/${w.id}${style === display.style ? '' : `?style=${style}`}`;
 	const tr = document.createElement('tr');
-	for (const v of [s.name, `${location.origin}${s.path}`, s.x, s.y, s.w, s.h]) {
+	for (const v of [w.name, url, r.x, r.y, r.w, r.h]) {
 		const td = document.createElement('td');
 		if (typeof v === 'string' && v.startsWith('http')) {
 			const code = document.createElement('code');
