@@ -46,7 +46,14 @@ body {
 	user-select: none;
 }
 
+/*
+ * Sizes are written in design pixels (--u) for each widget's design height (--design-h), and scale with the
+ * browser source's height. If a box in the overlay gets taller, make the Streamlabs source taller too and the
+ * widget grows to match.
+ */
 .widget {
+	--design-h: 70;
+	--u: calc(100vh / var(--design-h));
 	box-sizing: border-box;
 	width: 100%;
 	height: 100%;
@@ -54,16 +61,16 @@ body {
 	align-items: center;
 	overflow: hidden;
 	/* the overlay boxes have a 3px border drawn in the PNG; keep content clear of it */
-	padding: 4px 14px;
+	padding: calc(4 * var(--u)) calc(14 * var(--u));
 }
 
 .pill {
 	display: inline-flex;
 	align-items: center;
-	gap: 6px;
-	padding: 3px 9px;
+	gap: calc(6 * var(--u));
+	padding: calc(3 * var(--u)) calc(9 * var(--u));
 	border-radius: 999px;
-	font-size: 13px;
+	font-size: calc(13 * var(--u));
 	font-weight: 800;
 	letter-spacing: 0.08em;
 	text-transform: uppercase;

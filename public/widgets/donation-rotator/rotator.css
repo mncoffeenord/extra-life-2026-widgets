@@ -1,6 +1,7 @@
 /* Sized for the body of the "Donations received" box: 314 x 58. */
 
 .rotator {
+	--design-h: 58;
 	position: relative;
 	padding: 0;
 }
@@ -9,11 +10,11 @@
 	position: absolute;
 	inset: 0;
 	box-sizing: border-box;
-	padding: 5px 12px 6px;
+	padding: calc(5 * var(--u)) calc(12 * var(--u)) calc(6 * var(--u));
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
-	gap: 5px;
+	gap: calc(5 * var(--u));
 	transform: translateY(100%);
 	opacity: 0;
 	transition: transform 0.45s var(--ease-out), opacity 0.45s var(--ease-out);
@@ -25,7 +26,7 @@
 .line2 {
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: calc(8 * var(--u));
 	min-width: 0;
 	white-space: nowrap;
 	line-height: 1;
@@ -33,7 +34,7 @@
 .line1 { justify-content: space-between; }
 
 .donor {
-	font-size: 19px;
+	font-size: calc(19 * var(--u));
 	font-weight: 700;
 	color: var(--dark);
 	overflow: hidden;
@@ -42,18 +43,18 @@
 }
 .amount {
 	flex: none;
-	font-size: 24px;
+	font-size: calc(24 * var(--u));
 	font-weight: 800;
 	color: var(--cmn-blue);
 }
 .amount.private {
-	font-size: 13px;
+	font-size: calc(13 * var(--u));
 	font-weight: 700;
 	color: var(--muted);
 }
-.line2 .pill { font-size: 11px; padding: 3px 7px; }
+.line2 .pill { font-size: calc(11 * var(--u)); padding: calc(3 * var(--u)) calc(7 * var(--u)); }
 .meta {
-	font-size: 13px;
+	font-size: calc(13 * var(--u));
 	font-weight: 600;
 	color: var(--muted);
 	overflow: hidden;
@@ -63,7 +64,7 @@
 
 .slide.empty {
 	align-items: center;
-	font-size: 18px;
+	font-size: calc(18 * var(--u));
 	font-weight: 700;
 	color: var(--cmn-blue);
 }

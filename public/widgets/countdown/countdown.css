@@ -1,11 +1,12 @@
+/* Type sizes match the goal widgets: the time is the same size as the raised amount. */
+
 .countdown {
 	justify-content: center;
-	gap: 16px;
+	gap: calc(14 * var(--u));
 }
 
 .countdown .pill {
-	font-size: 15px;
-	padding: 6px 12px;
+	padding: calc(5 * var(--u)) calc(10 * var(--u));
 }
 .countdown[data-phase='before'] .pill { background: var(--sky-mist); color: var(--cmn-blue); }
 .countdown[data-phase='live'] .pill { background: var(--cmn-blue); color: #fff; }
@@ -14,8 +15,8 @@
 /* pulsing "on air" dot while live */
 .countdown[data-phase='live'] .pill::before {
 	content: '';
-	width: 8px;
-	height: 8px;
+	width: calc(7 * var(--u));
+	height: calc(7 * var(--u));
 	border-radius: 50%;
 	background: var(--yellow);
 	animation: pulse 1.6s ease-in-out infinite;
@@ -28,19 +29,19 @@
 .countdown .time {
 	display: inline-flex;
 	align-items: baseline;
-	gap: 10px;
+	gap: calc(8 * var(--u));
 	white-space: nowrap;
+	line-height: 1;
 }
 #primary {
-	font-size: 44px;
+	font-size: calc(32 * var(--u));
 	font-weight: 800;
 	letter-spacing: -0.01em;
-	line-height: 1;
 	color: var(--dark);
 }
 .countdown[data-phase='overtime'] #primary { color: var(--cmn-blue); }
 #secondary {
-	font-size: 22px;
+	font-size: calc(20 * var(--u));
 	font-weight: 700;
 	color: var(--muted);
 }
