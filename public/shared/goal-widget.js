@@ -9,6 +9,16 @@ const raisedEl = /** @type {HTMLElement} */ (root.querySelector('.raised'));
 const goalEl = /** @type {HTMLElement} */ (root.querySelector('.goal-amount'));
 const percentEl = /** @type {HTMLElement} */ (root.querySelector('.percent'));
 const fillEl = /** @type {HTMLElement} */ (root.querySelector('.fill'));
+const rowEl = /** @type {HTMLElement} */ (root.querySelector('.row'));
+const amountsEl = /** @type {HTMLElement} */ (root.querySelector('.amounts'));
+
+/** Keep the amounts centered over the bar unless they would collide with the percent. */
+function fitRow() {
+	rowEl.classList.remove('tight');
+	const gap = percentEl.getBoundingClientRect().left - amountsEl.getBoundingClientRect().right;
+	if (percentEl.textContent && gap < 8) rowEl.classList.add('tight');
+}
+new ResizeObserver(fitRow).observe(root);
 
 /** @type {number | null} */
 let shownRaised = null;
@@ -27,14 +37,19 @@ connectLive((s) => {
 	root.classList.toggle('met', p >= 1);
 	percentEl.textContent = goal > 0 ? `${Math.floor(p * 100)}%` : '';
 
-	if (raised === targetRaised) return;
+	if (raised === targetRaised) {
+		fitRow();
+		return;
+	}
 	const from = shownRaised;
 	targetRaised = raised;
 	cancel();
+	// lay out with the final (widest) value first, so the row never collides mid-animation
+	raisedEl.textContent = formatDollars(raised);
+	fitRow();
 	if (from === null) {
 		// first render (or a reload on scene switch): show the value immediately
 		shownRaised = raised;
-		raisedEl.textContent = formatDollars(raised);
 		return;
 	}
 	if (raised > from) {
