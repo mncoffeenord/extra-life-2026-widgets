@@ -66,7 +66,7 @@ pages to Streamlabs (macOS) as Browser Sources. Owner streams for team GamePlan4
   The first snapshot is a baseline, so reloads do not replay alerts. Anonymous donors show as `Mysterious Hero`;
   hidden amounts show as `Private donation`.
 - **Donations with messages (optional, 2026-10-21):** `/widgets/donation-messages` is 314×105 (taller Donations box,
-  320×143 at 1580,24, with a 32px header). The owner chose 116 first, then 105. It reuses `donation-rotator/rotator.js`
+  320×143 at 1580,290, with a 32px header). The owner chose 116 first, then 105. It reuses `donation-rotator/rotator.js`
   (`<body data-messages="on">`) plus `messages.css` (`--design-h: 105`). The tag/time line is a footer pinned to the
   bottom; name/amount and message are centered vertically above it (`.center`). rotator.js gives the message as many
   whole lines as fit (2 at 13u, the same at 12u). On overflow it drops to 12u; if it still overflows, it scrolls (4 s
@@ -79,7 +79,7 @@ pages to Streamlabs (macOS) as Browser Sources. Owner streams for team GamePlan4
 - **Widget sizes** are the white bodies of the overlay boxes. Footer boxes were made taller on 2026-10-21 (owner's
   choice): 494×128 (top 944, bottom 1072) with a 3px border and a 40px header, so the body is 488×82 at (23/533/1043, 987).
   The new layer is in the Asset Library folder `2026-10-21-bottom-bar-82px/`; the original checkpoint has 116px boxes (70px body). The Donations box is 320×96 with a 32px header, so the body is
-  314×58 at (1583, 59). The source of truth is the overlay generator `build.py` in the 2026 Asset Library checkpoint.
+  314×58 at (1583, 325) in the marvin-framed rail (2026-10-21; it was (1583, 59) before the rail was reworked). The source of truth is the overlay generator `build.py` in the 2026 Asset Library checkpoint.
 - **Mock mode** swaps only the HTTP client (`MockApi` implements `get`), so preview exercises the real poller, parsers
   and store.
 - **Public repo** so teammates can reuse it. The commit identity uses the GitHub noreply email.

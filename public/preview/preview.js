@@ -7,17 +7,17 @@ const SOURCES = [
 	{ name: 'Stream countdown', path: '/widgets/countdown', x: 23, y: 987, w: 488, h: 82 },
 	{ name: 'My Extra Life goal', path: '/widgets/participant-goal', x: 533, y: 987, w: 488, h: 82 },
 	{ name: 'GamePlan42 goal', path: '/widgets/team-goal', x: 1043, y: 987, w: 488, h: 82 },
-	{ name: 'Donations received', path: '/widgets/donation-rotator', x: 1583, y: 59, w: 314, h: 58 },
+	{ name: 'Donations received', path: '/widgets/donation-rotator', x: 1583, y: 325, w: 314, h: 58 },
 ];
 /** Optional replacement for the Donations source: the version with messages, in a taller box (320 x 143). */
-const MESSAGES_SOURCE = { name: 'Donations received (with messages)', path: '/widgets/donation-messages', x: 1583, y: 59, w: 314, h: 105 };
-const MESSAGES_BOX = { x: 1580, y: 24, w: 320, h: 143, head: 32, font: 18, title: 'Donations received' };
+const MESSAGES_SOURCE = { name: 'Donations received (with messages)', path: '/widgets/donation-messages', x: 1583, y: 325, w: 314, h: 105 };
+const MESSAGES_BOX = { x: 1580, y: 290, w: 320, h: 143, head: 32, font: 18, title: 'Donations received' };
 /** Fallback boxes (outer geometry from the overlay generator). */
 const BOXES = [
 	{ x: 20, y: 944, w: 494, h: 128, head: 40, font: 22, title: 'Stream countdown' },
 	{ x: 530, y: 944, w: 494, h: 128, head: 40, font: 22, title: 'My Extra Life goal' },
 	{ x: 1040, y: 944, w: 494, h: 128, head: 40, font: 22, title: 'GamePlan42 goal' },
-	{ x: 1580, y: 24, w: 320, h: 96, head: 32, font: 18, title: 'Donations received' },
+	{ x: 1580, y: 290, w: 320, h: 96, head: 32, font: 18, title: 'Donations received' },
 ];
 
 const $ = (/** @type {string} */ id) => /** @type {HTMLElement} */ (document.getElementById(id));
@@ -42,8 +42,6 @@ for (const s of activeSources) {
 	Object.assign(frame.style, { left: `${s.x}px`, top: `${s.y}px`, width: `${s.w}px`, height: `${s.h}px` });
 	stage.append(frame);
 }
-if (withMessages) stage.append(box(MESSAGES_BOX, 'fb-box msg-box'));
-
 /** @param {{ x: number, y: number, w: number, h: number, head: number, font: number, title: string }} b @param {string} className */
 function box(b, className) {
 	const el = document.createElement('div');
@@ -57,16 +55,28 @@ function box(b, className) {
 	return el;
 }
 
+// Overlay art (git-ignored, in local-assets/): overlay-preview-messages.png has the taller Donations box. If it is
+// missing, use overlay-preview.png and draw the taller box on top; if that is missing too, draw plain boxes.
 const overlay = /** @type {HTMLImageElement} */ ($('overlay'));
+let messagesArt = withMessages;
+if (messagesArt) overlay.src = '/local-assets/overlay-preview-messages.png';
+const drawMessagesBox = () => stage.append(box(MESSAGES_BOX, 'fb-box msg-box'));
 overlay.addEventListener('error', () => {
+	if (messagesArt) {
+		messagesArt = false;
+		overlay.src = '/local-assets/overlay-preview.png';
+		drawMessagesBox();
+		return;
+	}
 	overlay.remove();
 	const fb = $('fallback');
 	fb.hidden = false;
 	fb.innerHTML = '<div class="fb-game">Game capture 1440×810</div><div class="fb-rule"></div>';
 	for (const b of BOXES) {
-		if (withMessages && b.title === 'Donations received') continue; // drawn above, taller
+		if (withMessages && b.title === 'Donations received') continue; // the taller box is drawn instead
 		fb.append(box(b, 'fb-box'));
 	}
+	if (withMessages && !stage.querySelector('.msg-box')) drawMessagesBox();
 });
 
 // ?bare=1 shows only the 1920x1080 stage at 1:1 (for full-frame screenshots).
