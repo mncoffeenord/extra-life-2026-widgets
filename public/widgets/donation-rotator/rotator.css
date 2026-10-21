@@ -1,0 +1,89 @@
+/* Sized for the body of the "Donations received" box: 314 x 58. */
+
+.rotator {
+	position: relative;
+	padding: 0;
+}
+
+.slide {
+	position: absolute;
+	inset: 0;
+	box-sizing: border-box;
+	padding: 5px 12px 6px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: 5px;
+	transform: translateY(100%);
+	opacity: 0;
+	transition: transform 0.45s var(--ease-out), opacity 0.45s var(--ease-out);
+}
+.slide.in { transform: translateY(0); opacity: 1; }
+.slide.out { transform: translateY(-100%); opacity: 0; }
+
+.line1,
+.line2 {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	min-width: 0;
+	white-space: nowrap;
+	line-height: 1;
+}
+.line1 { justify-content: space-between; }
+
+.donor {
+	font-size: 19px;
+	font-weight: 700;
+	color: var(--dark);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	min-width: 0;
+}
+.amount {
+	flex: none;
+	font-size: 24px;
+	font-weight: 800;
+	color: var(--cmn-blue);
+}
+.amount.private {
+	font-size: 13px;
+	font-weight: 700;
+	color: var(--muted);
+}
+.line2 .pill { font-size: 11px; padding: 3px 7px; }
+.meta {
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--muted);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	min-width: 0;
+}
+
+.slide.empty {
+	align-items: center;
+	font-size: 18px;
+	font-weight: 700;
+	color: var(--cmn-blue);
+}
+
+/* a donation that just arrived */
+.slide.alert::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: var(--yellow);
+	opacity: 0;
+	animation: flash 2.4s ease-out;
+	pointer-events: none;
+}
+.slide.alert .amount { animation: glow 2.4s ease-out; }
+@keyframes flash {
+	0%, 30% { opacity: 0.45; }
+	100% { opacity: 0; }
+}
+@keyframes glow {
+	0%, 40% { color: var(--dark); }
+	100% { color: var(--cmn-blue); }
+}
