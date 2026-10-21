@@ -4,9 +4,11 @@ import { connectLive } from '../../shared/live.js';
 import { DonationRotation } from '../../shared/rotation.js';
 
 const stage = /** @type {HTMLElement} */ (document.getElementById('stage'));
+// The "with messages" page (/widgets/donation-messages) reuses this script with <body data-messages="on">.
+const showMessages = document.body.dataset.messages === 'on';
 const rotation = new DonationRotation({ ownParticipantId: null });
 
-let intervalMs = 30_000;
+let intervalMs = 45_000;
 let unknownDonorName = 'Mysterious Hero';
 let privateAmountText = 'Private donation';
 /** @type {ReturnType<typeof setTimeout> | undefined} */
@@ -45,6 +47,39 @@ function show(item) {
 	}
 	stage.append(slide);
 	requestAnimationFrame(() => requestAnimationFrame(() => slide.classList.add('in')));
+	void fitMessage(slide);
+}
+
+/**
+ * Long messages: try the normal size (3 lines), then one step smaller, then scroll slowly upward during the
+ * donation's turn (hold at the start, scroll at about half a line per second, hold at the end). No text is cut.
+ * @param {HTMLElement} slide
+ */
+async function fitMessage(slide) {
+	const box = /** @type {HTMLElement | null} */ (slide.querySelector('.msg'));
+	const text = /** @type {HTMLElement | null} */ (box?.querySelector('.msg-text') ?? null);
+	if (!box || !text) return;
+	await document.fonts.ready;
+	const overflow = () => text.scrollHeight - box.clientHeight;
+	if (overflow() > 1) slide.classList.add('msg-small');
+	const distance = overflow();
+	if (distance <= 1) return;
+	slide.classList.add('msg-scroll');
+	const lineHeight = parseFloat(getComputedStyle(text).lineHeight) || 15;
+	const holdStart = 4000;
+	const holdEnd = 3000;
+	// half a line per second, but always finish within the donation's turn
+	const scroll = Math.min((distance / (lineHeight * 0.5)) * 1000, Math.max(2000, intervalMs - holdStart - holdEnd - 2000));
+	const total = holdStart + scroll + holdEnd;
+	text.animate(
+		[
+			{ transform: 'translateY(0)', offset: 0 },
+			{ transform: 'translateY(0)', offset: holdStart / total },
+			{ transform: `translateY(${-distance}px)`, offset: (holdStart + scroll) / total },
+			{ transform: `translateY(${-distance}px)`, offset: 1 },
+		],
+		{ duration: total, easing: 'linear', fill: 'forwards' },
+	);
 }
 
 /** @param {import('../../shared/rotation.js').RotationItem} item */
@@ -55,6 +90,13 @@ function donationSlide({ donation, source, isNew }) {
 	const hasAmount = typeof donation.amount === 'number';
 	line1.append(el('span', `amount${hasAmount ? '' : ' private'}`, amountLabel(donation, privateAmountText)));
 
+	let msg = null;
+	if (showMessages && donation.message) {
+		slide.classList.add('has-msg');
+		msg = el('div', 'msg');
+		msg.append(el('div', 'msg-text', `\u201C${donation.message.trim()}\u201D`));
+	}
+
 	const line2 = el('div', 'line2');
 	line2.append(el('span', source === 'mine' ? 'pill blue' : 'pill yellow', source === 'mine' ? 'My page' : 'Team'));
 	const parts = [];
@@ -62,7 +104,7 @@ function donationSlide({ donation, source, isNew }) {
 	parts.push(timeAgo(Date.parse(donation.createdAt)));
 	line2.append(el('span', 'meta', parts.join(' · ')));
 
-	slide.append(line1, line2);
+	slide.append(...(msg ? [line1, msg, line2] : [line1, line2]));
 	return slide;
 }
 

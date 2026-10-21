@@ -8,7 +8,7 @@
 
 /**
  * @typedef {{ id: string, donorName: string | null, amount: number | null, createdAt: string,
- *   participantId: number | null, recipientName: string | null }} Donation
+ *   participantId: number | null, recipientName: string | null, message?: string | null }} Donation
  * @typedef {'mine' | 'team'} Source
  * @typedef {{ donation: Donation, source: Source, isNew: boolean }} RotationItem
  */
