@@ -1,0 +1,17 @@
+node_modules/
+
+# Personal config (IDs) and runtime cache
+config.json
+data/
+
+# Overlay art and other local-only files (not redistributable)
+local-assets/*
+!local-assets/README.md
+
+# Raw (un-anonymized) API recordings
+scripts/raw/
+
+.DS_Store
+*.log
+.vscode/
+*.code-workspace

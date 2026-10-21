@@ -1,0 +1,31 @@
+{
+	"server": {
+		"host": "127.0.0.1",
+		"port": 4242
+	},
+	"extraLife": {
+		"baseUrl": "https://dd.extra-life.org/api",
+		"apiVersion": "1.6",
+		"participantId": "123456",
+		"teamId": "12345"
+	},
+	"event": {
+		"timeZone": "America/Chicago",
+		"start": "2026-11-12T13:00",
+		"end": "2026-11-14T01:00"
+	},
+	"polling": {
+		"participantSeconds": 15,
+		"teamSeconds": 30,
+		"donationsSeconds": 120,
+		"minGapMs": 2000,
+		"timeoutMs": 10000,
+		"maxBackoffSeconds": 300
+	},
+	"rotation": {
+		"intervalSeconds": 30,
+		"recentCount": 10,
+		"unknownDonorName": "Mysterious Hero",
+		"privateAmountText": "Private donation"
+	}
+}
