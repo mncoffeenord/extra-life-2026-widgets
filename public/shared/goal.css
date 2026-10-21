@@ -1,10 +1,10 @@
-/* Raised / goal with a progress bar, designed at 488 x 70 (scales with the source height). */
+/* Raised / goal with a progress bar, designed at 488 x 82 (scales with the source height). */
 
 .goal {
 	flex-direction: column;
 	align-items: stretch;
 	justify-content: center;
-	gap: calc(7 * var(--u));
+	gap: calc(9 * var(--u));
 	padding: calc(6 * var(--u)) calc(16 * var(--u)) calc(8 * var(--u));
 }
 
@@ -52,6 +52,7 @@
 
 .goal .bar {
 	position: relative;
+	margin: 0 calc(3 * var(--u));
 	height: calc(14 * var(--u));
 	border-radius: 999px;
 	background: var(--sky-mist);

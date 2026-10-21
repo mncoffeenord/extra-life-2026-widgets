@@ -50,14 +50,14 @@ pages to Streamlabs (macOS) as Browser Sources. Owner streams for team GamePlan4
   `Intl`. Never use fixed offsets: the 2022 config's `-05:00` would be an hour off after DST ends on Nov 1, 2026.
   Widgets tick locally using the server's clock offset, so mock time travel works too.
 - **Countdown phases** (owner's spec): before start, `Starts in` with `Xd HHh MMm` (24 h or more) or `HH:MM:SS`;
-  during, `Live HH:MM of 36:00` (elapsed, counting up); after the end, `Overtime HH:MM` (counting up, no done message).
+  during, `HH:MM of 36:00` with no label (anyone seeing the overlay knows it is live; elapsed, counting up); after the end, `Overtime HH:MM` (counting up, no done message).
 - **Scalable sizing (2026-10-21):** widget CSS uses design pixels, `calc(N * var(--u))`, where
-  `--u = 100vh / --design-h` (70 for footer widgets, 58 for the rotator). Size changes only need the Streamlabs
+  `--u = 100vh / --design-h` (82 for footer widgets, 58 for the rotator). Size changes only need the Streamlabs
   source height to change. Don't write raw `px` sizes in widget CSS.
-- **Type scale:** the countdown time matches the goal's raised amount (32u). Secondary text is 20–22u and pills 13u.
+- **Type scale and color (owner's spec):** the countdown time is 38u, larger on purpose. Goal raised amounts are 32u, target text 22u, percent 20u, pills 13u. In all three footer widgets, the active number (elapsed time, raised) is CMN blue and the target (`of 36:00`, `/ $5,000`) is dark gray. Progress bars are inset 3u on each side.
 - **Goal layout:** a 3-column grid with the amounts centered over the bar and the percent pinned right. A `.tight`
   fallback left-aligns the amounts if they would collide with the percent (only possible with 5–6 digit totals in a
-  box taller than about 80px). The check runs on each data render and on ResizeObserver. It was NOT verified in the
+  box taller than the 82px design height). The check runs on each data render and on ResizeObserver. It was NOT verified in the
   desktop preview pane (its hidden-page throttling stops the observer); verify in mock mode if boxes get taller.
 - **Goal display:** whole dollars, rounded down (never overstate), with a percent and a bar. The bar turns yellow at
   100% or more. The number tweens over 1.2 s; the first render is instant (no tween from 0 on scene switch).
@@ -65,8 +65,9 @@ pages to Streamlabs (macOS) as Browser Sources. Owner streams for team GamePlan4
   cycling the 10 most recent of each. New donations, detected by `donationID`, interrupt immediately with a flash.
   The first snapshot is a baseline, so reloads do not replay alerts. Anonymous donors show as `Mysterious Hero`;
   hidden amounts show as `Private donation`.
-- **Widget sizes** are the white bodies of the overlay boxes: footer boxes are 494×116 with a 3px border and a 40px
-  header, so the body is 488×70 at (23/533/1043, 987). The Donations box is 320×96 with a 32px header, so the body is
+- **Widget sizes** are the white bodies of the overlay boxes. Footer boxes were made taller on 2026-10-21 (owner's
+  choice): 494×128 (top 944, bottom 1072) with a 3px border and a 40px header, so the body is 488×82 at (23/533/1043, 987).
+  The new layer is in the Asset Library folder `2026-10-21-bottom-bar-82px/`; the original checkpoint has 116px boxes (70px body). The Donations box is 320×96 with a 32px header, so the body is
   314×58 at (1583, 59). The source of truth is the overlay generator `build.py` in the 2026 Asset Library checkpoint.
 - **Mock mode** swaps only the HTTP client (`MockApi` implements `get`), so preview exercises the real poller, parsers
   and store.

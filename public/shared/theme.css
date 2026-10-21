@@ -52,7 +52,7 @@ body {
  * widget grows to match.
  */
 .widget {
-	--design-h: 70;
+	--design-h: 82; /* footer box body: 488 x 82 */
 	--u: calc(100vh / var(--design-h));
 	box-sizing: border-box;
 	width: 100%;

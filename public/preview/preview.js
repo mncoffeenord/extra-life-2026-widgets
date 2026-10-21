@@ -4,16 +4,16 @@
 
 /** Streamlabs browser sources on the 1920x1080 canvas. Keep in sync with the README table. */
 const SOURCES = [
-	{ name: 'Stream countdown', path: '/widgets/countdown', x: 23, y: 987, w: 488, h: 70 },
-	{ name: 'My Extra Life goal', path: '/widgets/participant-goal', x: 533, y: 987, w: 488, h: 70 },
-	{ name: 'GamePlan42 goal', path: '/widgets/team-goal', x: 1043, y: 987, w: 488, h: 70 },
+	{ name: 'Stream countdown', path: '/widgets/countdown', x: 23, y: 987, w: 488, h: 82 },
+	{ name: 'My Extra Life goal', path: '/widgets/participant-goal', x: 533, y: 987, w: 488, h: 82 },
+	{ name: 'GamePlan42 goal', path: '/widgets/team-goal', x: 1043, y: 987, w: 488, h: 82 },
 	{ name: 'Donations received', path: '/widgets/donation-rotator', x: 1583, y: 59, w: 314, h: 58 },
 ];
 /** Fallback boxes (outer geometry from the overlay generator). */
 const BOXES = [
-	{ x: 20, y: 944, w: 494, h: 116, head: 40, font: 22, title: 'Stream countdown' },
-	{ x: 530, y: 944, w: 494, h: 116, head: 40, font: 22, title: 'My Extra Life goal' },
-	{ x: 1040, y: 944, w: 494, h: 116, head: 40, font: 22, title: 'GamePlan42 goal' },
+	{ x: 20, y: 944, w: 494, h: 128, head: 40, font: 22, title: 'Stream countdown' },
+	{ x: 530, y: 944, w: 494, h: 128, head: 40, font: 22, title: 'My Extra Life goal' },
+	{ x: 1040, y: 944, w: 494, h: 128, head: 40, font: 22, title: 'GamePlan42 goal' },
 	{ x: 1580, y: 24, w: 320, h: 96, head: 32, font: 18, title: 'Donations received' },
 ];
 

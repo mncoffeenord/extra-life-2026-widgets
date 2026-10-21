@@ -6,9 +6,9 @@ Streamlabs / OBS **Browser Sources**, get live updates from that server.
 
 | Widget | URL path | Size | Shows |
 | --- | --- | --- | --- |
-| Stream countdown | `/widgets/countdown` | 488 × 70 | `Starts in 2d 04h 12m` → `Live 07:42 of 36:00` → `Overtime 00:12` |
-| My Extra Life goal | `/widgets/participant-goal` | 488 × 70 | `$1,250 / $2,000`, %, progress bar |
-| Team goal | `/widgets/team-goal` | 488 × 70 | same, for the team |
+| Stream countdown | `/widgets/countdown` | 488 × 82 | `Starts in 2d 04h 12m` → `07:42 of 36:00` (live) → `Overtime 00:12` |
+| My Extra Life goal | `/widgets/participant-goal` | 488 × 82 | `$1,250 / $2,000`, %, progress bar |
+| Team goal | `/widgets/team-goal` | 488 × 82 | same, for the team |
 | Donations received | `/widgets/donation-rotator` | 314 × 58 | Alternates your recent donations and your team's every 30 s. New donations show immediately. |
 
 Why a server instead of widgets calling the API directly (as the 2022 tracker did):
@@ -58,7 +58,7 @@ Mock mode adds controls to `/preview`: set totals, send fake donations (named, a
 clock (before start / live / near end / overtime), and simulate an API outage. Mock mode runs the real poller
 against a fake API, so it exercises the same code that runs on stream night.
 
-To see the live clock (`Live HH:MM of 36:00`) with real data before the event, run against a copy of your config
+To see the live clock (`HH:MM of 36:00`) with real data before the event, run against a copy of your config
 with an earlier start time, e.g. `"start": "2026-10-21T12:00"` and `"end": "2026-10-23T00:00"`:
 
 ```bash
@@ -77,13 +77,14 @@ For each widget: **Add Source → Browser Source**, then:
 
 | Source | URL | Width × Height | Position (X, Y) |
 | --- | --- | --- | --- |
-| Stream countdown | `http://localhost:4242/widgets/countdown` | 488 × 70 | 23, 987 |
-| My Extra Life goal | `http://localhost:4242/widgets/participant-goal` | 488 × 70 | 533, 987 |
-| GamePlan42 goal | `http://localhost:4242/widgets/team-goal` | 488 × 70 | 1043, 987 |
+| Stream countdown | `http://localhost:4242/widgets/countdown` | 488 × 82 | 23, 987 |
+| My Extra Life goal | `http://localhost:4242/widgets/participant-goal` | 488 × 82 | 533, 987 |
+| GamePlan42 goal | `http://localhost:4242/widgets/team-goal` | 488 × 82 | 1043, 987 |
 | Donations received | `http://localhost:4242/widgets/donation-rotator` | 314 × 58 | 1583, 59 |
 
 These positions put each widget inside the white body of its overlay box, below the blue header and inside the 3px
-border, on a 1920 × 1080 canvas. Set the position under **Transform → Edit Transform**, at 100% scale.
+border, on a 1920 × 1080 canvas. The footer sizes assume the taller footer boxes (494 × 128, bottom at y 1072) from
+the 2026-10-21 bottom-bar layer; with the original 116px boxes, use a height of 70. Set the position under **Transform → Edit Transform**, at 100% scale.
 
 Browser Source settings:
 
@@ -95,7 +96,7 @@ Browser Source settings:
   **Refresh cache of current page** in the source's properties.
 
 The preview page has the same table with copyable URLs. Text and spacing scale with the source **height**
-(designed at 70px for the footer, 58px for the rotator). If a box in your overlay gets taller, make the source
+(designed at 82px for the footer, 58px for the rotator). If a box in your overlay gets taller, make the source
 taller to match and the widget grows with it. Very large totals in a tall goal box switch to left-aligned amounts
 so they never run into the percent.
 
