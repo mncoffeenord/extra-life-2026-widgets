@@ -68,7 +68,8 @@ The server checks the config at startup and lists every problem it finds.
 npm start
 ```
 
-Then open <http://localhost:4242/preview/> to see every widget on the overlay, with a status panel.
+Then open <http://localhost:4242/preview/> to see every widget on the overlay, with a status panel. Its menus switch
+the style, the Donations box and the theme.
 
 To rehearse with fake data (stop the live server first; both use port 4242):
 
@@ -122,7 +123,8 @@ Use **one** of the two Donations sources. The with-messages version needs a tall
 320 × 143 at x 1580, y 290, with the same 32px blue header, which leaves a 314 × 105 white area for the widget. In
 `/preview`, the **Donations box** selector shows it in place.
 
-The preview page has the same table with copyable URLs. Text and spacing scale with the source **height**
+The preview page has the same table with copyable URLs, for the style, Donations box and theme picked in its menus
+(a non-default theme adds `?theme=` to each URL). Text and spacing scale with the source **height**
 (designed at 82px for the footer, 58px for the rotator). If a box in your overlay gets taller, make the source
 taller to match and the widget grows with it. Very large totals in a tall goal box switch to left-aligned amounts
 so they never run into the percent.
@@ -132,7 +134,8 @@ so they never run into the percent.
 **The day before**
 
 - [ ] `git pull && npm install && npm run check`: tests and type check pass.
-- [ ] `npm run theme -- --list` shows no warnings, if you use your own themes.
+- [ ] If you use your own themes: `npm run theme -- --list` lists them and prints no `warning:` lines (a broken theme
+      file is skipped).
 - [ ] `config.json` has the right participant ID, team ID, start (`2026-11-12T13:00`) and end (`2026-11-14T01:00`).
 - [ ] `npm run mock`, open `/preview`: send a fake donation (goal number animates, rotator flashes); try each clock
       preset (Starts in → Live → Overtime); toggle **Simulate outage** (values stay put, status turns red).
@@ -180,7 +183,7 @@ to stay near one request per 15 s and to use ETags.
 ## Development
 
 ```bash
-npm test                 # node:test: config, time zones/DST, parsers, client, poller, rotation, server
+npm test                 # node:test: config, time zones/DST, parsers, client, poller, rotation, server, themes, setup, message filter
 npm run typecheck        # tsc (also checks the browser JS via // @ts-check)
 npm run check            # both
 npm run dev              # restart on file changes
@@ -191,8 +194,9 @@ npm run theme -- --list  # list themes; npm run theme makes a new one
 Project layout:
 
 ```
-src/                server (TypeScript): config, time zones, API client + parsers, poller, store, HTTP app, mock API
-public/shared/      browser modules shared with the tests: countdown, format, rotation, live (SSE), theme
+src/                server (TypeScript): config, time zones, API client + parsers, poller, store, HTTP app, mock API,
+                    themes, widget geometry, message filter, setup/theme helpers
+public/shared/      browser modules shared with the tests: countdown, format, rotation, live (SSE), frame, theme.css
 public/widgets/     one folder per widget
 public/preview/     preview page
 themes/             custom color themes (<name>.json), made by npm run theme

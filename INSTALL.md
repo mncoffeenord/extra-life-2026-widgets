@@ -91,6 +91,8 @@ A theme is a named set of 8 colors. Three are built in (`extra-life`, `midnight`
 one in another. Single colors can be changed in the URL too, with or without a theme (no `#`, URLs can't hold one):
 `?theme=midnight&primary=6A1B9A&accent=FFB300`. After changing a source's URL in Streamlabs, the widget reloads by itself.
 A misspelled theme or color never blanks a widget: it falls back to your default colors, and the server window says why.
+To try themes first, open <http://localhost:4242/preview/> and pick one from the **Theme** menu: the overlay redraws in
+it, and the source table below it shows the URLs with `?theme=` added.
 
 **Make your own theme.** Run:
 
@@ -102,9 +104,14 @@ It asks for a name, a theme to start from, and your colors. Paste them in almost
 (`--primary: #6A1B9A;`), `name: #hex` lines, or a plain list of hex codes such as a coolors.co palette (a plain list is
 used in the order of the table below). It shows the result with color swatches, warns if text would be hard to read,
 saves `themes/<name>.json`, and prints your widget URLs with `?theme=<name>` added. New themes work right away, with
-no restart. `npm run theme -- --list` shows every theme. Without questions:
+no restart. If you change a theme that a source already shows, click **Refresh cache of current page** in that
+source's properties. `npm run theme -- --list` shows every theme. Without questions:
 `npm run theme -- --name purple-night --from my-colors.txt --base midnight --yes` (or `--colors "primary=6A1B9A,
-accent=FFB300"`; add `--default` to make it the default, `--force` to overwrite).
+accent=FFB300"`; add `--force` to overwrite a theme).
+
+At the end it offers to make the theme your default (`--default`). That sets `theme.preset` in `config.json`, clears
+any single-color overrides there, and backs up the old file; restart the server to apply it. Theme files are plain
+JSON (format in [themes/README.md](themes/README.md)): commit one to share it, delete it to remove it.
 
 **Change the default for every widget.** Re-run `npm run setup` (your own themes are in its list), or edit the `theme`
 section of `config.json`, then restart the server:
