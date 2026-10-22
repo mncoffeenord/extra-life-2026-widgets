@@ -70,7 +70,8 @@ export function tween(from, to, durationMs, render) {
 	const start = performance.now();
 	let frame = 0;
 	const step = (/** @type {number} */ t) => {
-		const p = Math.min(1, (t - start) / durationMs);
+		// a frame's timestamp can be a little before `start`; clamp so the value never runs below `from`
+		const p = Math.min(1, Math.max(0, (t - start) / durationMs));
 		const eased = 1 - (1 - p) ** 3;
 		render(from + (to - from) * eased);
 		if (p < 1) frame = requestAnimationFrame(step);
