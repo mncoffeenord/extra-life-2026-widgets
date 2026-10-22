@@ -17,6 +17,7 @@ const STATIC_DIRS: Record<string, string> = {
 	'/widgets/': join(ROOT, 'public/widgets'),
 	'/shared/': join(ROOT, 'public/shared'),
 	'/preview/': join(ROOT, 'public/preview'),
+	'/scenes/': join(ROOT, 'public/scenes'),
 	'/fonts/': join(ROOT, 'node_modules/@fontsource-variable/inter/files'),
 	'/local-assets/': join(ROOT, 'local-assets'),
 };
@@ -151,6 +152,11 @@ export function createApp(deps: AppDeps): Server {
 				}
 				if (path === '/preview') {
 					res.writeHead(302, { Location: '/preview/' }).end();
+					return;
+				}
+				// scene pages use relative imports, so they need the trailing slash (keep ?mock=1 etc.)
+				if (/^\/scenes\/[a-z0-9-]+$/.test(path)) {
+					res.writeHead(302, { Location: `${path}/${url.search}` }).end();
 					return;
 				}
 				for (const [prefix, dir] of Object.entries(STATIC_DIRS)) {

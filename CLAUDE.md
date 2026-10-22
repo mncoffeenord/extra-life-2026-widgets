@@ -30,7 +30,8 @@ pages to Streamlabs (macOS) as Browser Sources. Owner streams for team GamePlan4
 
 ## Never commit
 
-- `config.json` (real IDs), `data/` (runtime cache), `local-assets/*` (overlay art with CMN branding), `scripts/raw/`
+- `config.json` (real IDs), `data/` (runtime cache), `local-assets/*` (overlay art with CMN branding; the BRB scene's Marvin is the exception, committed with the
+  owner's OK on 2026-10-22), `scripts/raw/`
   (un-anonymized API recordings).
 - Real names or personal data in fixtures. `scripts/record-fixtures.ts` scrubs names, donor IDs, messages and
   avatars, and remaps IDs. Check the output before committing new fixtures.
@@ -113,6 +114,28 @@ pages to Streamlabs (macOS) as Browser Sources. Owner streams for team GamePlan4
   and store.
 - **Public repo** so teammates can reuse it. The commit identity uses the GitHub noreply email.
 
+- **Be Right Back scene (2026-10-21):** `/scenes/be-right-back` (`public/scenes/be-right-back/`), a 1920×1080 opaque
+  page drawn as one SVG from the approved design (`scene_BRB()` in the Asset Library checkpoint
+  `2026-10-21-be-right-back-scenes`, coordinates copied as-is; the stars are its `random.seed(7)` output, hard-coded).
+  Only BRB is built: the owner deferred the shared multi-scene shell, Starting Soon and the countdown API until those
+  designs are decided. It uses the design's fixed palette, not the widget themes. Lettering is the pixel font in
+  `public/shared/pixel-font.js` (5×7 glyphs, full A–Z/0–9 plus punctuation, accents stripped, unknown → `?`), never a CSS
+  font. View logic is `public/shared/brb-model.js`: latest donation is the newest across my page and the team;
+  "BE THE FIRST!" only when both `numDonations` are 0; hidden amounts show no amount. Donor names shrink px 9→6 to
+  fit beside the amount, then truncate with `...`. Marvin (`public/scenes/be-right-back/marvin.png`) is committed
+  with the owner's OK even though the repo is public. `test/scene-brb.test.ts` screenshots `?mock=1&still=1` with
+  headless Chrome (no Playwright: no new dependency) and diffs it against `test/fixtures/brb-reference.png`, the
+  approved render, skipping the areas changed since (`CHANGED_SINCE_DESIGN`). Chrome 153 on macOS doesn't exit after
+  `--screenshot`, so the test waits for the file and kills it. The first snapshot is a baseline (no flash or
+  step-fill on load). `?demo=1` plays sample donations (the shareable artifact is built from it).
+- **BRB changes (owner, 2026-10-22):** meters never round up: `meterSlots` floors, keeps one slot lit even at $0 or
+  with no goal, and lights all only at 100%+. Team hearts fill in halves (20 slots; a half is the left half including
+  the center column). My-goal bar: 40 segments, same rule. The header strip is 66px (was 64) with the team name
+  centered vertically (text plus shadow). The strip's heart is replaced by `sceneClock`: more than 48 h before the
+  start `DD:HH:MM` + `UNTIL GAME DAY`, under that `HH:MM` + the same label (both round up to the minute), from the
+  start `HH:MM` counting up with no label or end time, and it keeps counting after the end. It ticks on the server
+  clock, so mock time travel works.
+
 ## DonorDrive API facts (verified live 2026-10-21)
 
 - Base `https://dd.extra-life.org/api` (the old `www.extra-life.org/api` 301-redirects). Docs: github.com/DonorDrive/PublicAPI.
@@ -127,6 +150,6 @@ pages to Streamlabs (macOS) as Browser Sources. Owner streams for team GamePlan4
 
 - Incentives/milestones: add poll resources (`participants/{id}/incentives`, `.../milestones`). `Donation.incentiveId`
   is already parsed.
-- Scenes (starting soon, BRB, end, offline, commercials): full-canvas pages under `public/scenes/`, sharing
-  `theme.css` and `live.js`.
+- Scenes (starting soon, end, offline, commercials): full-canvas pages under `public/scenes/`, sharing `live.js`.
+  BRB is built (above); reuse its pixel font and model rather than adding a shell before the designs are decided.
 - Subteam list: `teams/{id}/participants` resource.

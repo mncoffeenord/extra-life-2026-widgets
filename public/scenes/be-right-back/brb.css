@@ -1,0 +1,59 @@
+/* Be Right Back scene. Fixed design palette (the approved scene art), not the widget themes. */
+html,
+body {
+	margin: 0;
+	height: 100%;
+	overflow: hidden;
+	background: #16283A;
+}
+
+.scene {
+	display: block;
+	width: 100vw;
+	height: 100vh;
+}
+
+/* Ambient motion only, in steps to stay pixel-snapped and cheap. */
+.bob {
+	animation: bob 1.5s steps(6, end) infinite alternate;
+}
+
+@keyframes bob {
+	to { transform: translateY(-6px); }
+}
+
+.drift {
+	animation: drift 24s steps(6, end) infinite alternate;
+}
+
+.drift.reverse {
+	animation-direction: alternate-reverse;
+}
+
+@keyframes drift {
+	to { transform: translateX(36px); }
+}
+
+.twinkle {
+	animation: twinkle 6s steps(1, end) infinite;
+}
+
+@keyframes twinkle {
+	0%, 88% { opacity: 1; }
+	90%, 100% { opacity: 0.25; }
+}
+
+/* New donation: the card border flashes yellow/white for about 1 s. */
+.card-border.flash {
+	animation: card-flash 1s steps(1, end);
+}
+
+@keyframes card-flash {
+	0%, 40%, 80% { fill: #FFCB05; }
+	20%, 60% { fill: #FFFFFF; }
+	100% { fill: #253746; }
+}
+
+.still * {
+	animation: none !important;
+}
