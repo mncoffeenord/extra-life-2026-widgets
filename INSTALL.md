@@ -46,8 +46,8 @@ Extra Life page.
 
 ## 3. Add the widgets (once)
 
-Open **`MY-SOURCES.md`**: it lists each source for your choices. For each one, use **+ Add Source → Browser
-Source**, then:
+Open **`MY-SOURCES.md`**: it lists each source for your choices. Add only the ones you want: every widget and scene
+works on its own, all from the same server. For each one, use **+ Add Source → Browser Source**, then:
 
 - Leave **Local file** off and paste the URL.
 - Set **Width** and **Height** from the list.
@@ -66,7 +66,19 @@ For reference, the sizes:
 | Donations | `/widgets/donation-rotator` | 320 × 96 | 314 × 58 |
 | *or* Donations + messages | `/widgets/donation-messages` | 320 × 143 | 314 × 105 |
 
-Use **one** of the two Donations widgets. Any source can switch style on its own by adding `?style=framed` or
+**Be Right Back scene (optional).** A full-screen break scene: latest donation, team goal hearts, your goal bar and
+a countdown to the start (then `GAME TIME`, counting up). Make a new Streamlabs scene for it, for example "Be Right
+Back", and add one Browser Source:
+
+| Scene | URL path | Size | Position |
+| --- | --- | --- | --- |
+| Be Right Back | `/scenes/be-right-back` | 1920 × 1080 | 0, 0 |
+
+Same settings as the widgets, plus **FPS** 30. Switch to that scene when you step away. It keeps its own colors, so
+`?theme=` and `?style=` don't change it. To check it without live data, open
+<http://localhost:4242/scenes/be-right-back?mock=1>.
+
+Use **one** of the two Donations widgets. Any widget can switch style on its own by adding `?style=framed` or
 `?style=transparent` to its URL, `?title=Your%20Title` sets its header text, and `?theme=midnight` its colors (see
 [Colors and themes](#colors-and-themes)). Combine them with `&`: `?style=framed&theme=midnight`.
 
@@ -76,7 +88,7 @@ that scene as a source to your other scenes.
 ## 4. Before going live
 
 - [ ] Server is running, and `/preview` shows **API OK**.
-- [ ] All widgets show data in Streamlabs.
+- [ ] All widgets show data in Streamlabs (and the Be Right Back scene, if you use it).
 - [ ] The countdown shows the right time to your start.
 
 Want to rehearse? Stop the server and run `npm run mock` instead. `/preview` then gets buttons for fake donations,
@@ -85,6 +97,7 @@ jumping the clock, and simulating an outage. Stop it and start the server normal
 ## Colors and themes
 
 A theme is a named set of 8 colors. Three are built in (`extra-life`, `midnight`, `mono`), and you can make your own.
+Themes apply to the widgets; the Be Right Back scene keeps its own design colors.
 
 **Different colors per source.** Add `?theme=<name>` to a widget's URL, e.g.
 `http://localhost:4242/widgets/countdown?theme=midnight`. One server can show a light widget in one scene and a dark

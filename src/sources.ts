@@ -1,5 +1,5 @@
-// Every widget's browser-source geometry, in one place. Used for the page injection (frame specs), /api/display
-// (the preview), and the setup script's source list.
+// Every widget's and scene's browser-source geometry, in one place. Used for the page injection (frame specs),
+// /api/display (the preview), and the setup script's source list.
 //
 // Positions are the GamePlan42 overlay layout on a 1920x1080 canvas (checkpoint "marvin-framed-widgets").
 // Transparent sources fill the white area inside an overlay box; framed sources draw the whole box themselves,
@@ -58,10 +58,14 @@ export interface SourceRow {
 	rect: Rect;
 }
 
+function baseUrl(config: Pick<Config, 'server'>): string {
+	const host = config.server.host === '127.0.0.1' || config.server.host === '0.0.0.0' ? 'localhost' : config.server.host;
+	return `http://${host}:${config.server.port}`;
+}
+
 /** The browser sources for a setup: the three footer widgets plus the chosen Donations version. */
 export function sourcesFor(config: Pick<Config, 'server' | 'display'>, style: Style = config.display.style): SourceRow[] {
-	const host = config.server.host === '127.0.0.1' || config.server.host === '0.0.0.0' ? 'localhost' : config.server.host;
-	const base = `http://${host}:${config.server.port}`;
+	const base = baseUrl(config);
 	const donations: WidgetId = config.display.donations === 'messages' ? 'donation-messages' : 'donation-rotator';
 	const ids: WidgetId[] = ['countdown', 'participant-goal', 'team-goal', donations];
 	// Only add ?style= when it differs from the configured default, so URLs stay short.
@@ -70,4 +74,24 @@ export function sourcesFor(config: Pick<Config, 'server' | 'display'>, style: St
 		const spec = WIDGETS[id];
 		return { id, name: spec.name, url: `${base}/widgets/${id}${suffix}`, rect: style === 'framed' ? spec.box : spec.body };
 	});
+}
+
+/**
+ * Full-screen scenes (public/scenes/). Each goes on its own Streamlabs scene as a 1920x1080 source at 0, 0. They use
+ * their own design palette, so ?style= and ?theme= do not apply.
+ */
+export const SCENES = [
+	{ id: 'be-right-back', name: 'Be Right Back scene', rect: { x: 0, y: 0, w: 1920, h: 1080 } },
+] as const satisfies readonly { id: string; name: string; rect: Rect }[];
+
+export interface SceneRow {
+	id: string;
+	name: string;
+	url: string;
+	rect: Rect;
+}
+
+export function scenesFor(config: Pick<Config, 'server'>): SceneRow[] {
+	const base = baseUrl(config);
+	return SCENES.map((s) => ({ id: s.id, name: s.name, url: `${base}/scenes/${s.id}`, rect: { ...s.rect } }));
 }

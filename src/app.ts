@@ -8,7 +8,7 @@ import { clockView } from '../public/shared/countdown.js';
 import type { Config } from './config.ts';
 import type { MockApi } from './mock.ts';
 import type { Poller } from './poller.ts';
-import { isWidgetId, sourcesFor, titleFor, WIDGETS, type WidgetId } from './sources.ts';
+import { isWidgetId, SCENES, sourcesFor, titleFor, WIDGETS, type WidgetId } from './sources.ts';
 import { loadThemeDir, resolveTheme, themeCss, themeFromQuery, type ThemeRegistry } from './theme.ts';
 import { RESOURCE_KEYS, type Store } from './store.ts';
 
@@ -275,6 +275,7 @@ export function display(deps: AppDeps) {
 		themes: Object.keys(registry),
 		widgets: Object.values(WIDGETS).map((w) => ({ id: w.id, name: w.name, title: titleFor(w, config.display.titles, team), box: w.box, body: w.body })),
 		sources: sourcesFor(config),
+		scenes: SCENES.map((s) => ({ id: s.id, name: s.name, rect: s.rect })),
 	};
 }
 

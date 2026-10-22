@@ -1,8 +1,9 @@
 # Extra Life 2026 stream widgets
 
 Self-hosted overlay widgets for an [Extra Life](https://www.extra-life.org/) stream. A small local Node.js server
-polls the Extra Life (DonorDrive) API on a schedule and caches the results. Transparent widget pages, loaded as
-Streamlabs / OBS **Browser Sources**, get live updates from that server.
+polls the Extra Life (DonorDrive) API on a schedule and caches the results. Widget pages and full-screen scenes,
+loaded as Streamlabs / OBS **Browser Sources**, get live updates from that server. Use any mix: one server serves them
+all, and each source is independent.
 
 | Widget | URL path | Size | Shows |
 | --- | --- | --- | --- |
@@ -11,6 +12,7 @@ Streamlabs / OBS **Browser Sources**, get live updates from that server.
 | Team goal | `/widgets/team-goal` | 488 × 82 | same, for the team |
 | Donations received | `/widgets/donation-rotator` | 314 × 58 | Alternates your recent donations and your team's every 45 s. New donations show immediately. |
 | Donations received, with messages (optional) | `/widgets/donation-messages` | 314 × 105 | Same, plus the donor's message (2 lines at 13px). Long messages shrink a step, then scroll. The tag line is a footer. |
+| Be Right Back scene (optional) | `/scenes/be-right-back` | 1920 × 1080 | Full-screen break scene: latest donation, team goal hearts, your goal bar, and a countdown / `GAME TIME` clock. |
 
 Why a server instead of widgets calling the API directly (as the 2022 tracker did):
 
@@ -152,13 +154,16 @@ looks during the event.
 - [ ] `config.json` has the right participant ID, team ID, start (`2026-11-12T13:00`) and end (`2026-11-14T01:00`).
 - [ ] `npm run mock`, open `/preview`: send a fake donation (goal number animates, rotator flashes); try each clock
       preset (Starts in → Live → Overtime); toggle **Simulate outage** (values stay put, status turns red).
+- [ ] If you use the Be Right Back scene: with mock mode still running, open
+      `http://localhost:4242/scenes/be-right-back` and send a fake donation (the card flashes, hearts fill).
 - [ ] Stop mock mode.
 
 **An hour before**
 
 - [ ] `caffeinate -is npm start`, and leave that Terminal window open.
 - [ ] `/preview` shows **Live data** and **API OK**, and the totals match your Extra Life page.
-- [ ] In Streamlabs, all four sources show data. If one is blank, use **Refresh cache of current page**.
+- [ ] In Streamlabs, every widget source shows data (switch to the Be Right Back scene once, if you use it). If one is
+      blank, use **Refresh cache of current page**.
 - [ ] The countdown shows the right time to start.
 
 **During the stream**
@@ -196,7 +201,7 @@ to stay near one request per 15 s and to use ETags.
 ## Development
 
 ```bash
-npm test                 # node:test: config, time zones/DST, parsers, client, poller, rotation, server, themes, setup, message filter
+npm test                 # node:test: config, time zones/DST, parsers, client, poller, rotation, server, themes, setup, message filter, BRB scene (pixel font, model, screenshot vs design; the screenshot test needs Chrome)
 npm run typecheck        # tsc (also checks the browser JS via // @ts-check)
 npm run check            # both
 npm run dev              # restart on file changes
@@ -211,6 +216,7 @@ src/                server (TypeScript): config, time zones, API client + parser
                     themes, widget geometry, message filter, setup/theme helpers
 public/shared/      browser modules shared with the tests: countdown, format, rotation, live (SSE), frame, theme.css
 public/widgets/     one folder per widget
+public/scenes/      full-screen scenes (be-right-back: page, pixel art, Marvin)
 public/preview/     preview page
 themes/             custom color themes (<name>.json), made by npm run theme
 scripts/            setup and theme scripts (interactive), fixture recorder

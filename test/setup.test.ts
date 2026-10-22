@@ -52,6 +52,7 @@ test('MY-SOURCES.md lists the right sources and sizes for the style', () => {
 	assert.match(md, /\| Stream countdown \| `http:\/\/localhost:4300\/widgets\/countdown` \| 494 × 128 \| 20, 944 \|/);
 	assert.match(md, /donation-messages` \| 320 × 143/);
 	assert.match(md, /Shutdown source when not visible\*\* off/);
+	assert.match(md, /\| Be Right Back scene \| `http:\/\/localhost:4300\/scenes\/be-right-back` \| 1920 × 1080 \| 0, 0 \|/);
 
 	const transparent = parseConfig(applyAnswers(example(), answers({ style: 'transparent', donations: 'standard' })));
 	const md2 = sourcesMarkdown(transparent);

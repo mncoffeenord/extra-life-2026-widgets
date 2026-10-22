@@ -5,12 +5,13 @@
 
 /** @typedef {{ x: number, y: number, w: number, h: number }} Rect */
 /** @typedef {{ id: string, name: string, title: string, box: Rect, body: Rect }} WidgetInfo */
+/** @typedef {{ id: string, name: string, rect: Rect }} SceneInfo */
 
 const $ = (/** @type {string} */ id) => /** @type {HTMLElement} */ (document.getElementById(id));
 const stage = $('stage');
 const wrap = $('stage-wrap');
 
-const display = /** @type {{ style: string, donations: string, themeName: string, themes: string[], widgets: WidgetInfo[] }} */ (
+const display = /** @type {{ style: string, donations: string, themeName: string, themes: string[], widgets: WidgetInfo[], scenes: SceneInfo[] }} */ (
 	await (await fetch('/api/display', { cache: 'no-store' })).json()
 );
 const byId = /** @type {Record<string, WidgetInfo>} */ (Object.fromEntries(display.widgets.map((w) => [w.id, w])));
@@ -103,13 +104,10 @@ outline.addEventListener('change', () => stage.classList.toggle('outline', outli
 // --- source table (for the selected style) ----------------------------------------
 $('sources-style').textContent = framed ? 'framed' : 'transparent';
 const sourceRows = /** @type {HTMLElement} */ (document.querySelector('#sources tbody'));
-for (const w of display.widgets) {
-	const r = rectOf(w);
-	const style = framed ? 'framed' : 'transparent';
-	const query = [style === display.style ? '' : `style=${style}`, themeParam].filter(Boolean).join('&');
-	const url = `${location.origin}/widgets/${w.id}${query ? `?${query}` : ''}`;
+/** @param {string} name @param {string} url @param {Rect} r */
+function addSourceRow(name, url, r) {
 	const tr = document.createElement('tr');
-	for (const v of [w.name, url, r.x, r.y, r.w, r.h]) {
+	for (const v of [name, url, r.x, r.y, r.w, r.h]) {
 		const td = document.createElement('td');
 		if (typeof v === 'string' && v.startsWith('http')) {
 			const code = document.createElement('code');
@@ -120,6 +118,13 @@ for (const w of display.widgets) {
 	}
 	sourceRows.append(tr);
 }
+for (const w of display.widgets) {
+	const style = framed ? 'framed' : 'transparent';
+	const query = [style === display.style ? '' : `style=${style}`, themeParam].filter(Boolean).join('&');
+	addSourceRow(w.name, `${location.origin}/widgets/${w.id}${query ? `?${query}` : ''}`, rectOf(w));
+}
+// Scenes are full-screen and keep their own colors, so no ?style= or ?theme=.
+for (const s of display.scenes ?? []) addSourceRow(s.name, `${location.origin}/scenes/${s.id}`, s.rect);
 
 // --- health ----------------------------------------------------------------------
 /** @type {{ startMs: number, endMs: number } | null} */
