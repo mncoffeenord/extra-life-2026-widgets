@@ -30,6 +30,8 @@ const CHANGED_SINCE_DESIGN = [
 	{ x: 196, y: 296, w: 1528, h: 76 },
 	{ x: 1290, y: 640, w: 92, h: 84 },
 ];
+/** Dark only: the crescent moon added top-left (owner, 2026-10-22), with its glow and the two stars it displaced. */
+const DARK_MOON = { x: 90, y: 14, w: 252, h: 252 };
 const CHROME = process.env.CHROME_PATH ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 
 async function start() {
@@ -98,7 +100,7 @@ async function matchesDesign(query: string, look: keyof typeof REFERENCES) {
 		await screenshot(shot, `${t.base}/scenes/be-right-back/?${query}mock=1&still=1`, join(dir, 'profile'));
 		const actual = decodePng(readFileSync(shot));
 		const expected = decodePng(readFileSync(REFERENCES[look]));
-		const ratio = diffRatio(actual, expected, 48, CHANGED_SINCE_DESIGN);
+		const ratio = diffRatio(actual, expected, 48, look === 'dark' ? [...CHANGED_SINCE_DESIGN, DARK_MOON] : CHANGED_SINCE_DESIGN);
 		assert.ok(ratio < 0.005, `${(ratio * 100).toFixed(3)}% of pixels differ (screenshot kept at ${shot})`);
 		rmSync(dir, { recursive: true, force: true });
 	} finally {

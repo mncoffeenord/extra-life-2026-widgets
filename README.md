@@ -12,7 +12,7 @@ all, and each source is independent.
 | Team goal | `/widgets/team-goal` | 488 × 82 | same, for the team |
 | Donations received | `/widgets/donation-rotator` | 314 × 58 | Alternates your recent donations and your team's every 45 s. New donations show immediately. |
 | Donations received, with messages (optional) | `/widgets/donation-messages` | 314 × 105 | Same, plus the donor's message (2 lines at 13px). Long messages shrink a step, then scroll. The tag line is a footer. |
-| Be Right Back scene (optional) | `/scenes/be-right-back` | 1920 × 1080 | Full-screen break scene: latest donation, team goal hearts, your goal bar, and a countdown / `GAME TIME` clock. Dark night sky by default; `?look=light` for the daytime sky with a sun. |
+| Be Right Back scene (optional) | `/scenes/be-right-back` | 1920 × 1080 | Full-screen break scene: latest donation, team goal hearts, your goal bar, and a countdown / `GAME TIME` clock. Dark night sky with a crescent moon by default; `?look=light` for the daytime sky with a sun. |
 
 Why a server instead of widgets calling the API directly (as the 2022 tracker did):
 
@@ -140,7 +140,7 @@ segment are always lit; all of them light only at 100%. Add it as a Browser Sour
 on its own scene, FPS 30. Turn **off** "Shutdown source when not visible" so switching scenes doesn't reload it and
 flash.
 
-It comes in two looks: dark (night sky, stars; the default) and light (`?look=light`: daytime sky, sun, more clouds).
+It comes in two looks: dark (night sky, stars, crescent moon; the default) and light (`?look=light`: daytime sky, sun, more clouds).
 Only the colors and background art differ. Add `?mock=1` to see it with the design's sample data, `?demo=1` for the
 same plus a sample donation every 7 seconds, or `?still=1` to stop the ambient animation. Combine them with `&`, e.g.
 `?look=light&demo=1`. With `?mock=1` or `?demo=1`, add `&clock=game` to see the clock as it

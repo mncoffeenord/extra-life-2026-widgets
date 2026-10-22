@@ -75,7 +75,7 @@ Back", and add one Browser Source:
 | Be Right Back (dark) | `/scenes/be-right-back` | 1920 × 1080 | 0, 0 |
 | *or* Be Right Back (light) | `/scenes/be-right-back?look=light` | 1920 × 1080 | 0, 0 |
 
-Use one of the two looks: dark is a night sky with stars, light a daytime sky with a sun. Same settings as the
+Use one of the two looks: dark is a night sky with stars and a crescent moon, light a daytime sky with a sun. Same settings as the
 widgets, plus **FPS** 30. Switch to that scene when you step away. It keeps its own colors, so `?theme=` and
 `?style=` don't change it. To check it without live data, open
 <http://localhost:4242/scenes/be-right-back?mock=1> (or `?look=light&mock=1`).

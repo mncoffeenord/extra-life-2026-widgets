@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { SUN_CENTER, sunLayers, sunRuns } from '../public/shared/pixel-sun.js';
+import { moonLayers, SUN_CENTER, sunLayers, sunRuns } from '../public/shared/pixel-sun.js';
 
 test('sun layers are deterministic, in back-to-front order, with a bounded rect count', () => {
 	const a = sunLayers();
@@ -37,4 +37,20 @@ test('rays sit between the orb and their tips, at fine 2px cells', () => {
 		const d = Math.hypot(r.x + 1 - SUN_CENTER.x, r.y + 1 - SUN_CENTER.y);
 		assert.ok(d > 80 && d < 88 + 42 + 4, `ray cell at distance ${d}`);
 	}
+});
+
+test('moon: deterministic layers, glow only outside the crescent, a C opening to the right', () => {
+	const layers = moonLayers();
+	assert.deepEqual(layers, moonLayers());
+	assert.deepEqual(layers.map((l) => l.name), ['glowFar', 'glowNear', 'body', 'inner', 'rim', 'crater']);
+	const byName = Object.fromEntries(layers.map((l) => [l.name, l.runs]));
+	const covers = (runs: { x: number, y: number, w: number, h: number }[], x: number, y: number) => runs.some((r) => x >= r.x && x < r.x + r.w && y >= r.y && y < r.y + r.h);
+	const cellsOf = (runs: { x: number, y: number, w: number, h: number }[]) => runs.flatMap((r) => Array.from({ length: r.w / 5 }, (_, i) => [r.x + i * 5 + 2, r.y + 2]));
+	// the glow rings never overlap the lit crescent
+	for (const [x = 0, y = 0] of [...cellsOf(byName.glowNear!), ...cellsOf(byName.glowFar!)]) assert.ok(!covers(byName.body!, x, y), `glow on the moon at ${x},${y}`);
+	// lit on the left (thick side), dark in the middle-right (the cut)
+	assert.ok(covers(byName.body!, SUN_CENTER.x - 60, SUN_CENTER.y));
+	assert.ok(!covers(byName.body!, SUN_CENTER.x + 20, SUN_CENTER.y));
+	const total = layers.reduce((n, l) => n + l.runs.length, 0);
+	assert.ok(total > 50 && total < 800, `${total} runs`);
 });

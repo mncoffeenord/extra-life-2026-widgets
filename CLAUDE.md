@@ -147,6 +147,15 @@ pages to Streamlabs (macOS) as Browser Sources. Owner streams for team GamePlan4
   is chosen by URL only (the page is static; a config default would need the server to serve it). `index.html` sets
   `data-look` before first paint so light never flashes dark. Both looks share every behavior.
 
+- **BRB dark moon (owner, 2026-10-22):** the dark look has a crescent moon where the light look has its sun (centered
+  215, 140), designed in this repo over six drafts (not in the Asset Library generator; spec handed back as
+  `brb-dark-moon-spec.md` next to the light checkpoint). `moonLayers()` in `pixel-sun.js`: 5px cells; an outer disc
+  r 78 minus a cut disc r 63 at (+46, -8), so it reads as an upright "C" opening right (a diagonal crescent looked like
+  a banana), tilted 8° clockwise like the title, tips trimmed below 6px width. Warm pale cream body with a bright rim
+  on the thick side, a deeper cream inner edge, six warm-grey craters. Glow: two pale-blue rings grown outward from
+  the lit pixels (not a disc; the owner rejected a halo). Stars within 120px of the moon are not drawn. Static. The
+  dark screenshot test skips its corner (`DARK_MOON`).
+
 ## DonorDrive API facts (verified live 2026-10-21)
 
 - Base `https://dd.extra-life.org/api` (the old `www.extra-life.org/api` 301-redirects). Docs: github.com/DonorDrive/PublicAPI.

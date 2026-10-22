@@ -10,7 +10,7 @@
 import { amountText, brbView, goalText, meterSlots, MOCK_VIEW, MY_SEGMENTS, NO_DONATIONS_TEXT, sceneClock, TEAM_HALVES, TEAM_HEARTS } from '../../shared/brb-model.js';
 import { connectLive, tween } from '../../shared/live.js';
 import { fitPixelText, HEART, HEART_OUTLINED, normalizePixelText, pixelRuns, pixelWidth } from '../../shared/pixel-font.js';
-import { sunLayers } from '../../shared/pixel-sun.js';
+import { moonLayers, SUN_CENTER, sunLayers } from '../../shared/pixel-sun.js';
 
 /** @typedef {import('../../shared/brb-model.js').BrbView} BrbView */
 /** @typedef {import('../../shared/brb-model.js').LatestView} LatestView */
@@ -31,19 +31,19 @@ const BLACK = '#000';
 /**
  * The two looks. Everything else (plate, card, labels, amounts, bar, ground, Marvin) is the same in both.
  * @typedef {{ page: string, sky: [string, string] | null, grid: string, gridOpacity: number, panel: string, strip: string,
- *   emptyHeart: string, title: { shadow: string, so: number, ow: number }, stars: boolean, sun: boolean,
+ *   emptyHeart: string, title: { shadow: string, so: number, ow: number }, stars: boolean, skyObject: 'moon' | 'sun',
  *   backClouds: [number, number, number][] }} Look
  */
 /** @type {Record<'dark' | 'light', Look>} */
 const LOOKS = {
 	dark: {
 		page: '#16283A', sky: null, grid: '#1F3A52', gridOpacity: 1, panel: '#0E2233', strip: BLUE, emptyHeart: '#0E2233',
-		title: { shadow: BLUE, so: 7, ow: 3 }, stars: true, sun: false, backClouds: [],
+		title: { shadow: BLUE, so: 7, ow: 3 }, stars: true, skyObject: 'moon', backClouds: [],
 	},
 	light: {
 		// sky gradient top to the ground (y 1010), no banding; a faint white grid; sun and extra clouds, no stars
 		page: '#E6F7FC', sky: ['#8FD0EE', '#E6F7FC'], grid: WHITE, gridOpacity: 0.22, panel: '#1A5C80', strip: '#1C9ED6',
-		emptyHeart: '#12445F', title: { shadow: DARK, so: 8, ow: 4 }, stars: false, sun: true,
+		emptyHeart: '#12445F', title: { shadow: DARK, so: 8, ow: 4 }, stars: false, skyObject: 'sun',
 		backClouds: [[1530, 120, 12], [40, 640, 9], [1700, 560, 9]],
 	},
 };
@@ -53,6 +53,8 @@ const MARVIN_ASPECT = 1760 / 2183;
 
 /** Star positions from the design (Python random.seed(7) in scene_BRB), so the sky looks the same every time. */
 const STARS = [[1242, 92], [1818, 104], [144, 152], [1764, 206], [714, 986], [1800, 914], [210, 968], [1824, 716], [1794, 476], [912, 950], [96, 728], [276, 272], [1836, 296], [42, 242], [1164, 956], [30, 890], [1878, 578], [1482, 206], [96, 332], [114, 62], [1644, 230], [1818, 812], [1596, 44], [1482, 968], [1026, 956], [402, 254], [84, 536], [1380, 44], [1614, 974], [504, 932], [84, 980], [342, 98], [360, 974], [162, 422], [228, 56], [102, 638], [1872, 386], [36, 446], [1344, 974], [1752, 572], [150, 866], [1758, 386], [1614, 134], [1368, 134]];
+/** Stars closer than this to the moon's center are not drawn. */
+const MOON_CLEAR = 120;
 const CLOUD = ['......XXXX........', '....XXXXXXXX..XX..', '..XXXXXXXXXXXXXXXX', 'XXXXXXXXXXXXXXXXXXX', 'XXXXXXXXXXXXXXXXXXX'];
 
 // Content column and card geometry (design pixels).
@@ -224,8 +226,10 @@ for (let y = 0; y < 1080; y += 60) grid.append(svg('line', { x1: 0, y1: y, x2: 1
 scene.append(grid);
 
 // Stars (dark): every 4th one twinkles (two frames), each on its own cycle so only a few change at a time.
+// Stars inside the moon's glow are left out.
 if (LOOK.stars) {
 	STARS.forEach(([x, y], i) => {
+		if (Math.hypot(/** @type {number} */ (x) - SUN_CENTER.x, /** @type {number} */ (y) - SUN_CENTER.y) < MOON_CLEAR) return;
 		const node = star(/** @type {number} */ (x), /** @type {number} */ (y), i);
 		if (i % 4 !== 1) return scene.append(node);
 		const wrap = svg('g', { class: 'twinkle' }, [node]);
@@ -235,9 +239,9 @@ if (LOOK.stars) {
 	});
 }
 
-// Sun (light): static pixel art, behind everything but the sky.
-if (LOOK.sun) {
-	for (const layer of sunLayers()) {
+// Sun (light) or crescent moon (dark), top-left: static pixel art, behind everything but the sky.
+{
+	for (const layer of LOOK.skyObject === 'sun' ? sunLayers() : moonLayers()) {
 		scene.append(crisp(layer.runs.map((r) => rect(r.x, r.y, r.w, r.h)), layer.opacity < 1 ? { fill: layer.fill, opacity: layer.opacity } : { fill: layer.fill }));
 	}
 }
