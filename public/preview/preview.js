@@ -5,7 +5,7 @@
 
 /** @typedef {{ x: number, y: number, w: number, h: number }} Rect */
 /** @typedef {{ id: string, name: string, title: string, box: Rect, body: Rect }} WidgetInfo */
-/** @typedef {{ id: string, name: string, rect: Rect }} SceneInfo */
+/** @typedef {{ id: string, query: string, name: string, rect: Rect }} SceneInfo */
 
 const $ = (/** @type {string} */ id) => /** @type {HTMLElement} */ (document.getElementById(id));
 const stage = $('stage');
@@ -124,7 +124,7 @@ for (const w of display.widgets) {
 	addSourceRow(w.name, `${location.origin}/widgets/${w.id}${query ? `?${query}` : ''}`, rectOf(w));
 }
 // Scenes are full-screen and keep their own colors, so no ?style= or ?theme=.
-for (const s of display.scenes ?? []) addSourceRow(s.name, `${location.origin}/scenes/${s.id}`, s.rect);
+for (const s of display.scenes ?? []) addSourceRow(s.name, `${location.origin}/scenes/${s.id}${s.query ? `?${s.query}` : ''}`, s.rect);
 
 // --- health ----------------------------------------------------------------------
 /** @type {{ startMs: number, endMs: number } | null} */

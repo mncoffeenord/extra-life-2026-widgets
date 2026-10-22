@@ -78,11 +78,12 @@ export function sourcesFor(config: Pick<Config, 'server' | 'display'>, style: St
 
 /**
  * Full-screen scenes (public/scenes/). Each goes on its own Streamlabs scene as a 1920x1080 source at 0, 0. They use
- * their own design palette, so ?style= and ?theme= do not apply.
+ * their own design palettes (BRB has two looks, ?look=light), so ?style= and ?theme= do not apply.
  */
 export const SCENES = [
-	{ id: 'be-right-back', name: 'Be Right Back scene', rect: { x: 0, y: 0, w: 1920, h: 1080 } },
-] as const satisfies readonly { id: string; name: string; rect: Rect }[];
+	{ id: 'be-right-back', query: '', name: 'Be Right Back scene', rect: { x: 0, y: 0, w: 1920, h: 1080 } },
+	{ id: 'be-right-back', query: 'look=light', name: 'Be Right Back scene (light)', rect: { x: 0, y: 0, w: 1920, h: 1080 } },
+] as const satisfies readonly { id: string; query: string; name: string; rect: Rect }[];
 
 export interface SceneRow {
 	id: string;
@@ -93,5 +94,5 @@ export interface SceneRow {
 
 export function scenesFor(config: Pick<Config, 'server'>): SceneRow[] {
 	const base = baseUrl(config);
-	return SCENES.map((s) => ({ id: s.id, name: s.name, url: `${base}/scenes/${s.id}`, rect: { ...s.rect } }));
+	return SCENES.map((s) => ({ id: s.id, name: s.name, url: `${base}/scenes/${s.id}${s.query ? `?${s.query}` : ''}`, rect: { ...s.rect } }));
 }

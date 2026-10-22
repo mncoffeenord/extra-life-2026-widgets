@@ -72,11 +72,13 @@ Back", and add one Browser Source:
 
 | Scene | URL path | Size | Position |
 | --- | --- | --- | --- |
-| Be Right Back | `/scenes/be-right-back` | 1920 × 1080 | 0, 0 |
+| Be Right Back (dark) | `/scenes/be-right-back` | 1920 × 1080 | 0, 0 |
+| *or* Be Right Back (light) | `/scenes/be-right-back?look=light` | 1920 × 1080 | 0, 0 |
 
-Same settings as the widgets, plus **FPS** 30. Switch to that scene when you step away. It keeps its own colors, so
-`?theme=` and `?style=` don't change it. To check it without live data, open
-<http://localhost:4242/scenes/be-right-back?mock=1>.
+Use one of the two looks: dark is a night sky with stars, light a daytime sky with a sun. Same settings as the
+widgets, plus **FPS** 30. Switch to that scene when you step away. It keeps its own colors, so `?theme=` and
+`?style=` don't change it. To check it without live data, open
+<http://localhost:4242/scenes/be-right-back?mock=1> (or `?look=light&mock=1`).
 
 Use **one** of the two Donations widgets. Any widget can switch style on its own by adding `?style=framed` or
 `?style=transparent` to its URL, `?title=Your%20Title` sets its header text, and `?theme=midnight` its colors (see

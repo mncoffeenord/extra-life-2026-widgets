@@ -275,7 +275,7 @@ export function display(deps: AppDeps) {
 		themes: Object.keys(registry),
 		widgets: Object.values(WIDGETS).map((w) => ({ id: w.id, name: w.name, title: titleFor(w, config.display.titles, team), box: w.box, body: w.body })),
 		sources: sourcesFor(config),
-		scenes: SCENES.map((s) => ({ id: s.id, name: s.name, rect: s.rect })),
+		scenes: SCENES.map((s) => ({ id: s.id, query: s.query, name: s.name, rect: s.rect })),
 	};
 }
 
