@@ -10,6 +10,7 @@ pages to Streamlabs (macOS) as Browser Sources. Owner streams for team GamePlan4
 - `npm run mock`: fake API plus preview controls (totals, donations, clock presets, outage)
 - `npm run check`: type check and tests. Run it before every commit.
 - `npm run record-fixtures -- --sample <busy participant id>`: re-record anonymized fixtures
+- `npm run setup` / `npm run theme`: interactive installer / make a named color theme (`--list` lists them)
 
 ## Conventions
 
@@ -83,6 +84,17 @@ pages to Streamlabs (macOS) as Browser Sources. Owner streams for team GamePlan4
   injects `:root{--primary...}` and `window.EL_DISPLAY` (style, frame spec with the team title resolved) into each
   widget page (`serveWidget` in app.ts), so first paint is right. Widget CSS must use only the theme variables
   (`--primary --primary-light --accent --text --muted --track --surface --header-text`), never raw colors.
+- **Custom themes and per-source themes (2026-10-21):** themes are named; the built-ins stay in `THEME_PRESETS`
+  (code), custom ones are `themes/<name>.json` (`{description?, base?, colors}`; tracked in git so they can be shared).
+  Widget URLs take `?theme=<name>` plus color parameters in any spelling (`primary=6A1B9A`, `header-text=%23FFF`),
+  resolved by `themeFromQuery`; a named theme ignores config's color overrides, bare overrides build on the config
+  theme. Bad values fall back to the configured theme and are logged, never a blank widget. The app re-reads
+  `themes/` on each widget page load and for `/api/display` (`themesDir` in AppDeps), so `npm run theme` needs no
+  restart; a broken theme file is a startup warning (`config.warnings`), not an error. One server serves light and
+  dark sources side by side; running two servers was rejected (double API polling, shared cache file).
+  `npm run theme` (`scripts/theme.ts`, pure parts in `src/theme-tools.ts`) parses JSON / CSS / name:hex / bare hex
+  lists (bare lists map in THEME_KEYS order), warns on WCAG contrast (`contrastWarnings`; the built-ins must pass), and
+  prints `?theme=` URLs. Prompt helpers shared with setup live in `scripts/prompt.ts`.
 - **Geometry lives in `src/sources.ts`** (box + body per widget, GamePlan42 layout positions). It feeds the injection,
   `/api/display` (the preview builds its stage and source table from it), and setup's `MY-SOURCES.md`. Don't
   hard-code positions elsewhere.

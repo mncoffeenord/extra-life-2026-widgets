@@ -1,7 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import type { AddressInfo } from 'node:net';
-import { readFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { createApp, createClock } from '../src/app.ts';
 import { parseConfig } from '../src/config.ts';
 import { parseDonations, parseParticipant, parseTeam } from '../src/extralife/parse.ts';
@@ -11,7 +13,7 @@ import { RESOURCE_KEYS, Store } from '../src/store.ts';
 
 const config = parseConfig(JSON.parse(readFileSync(new URL('../config.example.json', import.meta.url), 'utf8')), { mock: true });
 
-async function start({ withMock = true } = {}) {
+async function start({ withMock = true, themesDir = undefined as string | undefined, logs = [] as string[] } = {}) {
 	const clock = createClock();
 	const store = new Store();
 	const mock = new MockApi(() => clock.now());
@@ -28,7 +30,7 @@ async function start({ withMock = true } = {}) {
 			{ key: 'teamDonations', path: 'teams/2/donations?limit=10', intervalMs: 1000, apply: (d) => store.setDonations('team', parseDonations(d)) },
 		],
 	});
-	const server = createApp({ config, store, clock, poller, mock: withMock ? mock : undefined, log: () => {} });
+	const server = createApp({ config, store, clock, poller, mock: withMock ? mock : undefined, log: (m) => logs.push(m), themesDir });
 	await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
 	const base = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
 	const pollAll = async () => {
@@ -186,6 +188,37 @@ test('widget pages get the theme and frame settings injected; /api/display descr
 		assert.equal(d.theme.accent, '#FFCB05');
 	} finally {
 		await t.close();
+	}
+});
+
+test('?theme= and color parameters pick colors per source; themes/ is re-read without a restart', async () => {
+	const dir = mkdtempSync(join(tmpdir(), 'el-themes-'));
+	const logs: string[] = [];
+	const t = await start({ themesDir: dir, logs });
+	const css = async (query: string) => /<style id="el-theme">(.*?)<\/style>/.exec(await (await fetch(`${t.base}/widgets/countdown${query}`)).text())![1]!;
+	try {
+		assert.match(await css(''), /--primary:#0E7CA2;/);
+		assert.match(await css('?theme=midnight'), /--primary:#1C9ED6;.*--surface:#1B2733;/);
+		const mixed = await css('?theme=midnight&primary=6A1B9A&header-text=%23000&style=framed');
+		assert.match(mixed, /--primary:#6A1B9A;/);
+		assert.match(mixed, /--header-text:#000/);
+		assert.match(mixed, /--surface:#1B2733;/);
+		assert.match(await css('?accent=FF0000'), /--primary:#0E7CA2;--primary-light:#1C9ED6;--accent:#FF0000;/);
+
+		// Typos never blank a widget: the configured theme is used and the server logs why.
+		assert.match(await css('?theme=nope&primary=blue'), /--primary:#0E7CA2;/);
+		assert.ok(logs.some((l) => l.includes('unknown theme "nope"')));
+		assert.ok(logs.some((l) => l.includes('primary=blue is not a hex color')));
+
+		// A theme saved while the server runs works on the next page load.
+		writeFileSync(join(dir, 'purple-night.json'), JSON.stringify({ base: 'midnight', colors: { primary: '#6A1B9A' } }));
+		assert.match(await css('?theme=purple-night'), /--primary:#6A1B9A;.*--surface:#1B2733;/);
+		const d = await t.getJson('/api/display');
+		assert.deepEqual(d.themes, ['extra-life', 'midnight', 'mono', 'purple-night']);
+		assert.equal(d.themeName, 'extra-life');
+	} finally {
+		await t.close();
+		rmSync(dir, { recursive: true, force: true });
 	}
 });
 

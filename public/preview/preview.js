@@ -10,25 +10,30 @@ const $ = (/** @type {string} */ id) => /** @type {HTMLElement} */ (document.get
 const stage = $('stage');
 const wrap = $('stage-wrap');
 
-const display = /** @type {{ style: string, donations: string, widgets: WidgetInfo[] }} */ (
+const display = /** @type {{ style: string, donations: string, themeName: string, themes: string[], widgets: WidgetInfo[] }} */ (
 	await (await fetch('/api/display', { cache: 'no-store' })).json()
 );
 const byId = /** @type {Record<string, WidgetInfo>} */ (Object.fromEntries(display.widgets.map((w) => [w.id, w])));
 
 // --- stage ---------------------------------------------------------------------
-// Header selectors (or ?style= / ?donations=) pick the style and the Donations version; defaults come from config.
+// Header selectors (or ?style= / ?donations= / ?theme=) pick the style, Donations version and theme; defaults come from config.
 const params = new URLSearchParams(location.search);
 const styleSelect = /** @type {HTMLSelectElement} */ ($('style-variant'));
 const variantSelect = /** @type {HTMLSelectElement} */ ($('donations-variant'));
+const themeSelect = /** @type {HTMLSelectElement} */ ($('theme-variant'));
+for (const name of display.themes) themeSelect.append(new Option(name === display.themeName ? `${name} (default)` : name, name));
+themeSelect.value = display.themes.includes(params.get('theme') ?? '') ? /** @type {string} */ (params.get('theme')) : display.themeName;
 styleSelect.value = ['framed', 'transparent'].includes(params.get('style') ?? '') ? /** @type {string} */ (params.get('style')) : display.style;
 variantSelect.value = (params.get('donations') ?? display.donations) === 'messages' ? 'messages' : 'standard';
-for (const [select, key] of /** @type {const} */ ([[styleSelect, 'style'], [variantSelect, 'donations']])) {
+for (const [select, key] of /** @type {const} */ ([[styleSelect, 'style'], [variantSelect, 'donations'], [themeSelect, 'theme']])) {
 	select.addEventListener('change', () => {
 		params.set(key, select.value);
 		location.search = params.toString();
 	});
 }
 const framed = styleSelect.value === 'framed';
+// Only the non-default theme goes in widget URLs, as in the source table.
+const themeParam = themeSelect.value === display.themeName ? '' : `theme=${encodeURIComponent(themeSelect.value)}`;
 const withMessages = variantSelect.value === 'messages';
 const active = ['countdown', 'participant-goal', 'team-goal', withMessages ? 'donation-messages' : 'donation-rotator'].map((id) => /** @type {WidgetInfo} */ (byId[id]));
 const rectOf = (/** @type {WidgetInfo} */ w) => (framed ? w.box : w.body);
@@ -36,7 +41,7 @@ const headOf = (/** @type {WidgetInfo} */ w) => w.box.h - w.body.h - 6;
 
 for (const w of active) {
 	const frame = document.createElement('iframe');
-	frame.src = `/widgets/${w.id}?style=${framed ? 'framed' : 'transparent'}`;
+	frame.src = `/widgets/${w.id}?style=${framed ? 'framed' : 'transparent'}${themeParam ? `&${themeParam}` : ''}`;
 	frame.title = w.name;
 	const r = rectOf(w);
 	Object.assign(frame.style, { left: `${r.x}px`, top: `${r.y}px`, width: `${r.w}px`, height: `${r.h}px` });
@@ -101,7 +106,8 @@ const sourceRows = /** @type {HTMLElement} */ (document.querySelector('#sources 
 for (const w of display.widgets) {
 	const r = rectOf(w);
 	const style = framed ? 'framed' : 'transparent';
-	const url = `${location.origin}/widgets/${w.id}${style === display.style ? '' : `?style=${style}`}`;
+	const query = [style === display.style ? '' : `style=${style}`, themeParam].filter(Boolean).join('&');
+	const url = `${location.origin}/widgets/${w.id}${query ? `?${query}` : ''}`;
 	const tr = document.createElement('tr');
 	for (const v of [w.name, url, r.x, r.y, r.w, r.h]) {
 		const td = document.createElement('td');

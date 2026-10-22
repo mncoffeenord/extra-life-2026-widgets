@@ -2,7 +2,7 @@
 
 import type { Config, Titles } from './config.ts';
 import { sourcesFor } from './sources.ts';
-import { THEME_KEYS, THEME_PRESETS, type ThemeColors } from './theme.ts';
+import { THEME_KEYS, THEME_PRESETS, type ThemeColors, type ThemeRegistry } from './theme.ts';
 
 export interface SetupAnswers {
 	participantId: string;
@@ -43,8 +43,8 @@ export function applyAnswers(base: Json, a: SetupAnswers): Json {
 }
 
 /** Colors that differ from the preset, so config.json only lists real overrides. */
-export function colorOverrides(preset: string, colors: ThemeColors): Partial<ThemeColors> {
-	const base = THEME_PRESETS[preset];
+export function colorOverrides(preset: string, colors: ThemeColors, registry: ThemeRegistry = THEME_PRESETS): Partial<ThemeColors> {
+	const base = registry[preset];
 	const out: Partial<ThemeColors> = {};
 	for (const key of THEME_KEYS) if (!base || base[key].toUpperCase() !== colors[key].toUpperCase()) out[key] = colors[key];
 	return out;

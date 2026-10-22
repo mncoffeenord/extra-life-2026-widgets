@@ -9,7 +9,7 @@ import type { Config } from './config.ts';
 import type { MockApi } from './mock.ts';
 import type { Poller } from './poller.ts';
 import { isWidgetId, sourcesFor, titleFor, WIDGETS, type WidgetId } from './sources.ts';
-import { themeCss } from './theme.ts';
+import { loadThemeDir, resolveTheme, themeCss, themeFromQuery, type ThemeRegistry } from './theme.ts';
 import { RESOURCE_KEYS, type Store } from './store.ts';
 
 const ROOT = fileURLToPath(new URL('../', import.meta.url));
@@ -51,6 +51,8 @@ export interface AppDeps {
 	poller?: Poller;
 	mock?: MockApi;
 	log?: (message: string) => void;
+	/** Custom themes folder, re-read on each widget page load so a new `npm run theme` needs no restart. */
+	themesDir?: string;
 }
 
 export function snapshot({ config, store, clock, mock }: AppDeps) {
@@ -145,7 +147,7 @@ export function createApp(deps: AppDeps): Server {
 				const widget = /^\/widgets\/([a-z0-9-]+)\/?$/.exec(path);
 				if (widget) {
 					const id = widget[1]!;
-					return isWidgetId(id) ? serveWidget(res, id, deps) : notFound(res);
+					return isWidgetId(id) ? serveWidget(res, id, url, deps, log) : notFound(res);
 				}
 				if (path === '/preview') {
 					res.writeHead(302, { Location: '/preview/' }).end();
@@ -240,13 +242,31 @@ function notFound(res: ServerResponse) {
 	res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' }).end('Not found');
 }
 
+/** Every theme by name: built-ins, themes from startup, and any added to the themes folder since. */
+function themes({ config, themesDir }: AppDeps): ThemeRegistry {
+	return themesDir ? { ...config.theme.available, ...loadThemeDir(themesDir).themes } : config.theme.available;
+}
+
+/** The configured theme, re-resolved so edits to a custom theme file show after a page refresh. */
+function configuredTheme(deps: AppDeps, registry: ThemeRegistry) {
+	try {
+		return resolveTheme(deps.config.theme.preset, deps.config.theme.colors, registry);
+	} catch {
+		return deps.config.theme.resolved;
+	}
+}
+
 /** Style, theme, titles and geometry for /api/display (preview, setup). */
-export function display({ config, store }: AppDeps) {
+export function display(deps: AppDeps) {
+	const { config, store } = deps;
 	const team = store.data.team?.name ?? null;
+	const registry = themes(deps);
 	return {
 		style: config.display.style,
 		donations: config.display.donations,
-		theme: config.theme.resolved,
+		theme: configuredTheme(deps, registry),
+		themeName: config.theme.preset,
+		themes: Object.keys(registry),
 		widgets: Object.values(WIDGETS).map((w) => ({ id: w.id, name: w.name, title: titleFor(w, config.display.titles, team), box: w.box, body: w.body })),
 		sources: sourcesFor(config),
 	};
@@ -255,8 +275,10 @@ export function display({ config, store }: AppDeps) {
 /**
  * Serve a widget page with the configured theme and frame settings injected, so pages render right on first paint.
  * frame.js applies the frame when the style is "framed" (config default, or ?style= / ?framed in the URL).
+ * ?theme=<name> and color parameters (?primary=6A1B9A) pick the colors per source (see themeFromQuery).
  */
-function serveWidget(res: ServerResponse, id: WidgetId, { config, store }: AppDeps) {
+function serveWidget(res: ServerResponse, id: WidgetId, url: URL, deps: AppDeps, log: (message: string) => void) {
+	const { config, store } = deps;
 	let html: string;
 	try {
 		html = readFileSync(join(STATIC_DIRS['/widgets/']!, id, 'index.html'), 'utf8');
@@ -268,7 +290,10 @@ function serveWidget(res: ServerResponse, id: WidgetId, { config, store }: AppDe
 		style: config.display.style,
 		frame: { title: titleFor(spec, config.display.titles, store.data.team?.name ?? null), h: spec.box.h, head: spec.head, headSize: spec.headSize, align: spec.align },
 	};
-	const inject = `<style id="el-theme">${themeCss(config.theme.resolved)}</style>\n<script>window.EL_DISPLAY = ${JSON.stringify(settings).replace(/</g, '\\u003c')};</script>\n`;
+	const registry = themes(deps);
+	const { colors, problems } = themeFromQuery(url.searchParams, configuredTheme(deps, registry), registry);
+	for (const p of problems) log(`[theme] /widgets/${id}: ${p}`);
+	const inject = `<style id="el-theme">${themeCss(colors)}</style>\n<script>window.EL_DISPLAY = ${JSON.stringify(settings).replace(/</g, '\\u003c')};</script>\n`;
 	const body = html.replace('</head>', `${inject}</head>`);
 	res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' });
 	res.end(body);

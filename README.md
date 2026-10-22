@@ -50,9 +50,15 @@ check). You can also copy `config.example.json` to `config.json` and edit it by 
   boxes drawn in your overlay art). Any source can override it with `?style=framed` / `?style=transparent`.
 - `display.donations`: `"standard"` or `"messages"`. This sets which Donations widget `MY-SOURCES.md` and the preview use.
 - `display.titles`: header text on framed boxes (`{team}` becomes the team name); `?title=` overrides it per source.
-- `theme`: `{ "preset": "extra-life" | "midnight" | "mono", "colors": { "primary": "#6A1B9A", ... } }`. Hex overrides
-  for `primary`, `primaryLight`, `accent`, `text`, `muted`, `track`, `surface`, `headerText` (see INSTALL.md for what
-  each one colors). The server injects the theme into every widget page.
+- `theme`: `{ "preset": "extra-life", "colors": { "primary": "#6A1B9A", ... } }`. The preset is a built-in theme
+  (`extra-life`, `midnight`, `mono`) or one of yours from `themes/`. Hex overrides for `primary`, `primaryLight`,
+  `accent`, `text`, `muted`, `track`, `surface`, `headerText` (see INSTALL.md for what each one colors). The server
+  injects the theme into every widget page.
+
+**Themes per source:** add `?theme=<name>` to any widget URL (and single colors, e.g. `&primary=6A1B9A`), so one
+server can run light and dark widgets side by side. `npm run theme` turns a pasted color scheme (JSON, CSS variables,
+or a list of hex codes) into a named theme in `themes/<name>.json`, checks it for readability, and prints the URLs that
+use it. See INSTALL.md, "Colors and themes".
 
 The server checks the config at startup and lists every problem it finds.
 
@@ -126,6 +132,7 @@ so they never run into the percent.
 **The day before**
 
 - [ ] `git pull && npm install && npm run check`: tests and type check pass.
+- [ ] `npm run theme -- --list` shows no warnings, if you use your own themes.
 - [ ] `config.json` has the right participant ID, team ID, start (`2026-11-12T13:00`) and end (`2026-11-14T01:00`).
 - [ ] `npm run mock`, open `/preview`: send a fake donation (goal number animates, rotator flashes); try each clock
       preset (Starts in → Live → Overtime); toggle **Simulate outage** (values stay put, status turns red).
@@ -178,6 +185,7 @@ npm run typecheck        # tsc (also checks the browser JS via // @ts-check)
 npm run check            # both
 npm run dev              # restart on file changes
 npm run record-fixtures -- --sample <busy-participant-id>   # re-record anonymized API fixtures
+npm run theme -- --list  # list themes; npm run theme makes a new one
 ```
 
 Project layout:
@@ -187,6 +195,8 @@ src/                server (TypeScript): config, time zones, API client + parser
 public/shared/      browser modules shared with the tests: countdown, format, rotation, live (SSE), theme
 public/widgets/     one folder per widget
 public/preview/     preview page
+themes/             custom color themes (<name>.json), made by npm run theme
+scripts/            setup and theme scripts (interactive), fixture recorder
 test/               node:test suites + anonymized fixtures recorded from the live API
 local-assets/       git-ignored: put overlay-preview.png (1920x1080) here for /preview
 ```

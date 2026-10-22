@@ -28,7 +28,7 @@ The short version: **one small server runs on your computer, and each widget is 
 | Donations widget | **standard**, or **messages** (also shows the donor's message, in a taller box). |
 | Seconds per donation | How long each donation stays up in the rotation (default 45). |
 | Box titles | Header text on framed boxes. `{team}` becomes your team's name. |
-| Colors | A preset (`extra-life`, `midnight`, `mono`), optionally with your own hex codes. |
+| Colors | A theme (`extra-life`, `midnight`, `mono`, or one you made with `npm run theme`), optionally with your own hex codes. |
 
 It writes `config.json` (your settings), **`MY-SOURCES.md`** (your browser sources, with URLs and sizes), and
 launchers. Run it again any time to change something; it keeps your other settings and backs up the old file.
@@ -67,7 +67,8 @@ For reference, the sizes:
 | *or* Donations + messages | `/widgets/donation-messages` | 320 × 143 | 314 × 105 |
 
 Use **one** of the two Donations widgets. Any source can switch style on its own by adding `?style=framed` or
-`?style=transparent` to its URL, and `?title=Your%20Title` sets its header text.
+`?style=transparent` to its URL, `?title=Your%20Title` sets its header text, and `?theme=midnight` its colors (see
+[Colors and themes](#colors-and-themes)). Combine them with `&`: `?style=framed&theme=midnight`.
 
 **Set them up once, use them everywhere:** put the sources in one scene, for example "Extra Life widgets", then add
 that scene as a source to your other scenes.
@@ -81,9 +82,32 @@ that scene as a source to your other scenes.
 Want to rehearse? Stop the server and run `npm run mock` instead. `/preview` then gets buttons for fake donations,
 jumping the clock, and simulating an outage. Stop it and start the server normally before you go live.
 
-## Changing colors later
+## Colors and themes
 
-Re-run `npm run setup`, or edit the `theme` section of `config.json`, then restart the server:
+A theme is a named set of 8 colors. Three are built in (`extra-life`, `midnight`, `mono`), and you can make your own.
+
+**Different colors per source.** Add `?theme=<name>` to a widget's URL, e.g.
+`http://localhost:4242/widgets/countdown?theme=midnight`. One server can show a light widget in one scene and a dark
+one in another. Single colors can be changed in the URL too, with or without a theme (no `#`, URLs can't hold one):
+`?theme=midnight&primary=6A1B9A&accent=FFB300`. After changing a source's URL in Streamlabs, the widget reloads by itself.
+A misspelled theme or color never blanks a widget: it falls back to your default colors, and the server window says why.
+
+**Make your own theme.** Run:
+
+```bash
+npm run theme
+```
+
+It asks for a name, a theme to start from, and your colors. Paste them in almost any shape: JSON, CSS variables
+(`--primary: #6A1B9A;`), `name: #hex` lines, or a plain list of hex codes such as a coolors.co palette (a plain list is
+used in the order of the table below). It shows the result with color swatches, warns if text would be hard to read,
+saves `themes/<name>.json`, and prints your widget URLs with `?theme=<name>` added. New themes work right away, with
+no restart. `npm run theme -- --list` shows every theme. Without questions:
+`npm run theme -- --name purple-night --from my-colors.txt --base midnight --yes` (or `--colors "primary=6A1B9A,
+accent=FFB300"`; add `--default` to make it the default, `--force` to overwrite).
+
+**Change the default for every widget.** Re-run `npm run setup` (your own themes are in its list), or edit the `theme`
+section of `config.json`, then restart the server:
 
 ```json
 "theme": { "preset": "extra-life", "colors": { "primary": "#6A1B9A", "accent": "#FFB300" } }

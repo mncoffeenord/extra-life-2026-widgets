@@ -3,7 +3,7 @@
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { createApp, createClock } from './app.ts';
-import { ConfigError, loadConfig, type Config } from './config.ts';
+import { ConfigError, loadConfig, THEMES_DIR, type Config } from './config.ts';
 import { ExtraLifeClient } from './extralife/client.ts';
 import { parseDonations, parseParticipant, parseTeam } from './extralife/parse.ts';
 import { createMessageFilter, DEFAULT_BLOCKED_WORDS, hideFlaggedMessages } from './message-filter.ts';
@@ -25,6 +25,7 @@ try {
 	console.error(err instanceof ConfigError ? err.message : err);
 	process.exit(1);
 }
+for (const w of config.warnings) console.warn(`[config] ${w}`);
 
 const clock = createClock();
 const mock = mockMode ? new MockApi(() => clock.now()) : undefined;
@@ -87,7 +88,7 @@ const poller = new Poller({
 	maxBackoffMs: mockMode ? 10_000 : config.polling.maxBackoffSeconds * 1000,
 });
 
-const server = createApp({ config, store, clock, poller, mock });
+const server = createApp({ config, store, clock, poller, mock, themesDir: THEMES_DIR });
 server.on('error', (err: NodeJS.ErrnoException) => {
 	console.error(err.code === 'EADDRINUSE' ? `Port ${config.server.port} is already in use. Is the server already running?` : err);
 	process.exit(1);

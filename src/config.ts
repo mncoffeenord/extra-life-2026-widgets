@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
-import { resolveTheme, type ThemeColors } from './theme.ts';
+import { fileURLToPath } from 'node:url';
+import { loadThemeDir, resolveTheme, THEME_PRESETS, type ThemeColors, type ThemeRegistry } from './theme.ts';
 import { isValidTimeZone, parseEventTime } from './time.ts';
 
 export interface Config {
@@ -17,8 +18,11 @@ export interface Config {
 	rotation: { intervalSeconds: number; recentCount: number; unknownDonorName: string; privateAmountText: string };
 	messageFilter: { enabled: boolean; extraWords: string[] };
 	display: { style: 'framed' | 'transparent'; donations: 'standard' | 'messages'; titles: Titles };
-	theme: { preset: string; colors: Partial<Record<string, string>>; resolved: ThemeColors };
+	/** `available` is every theme by name (built-in plus themes/*.json), for ?theme= in widget URLs. */
+	theme: { preset: string; colors: Partial<Record<string, string>>; resolved: ThemeColors; available: ThemeRegistry };
 	mock: boolean;
+	/** Non-fatal problems (e.g. a broken custom theme file) for the server to print at startup. */
+	warnings: string[];
 }
 
 export interface Titles {
@@ -65,8 +69,9 @@ function isRecord(v: unknown): v is Record<string, unknown> {
 }
 
 /** Validate a parsed config object, filling defaults. Collects every problem before throwing. */
-export function parseConfig(raw: unknown, options: { mock?: boolean } = {}): Config {
+export function parseConfig(raw: unknown, options: { mock?: boolean; themes?: ThemeRegistry; warnings?: string[] } = {}): Config {
 	const mock = options.mock ?? false;
+	const available = { ...THEME_PRESETS, ...options.themes };
 	const problems: string[] = [];
 	const input = isRecord(raw) ? raw : {};
 	if (!isRecord(raw)) problems.push('config must be a JSON object');
@@ -155,7 +160,7 @@ export function parseConfig(raw: unknown, options: { mock?: boolean } = {}): Con
 	let resolved: ThemeColors | null = null;
 	try {
 		if (!isRecord(theme.colors)) throw new Error('theme.colors must be an object of hex colors');
-		resolved = resolveTheme(String(theme.preset), theme.colors as Record<string, string>);
+		resolved = resolveTheme(String(theme.preset), theme.colors as Record<string, string>, available);
 	} catch (err) {
 		problems.push(`theme: ${(err as Error).message}`);
 	}
@@ -170,12 +175,16 @@ export function parseConfig(raw: unknown, options: { mock?: boolean } = {}): Con
 		rotation,
 		messageFilter,
 		display: { style: display.style as 'framed' | 'transparent', donations: display.donations as 'standard' | 'messages', titles },
-		theme: { preset: String(theme.preset), colors: theme.colors, resolved: resolved! },
+		theme: { preset: String(theme.preset), colors: theme.colors, resolved: resolved!, available },
 		mock,
+		warnings: options.warnings ?? [],
 	};
 }
 
-export function loadConfig(path: string, options: { mock?: boolean } = {}): Config {
+/** The custom themes folder that `npm run theme` writes to. */
+export const THEMES_DIR = fileURLToPath(new URL('../themes/', import.meta.url));
+
+export function loadConfig(path: string, options: { mock?: boolean; themesDir?: string } = {}): Config {
 	let text: string;
 	try {
 		text = readFileSync(path, 'utf8');
@@ -188,5 +197,6 @@ export function loadConfig(path: string, options: { mock?: boolean } = {}): Conf
 	} catch (err) {
 		throw new ConfigError([`${path} is not valid JSON: ${(err as Error).message}`]);
 	}
-	return parseConfig(raw, options);
+	const { themes, problems } = loadThemeDir(options.themesDir ?? THEMES_DIR);
+	return parseConfig(raw, { mock: options.mock, themes, warnings: problems });
 }
