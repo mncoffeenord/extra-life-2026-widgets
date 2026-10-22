@@ -4,29 +4,49 @@
 // live snapshot, with a countdown / count-up clock in the header. ?mock=1 shows the design's mock data, ?demo=1 the
 // same plus a sample donation every few seconds, ?still=1 stops the ambient animation and demo (screenshot test).
 // In mock and demo mode, ?clock=game (or #game-time) shows the clock as during the event instead of before it.
+// ?look=light picks the light design (scene_BRB_light, 2026-10-22); dark is the default. Only colors and the
+// background art differ between looks (LOOKS below); layout and behavior are shared.
 // Donor names are drawn as glyph rectangles from a fixed table, so untrusted text never becomes markup.
 import { amountText, brbView, goalText, meterSlots, MOCK_VIEW, MY_SEGMENTS, NO_DONATIONS_TEXT, sceneClock, TEAM_HALVES, TEAM_HEARTS } from '../../shared/brb-model.js';
 import { connectLive, tween } from '../../shared/live.js';
 import { fitPixelText, HEART, HEART_OUTLINED, normalizePixelText, pixelRuns, pixelWidth } from '../../shared/pixel-font.js';
+import { sunLayers } from '../../shared/pixel-sun.js';
 
 /** @typedef {import('../../shared/brb-model.js').BrbView} BrbView */
 /** @typedef {import('../../shared/brb-model.js').LatestView} LatestView */
 
-const NAVY = '#16283A';
-const GRID = '#1F3A52';
 const BLUE = '#0E7CA2';
 const YELLOW = '#FFCB05';
 const DARK = '#253746';
 const SKY = '#8FD0EE';
 const SPARKLE = '#4FB5E0';
 const MIST = '#E3F6FC';
-const PANEL = '#0E2233';
 const CARD = '#16293A';
 const EMPTY_SEGMENT = '#183247';
 const GROUND_ALT = '#2C4156';
 const HIGHLIGHT = '#FFF3B0';
 const WHITE = '#FFFFFF';
 const BLACK = '#000';
+
+/**
+ * The two looks. Everything else (plate, card, labels, amounts, bar, ground, Marvin) is the same in both.
+ * @typedef {{ page: string, sky: [string, string] | null, grid: string, gridOpacity: number, panel: string, strip: string,
+ *   emptyHeart: string, title: { shadow: string, so: number, ow: number }, stars: boolean, sun: boolean,
+ *   backClouds: [number, number, number][] }} Look
+ */
+/** @type {Record<'dark' | 'light', Look>} */
+const LOOKS = {
+	dark: {
+		page: '#16283A', sky: null, grid: '#1F3A52', gridOpacity: 1, panel: '#0E2233', strip: BLUE, emptyHeart: '#0E2233',
+		title: { shadow: BLUE, so: 7, ow: 3 }, stars: true, sun: false, backClouds: [],
+	},
+	light: {
+		// sky gradient top to the ground (y 1010), no banding; a faint white grid; sun and extra clouds, no stars
+		page: '#E6F7FC', sky: ['#8FD0EE', '#E6F7FC'], grid: WHITE, gridOpacity: 0.22, panel: '#1A5C80', strip: '#1C9ED6',
+		emptyHeart: '#12445F', title: { shadow: DARK, so: 8, ow: 4 }, stars: false, sun: true,
+		backClouds: [[1530, 120, 12], [40, 640, 9], [1700, 560, 9]],
+	},
+};
 
 const MARVIN_SRC = 'marvin.png';
 const MARVIN_ASPECT = 1760 / 2183;
@@ -61,6 +81,9 @@ const flag = (/** @type {string} */ name) => params.has(name) && params.get(name
 const demo = flag('demo');
 const mock = demo || flag('mock');
 const mockGameTime = params.get('clock') === 'game' || location.hash === '#game-time';
+const lookName = params.get('look') === 'light' ? 'light' : 'dark';
+const LOOK = LOOKS[lookName];
+document.documentElement.dataset.look = lookName; // index.html sets it before first paint; this covers other hosts
 if (flag('still')) document.documentElement.classList.add('still');
 
 // ---------- SVG helpers ----------
@@ -151,7 +174,7 @@ function heartContainer(x, y, px) {
 	HEART_OUTLINED.forEach((row, ri) =>
 		[...row].forEach((ch, ci) => {
 			if (ch === '.') return;
-			const cell = rect(x + ci * px, y + ri * px, px, px, ch === 'O' ? DARK : PANEL);
+			const cell = rect(x + ci * px, y + ri * px, px, px, ch === 'O' ? DARK : LOOK.emptyHeart);
 			cells.push(cell);
 			if (ch !== 'O') fills.push({ cell, left: ci <= 4, shine: ch === 'h' });
 		}),
@@ -160,7 +183,7 @@ function heartContainer(x, y, px) {
 		node: crisp(cells),
 		/** @param {boolean} left @param {boolean} right */
 		set(left, right) {
-			for (const f of fills) f.cell.setAttribute('fill', (f.left ? left : right) ? (f.shine ? HIGHLIGHT : YELLOW) : PANEL);
+			for (const f of fills) f.cell.setAttribute('fill', (f.left ? left : right) ? (f.shine ? HIGHLIGHT : YELLOW) : LOOK.emptyHeart);
 		},
 	};
 }
@@ -186,21 +209,41 @@ function star(x, y, i) {
 
 const scene = svg('svg', { viewBox: '0 0 1920 1080', class: 'scene' });
 
-scene.append(rect(0, 0, 1920, 1080, NAVY));
-const grid = svg('g', { stroke: GRID, 'stroke-width': 2 });
+scene.append(rect(0, 0, 1920, 1080, LOOK.page));
+if (LOOK.sky) {
+	const [top, bottom] = LOOK.sky;
+	const gradient = svg('linearGradient', { id: 'sky', x1: 0, y1: 0, x2: 0, y2: 1 }, [
+		svg('stop', { offset: 0, 'stop-color': top }),
+		svg('stop', { offset: 1, 'stop-color': bottom }),
+	]);
+	scene.append(svg('defs', {}, [gradient]), rect(0, 0, 1920, 1010, 'url(#sky)'));
+}
+const grid = svg('g', LOOK.gridOpacity < 1 ? { stroke: LOOK.grid, 'stroke-opacity': LOOK.gridOpacity, 'stroke-width': 2 } : { stroke: LOOK.grid, 'stroke-width': 2 });
 for (let x = 0; x < 1920; x += 60) grid.append(svg('line', { x1: x, y1: 0, x2: x, y2: 1080 }));
 for (let y = 0; y < 1080; y += 60) grid.append(svg('line', { x1: 0, y1: y, x2: 1920, y2: y }));
 scene.append(grid);
 
-// Stars: every 4th one twinkles (two frames), each on its own cycle so only a few change at a time.
-STARS.forEach(([x, y], i) => {
-	const node = star(/** @type {number} */ (x), /** @type {number} */ (y), i);
-	if (i % 4 !== 1) return scene.append(node);
-	const wrap = svg('g', { class: 'twinkle' }, [node]);
-	wrap.style.animationDuration = `${5 + (i % 5)}s`;
-	wrap.style.animationDelay = `${-((i * 1.7) % 7).toFixed(1)}s`;
-	scene.append(wrap);
-});
+// Stars (dark): every 4th one twinkles (two frames), each on its own cycle so only a few change at a time.
+if (LOOK.stars) {
+	STARS.forEach(([x, y], i) => {
+		const node = star(/** @type {number} */ (x), /** @type {number} */ (y), i);
+		if (i % 4 !== 1) return scene.append(node);
+		const wrap = svg('g', { class: 'twinkle' }, [node]);
+		wrap.style.animationDuration = `${5 + (i % 5)}s`;
+		wrap.style.animationDelay = `${-((i * 1.7) % 7).toFixed(1)}s`;
+		scene.append(wrap);
+	});
+}
+
+// Sun (light): static pixel art, behind everything but the sky.
+if (LOOK.sun) {
+	for (const layer of sunLayers()) {
+		scene.append(crisp(layer.runs.map((r) => rect(r.x, r.y, r.w, r.h)), layer.opacity < 1 ? { fill: layer.fill, opacity: layer.opacity } : { fill: layer.fill }));
+	}
+}
+
+// Clouds behind the plate and panel (light); the two by the ground are drawn in front, further down.
+LOOK.backClouds.forEach(([x, y, px], i) => scene.append(svg('g', { class: i % 2 ? 'drift' : 'drift reverse' }, [cloud(x, y, px)])));
 
 // Top plate
 scene.append(rect(480, 34, 960, 100, YELLOW, { rx: 12 }), rect(488, 42, 944, 84, DARK, { rx: 8 }));
@@ -208,14 +251,14 @@ scene.append(tilt(centeredText('EXTRA LIFE 2026', 8, 960, 60, YELLOW, { shadow: 
 scene.append(smallHeart(515, 60, 7, YELLOW), smallHeart(1375, 60, 7, YELLOW));
 
 // Title
-scene.append(tilt(centeredText('BE RIGHT BACK', 13, 960, 168, WHITE, { shadow: BLUE, so: 7, ow: 3 }), 960, 210));
+scene.append(tilt(centeredText('BE RIGHT BACK', 13, 960, 168, WHITE, LOOK.title), 960, 210));
 
 // Panel
 scene.append(
 	rect(188, 288, 1544, 624, YELLOW, { rx: 10 }),
 	rect(196, 296, 1528, 608, DARK, { rx: 6 }),
-	rect(200, 300, 1520, 600, PANEL, { rx: 4 }),
-	rect(200, STRIP_Y, 1520, STRIP_H, BLUE),
+	rect(200, 300, 1520, 600, LOOK.panel, { rx: 4 }),
+	rect(200, STRIP_Y, 1520, STRIP_H, LOOK.strip),
 );
 const headerLayer = svg('g');
 const clockLayer = svg('g');

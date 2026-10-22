@@ -3,6 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<title>Be Right Back</title>
+	<!-- pick the look before first paint, so a light scene never flashes dark -->
+	<script>document.documentElement.dataset.look = new URLSearchParams(location.search).get('look') === 'light' ? 'light' : 'dark';</script>
 	<link rel="stylesheet" href="brb.css">
 </head>
 <body>

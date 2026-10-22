@@ -1,10 +1,15 @@
-/* Be Right Back scene. Fixed design palette (the approved scene art), not the widget themes. */
+/* Be Right Back scene. Fixed design palettes (the approved scene art, ?look=dark|light), not the widget themes. */
 html,
 body {
 	margin: 0;
 	height: 100%;
 	overflow: hidden;
 	background: #16283A;
+}
+
+html[data-look="light"],
+html[data-look="light"] body {
+	background: #E6F7FC;
 }
 
 .scene {

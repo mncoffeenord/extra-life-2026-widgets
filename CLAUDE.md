@@ -137,6 +137,16 @@ pages to Streamlabs (macOS) as Browser Sources. Owner streams for team GamePlan4
   the end. Mock/demo `?clock=game` (or `#game-time`, for the artifact) shows that state. It ticks on the server
   clock, so mock time travel works.
 
+- **BRB light look (owner, 2026-10-22):** `?look=light` (default `dark`; not `?theme=`, which the widgets use). Spec:
+  `scene_BRB_light()` in the Asset Library checkpoint `2026-10-22-be-right-back-light`; render in
+  `test/fixtures/brb-light-reference.png`. Only colors and background art differ, all in the `LOOKS` table at the top
+  of `brb.js` (page, sky gradient #8FD0EE→#E6F7FC over y 0–1010, grid white at .22, panel #1A5C80, strip #1C9ED6,
+  empty heart #12445F, title shadow DARK so 8 ow 4, no stars, sun, three extra clouds drawn behind the plate/panel).
+  Don't branch on the look inside render functions. The sun is `public/shared/pixel-sun.js` (port of the generator:
+  5px halo/orb/shade/highlight, 2px tapered irregular rays, Python-style modulo for the angle math), static. The look
+  is chosen by URL only (the page is static; a config default would need the server to serve it). `index.html` sets
+  `data-look` before first paint so light never flashes dark. Both looks share every behavior.
+
 ## DonorDrive API facts (verified live 2026-10-21)
 
 - Base `https://dd.extra-life.org/api` (the old `www.extra-life.org/api` 301-redirects). Docs: github.com/DonorDrive/PublicAPI.

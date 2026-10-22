@@ -14,10 +14,16 @@ import { Store } from '../src/store.ts';
 import { decodePng, diffRatio } from './png.ts';
 
 const config = parseConfig(JSON.parse(readFileSync(new URL('../config.example.json', import.meta.url), 'utf8')), { mock: true });
-/** The approved design render (scenes/renders/BRB.png in the 2026-10-21-be-right-back-scenes checkpoint). */
-const REFERENCE = new URL('./fixtures/brb-reference.png', import.meta.url);
 /**
- * Areas the owner changed after that render (2026-10-22): the header strip (2px taller, centered team name, clock in
+ * The approved design renders: dark is scenes/renders/BRB.png (checkpoint 2026-10-21-be-right-back-scenes), light is
+ * scenes/renders/BRB-light.png (checkpoint 2026-10-22-be-right-back-light).
+ */
+const REFERENCES = {
+	dark: new URL('./fixtures/brb-reference.png', import.meta.url),
+	light: new URL('./fixtures/brb-light-reference.png', import.meta.url),
+};
+/**
+ * Areas the owner changed after those renders (2026-10-22), the same in both looks: the header strip (2px taller, centered team name, clock in
  * place of the heart) and the 7th team heart (the mock's $3,250 of $5,000 is now 6 and a half hearts).
  */
 const CHANGED_SINCE_DESIGN = [
@@ -79,18 +85,23 @@ async function screenshot(file: string, url: string, profile: string) {
 	}
 }
 
-test('?mock=1 matches the approved BRB design within a small tolerance', { skip: existsSync(CHROME) ? false : 'needs Google Chrome (or CHROME_PATH)', timeout: 90_000 }, async () => {
+const needsChrome = { skip: existsSync(CHROME) ? false : 'needs Google Chrome (or CHROME_PATH)', timeout: 90_000 };
+
+test('?mock=1 (no look: dark) matches the approved BRB design within a small tolerance', needsChrome, () => matchesDesign('', 'dark'));
+test('?look=light&mock=1 matches the approved light BRB design within a small tolerance', needsChrome, () => matchesDesign('look=light&', 'light'));
+
+async function matchesDesign(query: string, look: keyof typeof REFERENCES) {
 	const t = await start();
 	const dir = mkdtempSync(join(tmpdir(), 'brb-shot-'));
 	try {
 		const shot = join(dir, 'brb.png');
-		await screenshot(shot, `${t.base}/scenes/be-right-back/?mock=1&still=1`, join(dir, 'profile'));
+		await screenshot(shot, `${t.base}/scenes/be-right-back/?${query}mock=1&still=1`, join(dir, 'profile'));
 		const actual = decodePng(readFileSync(shot));
-		const expected = decodePng(readFileSync(REFERENCE));
+		const expected = decodePng(readFileSync(REFERENCES[look]));
 		const ratio = diffRatio(actual, expected, 48, CHANGED_SINCE_DESIGN);
 		assert.ok(ratio < 0.005, `${(ratio * 100).toFixed(3)}% of pixels differ (screenshot kept at ${shot})`);
 		rmSync(dir, { recursive: true, force: true });
 	} finally {
 		await t.close();
 	}
-});
+}
