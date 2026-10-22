@@ -133,13 +133,14 @@ so they never run into the percent.
 
 `http://localhost:4242/scenes/be-right-back` is a full-screen (1920 × 1080, opaque) scene with the latest donation,
 team goal hearts (in halves), your goal bar, and a clock in the header: `DD:HH:MM UNTIL GAME DAY` more than 48 hours
-out, `HH:MM UNTIL GAME DAY` closer in, then `HH:MM` counting up from the event start. Half a heart and one bar
+out, `HH:MM UNTIL GAME DAY` closer in, then `GAME TIME HH:MM` counting up from the event start. Half a heart and one bar
 segment are always lit; all of them light only at 100%. Add it as a Browser Source at 1920 × 1080, position (0, 0),
 on its own scene, FPS 30. Turn **off** "Shutdown source when not visible" so switching scenes doesn't reload it and
 flash.
 
 Add `?mock=1` to see it with the design's sample data, `?demo=1` for the same plus a sample donation every 7 seconds,
-or `?still=1` to stop the ambient animation.
+or `?still=1` to stop the ambient animation. With `?mock=1` or `?demo=1`, add `&clock=game` to see the clock as it
+looks during the event.
 
 ## Pre-stream checklist
 

@@ -35,18 +35,18 @@ test('meter: floor, one always lit, all only at 100%', () => {
 	assert.equal(meterSlots(-5, 5000, 20), 1);
 });
 
-test('clock: DD:HH:MM over 48 h, HH:MM under, counts up from the start with no label', () => {
+test('clock: DD:HH:MM over 48 h, HH:MM under, then GAME TIME counting up from the start', () => {
 	const start = Date.UTC(2026, 10, 12, 19, 0); // 1 PM Central, Nov 12
 	const h = 3_600_000;
 	const m = 60_000;
-	assert.deepEqual(sceneClock(start - (21 * 24 + 4) * h - 15 * m, start), { time: '21:04:15', label: 'UNTIL GAME DAY' });
-	assert.deepEqual(sceneClock(start - 48 * h - 1, start), { time: '02:00:01', label: 'UNTIL GAME DAY' });
-	assert.deepEqual(sceneClock(start - 48 * h, start), { time: '48:00', label: 'UNTIL GAME DAY' });
-	assert.deepEqual(sceneClock(start - 2 * h - 14 * m - 30_000, start), { time: '02:15', label: 'UNTIL GAME DAY' }); // rounds up
-	assert.deepEqual(sceneClock(start - 1000, start), { time: '00:01', label: 'UNTIL GAME DAY' });
-	assert.deepEqual(sceneClock(start, start), { time: '00:00', label: '' });
-	assert.deepEqual(sceneClock(start + 26 * h + 40 * m + 59_000, start), { time: '26:40', label: '' });
-	assert.deepEqual(sceneClock(start + 40 * h, start), { time: '40:00', label: '' }); // past the end: keeps counting
+	assert.deepEqual(sceneClock(start - (21 * 24 + 4) * h - 15 * m, start), { time: '21:04:15', before: '', after: 'UNTIL GAME DAY' });
+	assert.deepEqual(sceneClock(start - 48 * h - 1, start), { time: '02:00:01', before: '', after: 'UNTIL GAME DAY' });
+	assert.deepEqual(sceneClock(start - 48 * h, start), { time: '48:00', before: '', after: 'UNTIL GAME DAY' });
+	assert.deepEqual(sceneClock(start - 2 * h - 14 * m - 30_000, start), { time: '02:15', before: '', after: 'UNTIL GAME DAY' }); // rounds up
+	assert.deepEqual(sceneClock(start - 1000, start), { time: '00:01', before: '', after: 'UNTIL GAME DAY' });
+	assert.deepEqual(sceneClock(start, start), { time: '00:00', before: 'GAME TIME', after: '' });
+	assert.deepEqual(sceneClock(start + 26 * h + 40 * m + 59_000, start), { time: '26:40', before: 'GAME TIME', after: '' });
+	assert.deepEqual(sceneClock(start + 40 * h, start), { time: '40:00', before: 'GAME TIME', after: '' }); // past the end: keeps counting
 	assert.equal(sceneClock(start, Number.NaN), null);
 });
 

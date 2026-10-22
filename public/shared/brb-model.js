@@ -48,11 +48,12 @@ const pad = (/** @type {number} */ n) => String(n).padStart(2, '0');
 
 /**
  * Header clock: before the start it counts down, as DD:HH:MM "UNTIL GAME DAY" when more than 48 hours away, else
- * HH:MM (rounded up to the minute, so it never reads 00:00 early). From the published start it counts up as HH:MM
- * (hours go past 24), with no label and no end time (owner, 2026-10-22). Null without a valid start.
+ * HH:MM (rounded up to the minute, so it never reads 00:00 early). From the published start it counts up as
+ * "GAME TIME" HH:MM (hours go past 24), with no end time (owner, 2026-10-22/23). `before`/`after` are the labels on
+ * each side of the time. Null without a valid start.
  * @param {number} nowMs
  * @param {number} startMs
- * @returns {{ time: string, label: string } | null}
+ * @returns {{ time: string, before: string, after: string } | null}
  */
 export function sceneClock(nowMs, startMs) {
 	if (!Number.isFinite(nowMs) || !Number.isFinite(startMs)) return null;
@@ -61,10 +62,10 @@ export function sceneClock(nowMs, startMs) {
 		const minutes = Math.ceil(ms / MINUTE);
 		const hm = `${pad(Math.floor((minutes % 1440) / 60))}:${pad(minutes % 60)}`;
 		const time = ms > 48 * 60 * MINUTE ? `${pad(Math.floor(minutes / 1440))}:${hm}` : `${pad(Math.floor(minutes / 60))}:${pad(minutes % 60)}`;
-		return { time, label: 'UNTIL GAME DAY' };
+		return { time, before: '', after: 'UNTIL GAME DAY' };
 	}
 	const minutes = Math.floor((nowMs - startMs) / MINUTE);
-	return { time: `${pad(Math.floor(minutes / 60))}:${pad(minutes % 60)}`, label: '' };
+	return { time: `${pad(Math.floor(minutes / 60))}:${pad(minutes % 60)}`, before: 'GAME TIME', after: '' };
 }
 
 /**

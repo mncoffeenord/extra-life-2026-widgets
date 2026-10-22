@@ -3,6 +3,7 @@
 // generator/scenes/scenes.py scene_BRB) as SVG and binds the donation card, team hearts and my-goal bar to the
 // live snapshot, with a countdown / count-up clock in the header. ?mock=1 shows the design's mock data, ?demo=1 the
 // same plus a sample donation every few seconds, ?still=1 stops the ambient animation and demo (screenshot test).
+// In mock and demo mode, ?clock=game (or #game-time) shows the clock as during the event instead of before it.
 // Donor names are drawn as glyph rectangles from a fixed table, so untrusted text never becomes markup.
 import { amountText, brbView, goalText, meterSlots, MOCK_VIEW, MY_SEGMENTS, NO_DONATIONS_TEXT, sceneClock, TEAM_HALVES, TEAM_HEARTS } from '../../shared/brb-model.js';
 import { connectLive, tween } from '../../shared/live.js';
@@ -50,11 +51,16 @@ const STRIP_RIGHT = 1684;
 const CLOCK_ROOM = 640;
 /** Mock and demo clock: this far before the start, counting down from page load. */
 const MOCK_CLOCK_LEAD_MS = ((21 * 24 + 4) * 60 + 15) * 60_000;
+/** Mock and demo clock with ?clock=game: this far into the event, counting up. */
+const MOCK_GAME_ELAPSED_MS = (7 * 60 + 42) * 60_000;
+/** Gap between a clock label and the time. */
+const CLOCK_GAP = 18;
 
 const params = new URLSearchParams(location.search);
 const flag = (/** @type {string} */ name) => params.has(name) && params.get(name) !== '0';
 const demo = flag('demo');
 const mock = demo || flag('mock');
+const mockGameTime = params.get('clock') === 'game' || location.hash === '#game-time';
 if (flag('still')) document.documentElement.classList.add('still');
 
 // ---------- SVG helpers ----------
@@ -363,19 +369,29 @@ function renderLatest(latest, animate) {
 }
 
 let clockKey = '';
-/** @param {{ time: string, label: string } | null} clock */
+/** Right-aligned in the strip: [before label] TIME [after label]. @param {{ time: string, before: string, after: string } | null} clock */
 function renderClock(clock) {
-	const key = clock ? `${clock.time}|${clock.label}` : '';
+	const key = clock ? `${clock.before}|${clock.time}|${clock.after}` : '';
 	if (key === clockKey) return;
 	clockKey = key;
 	if (!clock) return clockLayer.replaceChildren();
 	const time = normalizePixelText(clock.time);
-	const label = normalizePixelText(clock.label);
-	const labelW = label ? pixelWidth(label, 4) : 0;
-	const timeRight = label ? STRIP_RIGHT - labelW - 18 : STRIP_RIGHT;
+	const before = normalizePixelText(clock.before);
+	const after = normalizePixelText(clock.after);
 	/** @type {Element[]} */
-	const parts = [pixelText(time, 6, timeRight - pixelWidth(time, 6), stripTop(6, 3), YELLOW, { shadow: DARK, so: 3 })];
-	if (label) parts.push(pixelText(label, 4, STRIP_RIGHT - labelW, stripTop(4, 2), WHITE, { shadow: DARK, so: 2 }));
+	const parts = [];
+	let right = STRIP_RIGHT;
+	/** @param {string} label */
+	const addLabel = (label) => {
+		const w = pixelWidth(label, 4);
+		parts.push(pixelText(label, 4, right - w, stripTop(4, 2), WHITE, { shadow: DARK, so: 2 }));
+		right -= w + CLOCK_GAP;
+	};
+	if (after) addLabel(after);
+	const timeW = pixelWidth(time, 6);
+	parts.push(pixelText(time, 6, right - timeW, stripTop(6, 3), YELLOW, { shadow: DARK, so: 3 }));
+	right -= timeW + CLOCK_GAP;
+	if (before) addLabel(before);
 	clockLayer.replaceChildren(...parts);
 }
 
@@ -417,7 +433,7 @@ segmentStepper.set(1, false);
 
 if (mock) {
 	apply(MOCK_VIEW, false);
-	const mockStart = Date.now() + MOCK_CLOCK_LEAD_MS;
+	const mockStart = mockGameTime ? Date.now() - MOCK_GAME_ELAPSED_MS : Date.now() + MOCK_CLOCK_LEAD_MS;
 	runClock(() => Date.now(), () => mockStart);
 	if (demo && !document.documentElement.classList.contains('still')) runDemo();
 } else {

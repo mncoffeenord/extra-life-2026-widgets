@@ -133,7 +133,8 @@ pages to Streamlabs (macOS) as Browser Sources. Owner streams for team GamePlan4
   the center column). My-goal bar: 40 segments, same rule. The header strip is 66px (was 64) with the team name
   centered vertically (text plus shadow). The strip's heart is replaced by `sceneClock`: more than 48 h before the
   start `DD:HH:MM` + `UNTIL GAME DAY`, under that `HH:MM` + the same label (both round up to the minute), from the
-  start `HH:MM` counting up with no label or end time, and it keeps counting after the end. It ticks on the server
+  start `GAME TIME HH:MM` counting up (label in front, owner 2026-10-23) with no end time, and it keeps counting after
+  the end. Mock/demo `?clock=game` (or `#game-time`, for the artifact) shows that state. It ticks on the server
   clock, so mock time travel works.
 
 ## DonorDrive API facts (verified live 2026-10-21)
