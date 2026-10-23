@@ -77,5 +77,5 @@ test('launchers start the server from their own folder', () => {
 	assert.match(LAUNCHERS['start-widgets.command'], /cd "\$\(dirname "\$0"\)"/);
 	assert.match(LAUNCHERS['start-widgets.command'], /caffeinate -is npm start/);
 	assert.match(LAUNCHERS['start-widgets.bat'], /cd \/d "%~dp0"\r\n/);
-	assert.match(LAUNCHERS['start-widgets.bat'], /npm start/);
+	assert.match(LAUNCHERS['start-widgets.bat'], /\r\ncall npm start\r\npause\r\n/);
 });

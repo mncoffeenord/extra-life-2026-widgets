@@ -6,9 +6,16 @@ The short version: **one small server runs on your computer, and each widget is 
 ## 1. Install (about 10 minutes, once)
 
 1. **Install Node.js 24 or newer** from <https://nodejs.org> (the LTS download is fine).
-2. **Get the code.** Either `git clone https://github.com/mncoffeenord/extra-life-2026-widgets.git`, or download the
-   ZIP from GitHub (**Code → Download ZIP**) and unzip it.
-3. Open Terminal (Mac) or PowerShell (Windows) in that folder and run:
+2. **Get the code.** Either `git clone https://github.com/mncoffeenord/extra-life-2026-widgets.git` (on Windows this
+   needs [Git for Windows](https://git-scm.com/download/win)), or download the ZIP from GitHub
+   (**Code → Download ZIP**) and unzip it (Windows: right-click → **Extract All**).
+3. Open a terminal in that folder:
+   - **Mac:** open **Terminal** and type `cd ` (with a space), drag the folder onto the window, and press Return.
+   - **Windows:** open the folder in File Explorer, click the address bar, type `cmd` and press Enter. This opens
+     **Command Prompt** in that folder. (In PowerShell, `npm` can stop with "running scripts is disabled on this
+     system"; Command Prompt doesn't have that problem.)
+
+   Then run:
 
    ```bash
    npm install
@@ -35,7 +42,9 @@ launchers. Run it again any time to change something; it keeps your other settin
 
 ## 2. Start the server (every stream)
 
-Double-click **`start-widgets.command`** (Mac; it also keeps the Mac awake) or **`start-widgets.bat`** (Windows).
+Double-click **`start-widgets.command`** (Mac; it also keeps the Mac awake) or **`start-widgets.bat`** (Windows; set
+**Settings → System → Power → Screen and sleep** to **Never** while you stream, so the PC doesn't sleep and stop the
+server).
 Or run `npm start`. It prints the widget and scene URLs and then waits: that means it's running, not stuck. Leave
 that window open for the whole stream, and press **Ctrl+C** in it to stop the server.
 

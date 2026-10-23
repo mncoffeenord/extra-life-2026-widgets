@@ -9,7 +9,14 @@ import { parseConfig } from '../src/config.ts';
 import { Store } from '../src/store.ts';
 
 const config = parseConfig(JSON.parse(readFileSync(new URL('../config.example.json', import.meta.url), 'utf8')), { mock: true });
-export const CHROME = process.env.CHROME_PATH ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+/** Google Chrome's usual install location per platform; set CHROME_PATH for anything else. */
+const DEFAULT_CHROME: Partial<Record<NodeJS.Platform, string>> = {
+	darwin: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+	win32: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+	linux: '/usr/bin/google-chrome',
+};
+export const CHROME = process.env.CHROME_PATH ?? DEFAULT_CHROME[process.platform] ?? 'google-chrome';
+const WINDOWS = process.platform === 'win32';
 
 export async function start() {
 	const server = createApp({ config, store: new Store(), clock: createClock(), log: () => {} });
@@ -24,14 +31,15 @@ export async function start() {
 
 /**
  * Headless Chrome screenshot at 1920x1080. Chrome (153, macOS) writes the file and then does not exit, so wait
- * for the file to appear and stop growing, then kill its process group.
+ * for the file to appear and stop growing, then kill it (its whole process group on macOS/Linux; Windows has no
+ * process groups, so just the process).
  */
 export async function screenshot(file: string, url: string, profile: string) {
 	const chrome = spawn(CHROME, [
 		'--headless=new', '--disable-gpu', '--hide-scrollbars', '--force-device-scale-factor=1', '--no-first-run',
 		'--no-default-browser-check', `--user-data-dir=${profile}`, '--window-size=1920,1080',
 		'--virtual-time-budget=3000', `--screenshot=${file}`, url,
-	], { stdio: 'ignore', detached: true });
+	], { stdio: 'ignore', detached: !WINDOWS });
 	let exited = false;
 	chrome.on('exit', () => (exited = true));
 	try {
@@ -44,7 +52,10 @@ export async function screenshot(file: string, url: string, profile: string) {
 		}
 		throw new Error('timed out waiting for the Chrome screenshot');
 	} finally {
-		if (!exited && chrome.pid) process.kill(-chrome.pid, 'SIGKILL');
+		if (!exited && chrome.pid) {
+			if (WINDOWS) chrome.kill('SIGKILL');
+			else process.kill(-chrome.pid, 'SIGKILL');
+		}
 	}
 }
 

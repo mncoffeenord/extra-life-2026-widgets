@@ -94,11 +94,14 @@ with an earlier start time, e.g. `"start": "2026-10-21T12:00"` and `"end": "2026
 npm start -- --config my-test-window.json
 ```
 
-Keep your Mac awake during the stream:
+Keep the computer awake during the stream. On a Mac:
 
 ```bash
 caffeinate -is npm start
 ```
+
+On Windows, set **Settings → System → Power → Screen and sleep** to **Never** while you stream, then run `npm start`
+(or double-click `start-widgets.bat`).
 
 ## Add the widgets in Streamlabs
 
@@ -219,7 +222,8 @@ Extra Life's tracker, so these don't apply to it either.
 
 **An hour before**
 
-- [ ] `caffeinate -is npm start`, and leave that Terminal window open.
+- [ ] Start the server and leave its window open: `start-widgets.command` or `caffeinate -is npm start` (Mac),
+      `start-widgets.bat` or `npm start` (Windows, with sleep set to Never).
 - [ ] `/preview` shows **Live data** and **API OK**, and the totals match your Extra Life page.
 - [ ] In Streamlabs, every widget source shows data (switch to the Be Right Back scene once, if you use it). If one is
       blank, use **Refresh cache of current page**.
@@ -260,7 +264,7 @@ to stay near one request per 15 s and to use ETags.
 ## Development
 
 ```bash
-npm test                 # node:test: config, time zones/DST, parsers, client, poller, rotation, server, themes, setup, message filter, BRB scene (pixel font, model, screenshot vs design; the screenshot test needs Chrome)
+npm test                 # node:test: config, time zones/DST, parsers, client, poller, rotation, server, themes, setup, message filter, BRB scene (pixel font, model, screenshot vs design; the screenshot tests need Google Chrome in its usual place, or CHROME_PATH set to it)
 npm run typecheck        # tsc (also checks the browser JS via // @ts-check)
 npm run check            # both
 npm run dev              # restart on file changes

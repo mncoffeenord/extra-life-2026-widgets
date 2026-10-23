@@ -142,10 +142,11 @@ export const LAUNCHERS = {
 	].join('\n'),
 	'start-widgets.bat': [
 		'@echo off',
-		'rem Starts the Extra Life widgets server. Close this window to stop.',
+		'rem Starts the Extra Life widgets server. Close this window (or press Ctrl+C) to stop.',
 		'cd /d "%~dp0"',
 		'echo Starting Extra Life widgets... (close this window to stop)',
-		'npm start',
+		'rem call: without it, control never returns here, so pause would not keep an error on screen',
+		'call npm start',
 		'pause',
 		'',
 	].join('\r\n'),
