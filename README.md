@@ -300,4 +300,4 @@ GPL-3.0-or-later; see [LICENSE](LICENSE). This project is a rewrite inspired by 
 it and for the Inter font (SIL OFL 1.1).
 
 Extra Life is a program of Children's Miracle Network Hospitals. This project is not affiliated with or endorsed by
-them. No Extra Life branding or overlay art is included.
+them.
