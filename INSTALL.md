@@ -112,7 +112,7 @@ and add two sources:
 
 Use **one** of the two Donations widgets. Any widget can switch style on its own by adding `?style=framed` or
 `?style=transparent` to its URL, `?title=Your%20Title` sets its header text, and `?theme=midnight` its colors (see
-[Colors and themes](#colors-and-themes)). Combine them with `&`: `?style=framed&theme=midnight`.
+[Colors and themes](#colors-and-themes)). Combine them with `&`: `?style=framed&theme=midnight`. Every option is listed in [URL options](README.md#url-options).
 
 **Set them up once, use them everywhere:** put the sources in one scene, for example "Extra Life widgets", then add
 that scene as a source to your other scenes.

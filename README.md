@@ -161,6 +161,38 @@ The art comes from the design pages: after a design change, re-import it with
 `node scripts/import-ending.ts <ending-dark-animated.html> <ending-light-animated.html>` and refresh the reference
 renders in `test/fixtures/ending-*.png`.
 
+## URL options
+
+Add these to a source's URL after `?`, joined with `&` (e.g. `/widgets/team-goal?style=transparent&theme=midnight`).
+Anything left out uses `config.json` (from `npm run setup`). A bad value is ignored, never a blank source.
+
+**Widgets** (`/widgets/...`)
+
+| Option | Values | What it does |
+| --- | --- | --- |
+| `style` | `framed`, `transparent` | Draw its own box, or fill a box in your overlay art. `?framed` is short for `?style=framed`. Size the source to match (see the size table above). |
+| `title` | text, e.g. `Team%20Total` | Header text on a framed box (`%20` is a space). |
+| `theme` | `extra-life`, `midnight`, `mono`, or a theme you made | Color theme. `midnight` is light text for dark overlays. |
+| color names | `primary`, `primaryLight`, `accent`, `text`, `muted`, `track`, `surface`, `headerText` = a hex code without `#` | Override single colors, e.g. `&accent=FFB300`. Spellings like `header-text` work too. See [Colors and themes](INSTALL.md#colors-and-themes) for what each one colors. |
+| `transport` | `poll` | Ask the server every 3 s instead of keeping a live connection. Only for troubleshooting. |
+
+**Scenes** (`/scenes/be-right-back`, `/scenes/ending`)
+
+| Option | Values | What it does |
+| --- | --- | --- |
+| `look` | `light` | Daytime look (default: dark). |
+| `mock` | `1` | The design's sample data instead of live data, to check placement. |
+| `demo` | `1` | Sample data plus a fake donation every 7 s, to see the animations. |
+| `still` | `1` | Stop the ambient motion (bobbing, twinkling, drifting). |
+| `clock` | `game` | Be Right Back only, with `mock` or `demo`: show the clock as during the event (`GAME TIME`). |
+| `transport` | `poll` | As for widgets. |
+
+Scenes keep their own colors, so `style`, `title` and `theme` don't apply. The Starting Soon scene is an image plus
+Extra Life's tracker, so these don't apply to it either.
+
+**Preview page** (`/preview/`): `style`, `donations` (`standard` or `messages`) and `theme` preselect its menus;
+`bare=1` shows only the 1920 × 1080 stage, for screenshots.
+
 ## Pre-stream checklist
 
 **The day before**
