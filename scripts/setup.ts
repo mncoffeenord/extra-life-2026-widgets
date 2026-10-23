@@ -90,7 +90,7 @@ const start = await ask('Stream start', current.event.start, validTime(timeZone)
 const end = await ask('Stream end', current.event.end, (v) => validTime(timeZone)(v) ?? (parseEventTime(v, timeZone) > parseEventTime(start, timeZone) ? null : 'must be after the start'));
 
 // Look
-const style = (option('style') as 'framed' | 'transparent' | undefined) ?? (await choose<'framed' | 'transparent'>('\nWidget style:', [
+const style = (option('style') as 'framed' | 'transparent' | undefined) ?? (await choose<'framed' | 'transparent'>('\nDefault widget style (any single source can use the other one by adding ?style=framed or ?style=transparent to its URL):', [
 	['framed', 'each widget draws its own box; place it anywhere (no overlay art needed)'],
 	['transparent', 'widgets fill the white areas of boxes drawn in your overlay art'],
 ], current.display.style));

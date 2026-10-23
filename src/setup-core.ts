@@ -74,6 +74,8 @@ export function sourcesMarkdown(config: Config, now = new Date()): string {
 			? 'Positions place the boxes where the GamePlan42 overlay has them; with framed widgets you can put them anywhere.'
 			: 'Positions match the GamePlan42 overlay art. On a different overlay, size each source to the white area it should fill.',
 		'',
+		`To use the other style for one source, add \`?style=${framed ? 'transparent' : 'framed'}\` to its URL and use that style's size: framed boxes are 494 × 128 (footer) and 320 × 96 or 320 × 143 (Donations); transparent bodies are 488 × 82 and 314 × 58 or 314 × 105. The preview page lists both.`,
+		'',
 		'## In Streamlabs (or OBS)',
 		'',
 		'For each row: **+ Add Source → Browser Source**, then:',

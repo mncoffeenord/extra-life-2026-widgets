@@ -24,7 +24,7 @@ The short version: **one small server runs on your computer, and each widget is 
 | --- | --- |
 | Participant ID or page URL | Paste your Extra Life page link. It is checked live, and your team is filled in from it. |
 | Time zone, stream start and end | Local times, e.g. `2026-11-12T13:00`. Daylight saving is handled for you. |
-| Style | **framed**: each widget draws its own box, so you can drop it anywhere (no overlay art needed). **transparent**: widgets fill the white areas of boxes in your own overlay art. |
+| Style | **framed**: each widget draws its own box, so you can drop it anywhere (no overlay art needed). **transparent**: widgets fill the white areas of boxes in your own overlay art. This is only the default: any source can use the other style with `?style=` in its URL. |
 | Donations widget | **standard**, or **messages** (also shows the donor's message, in a taller box). |
 | Seconds per donation | How long each donation stays up in the rotation (default 45). |
 | Box titles | Header text on framed boxes. `{team}` becomes your team's name. |
