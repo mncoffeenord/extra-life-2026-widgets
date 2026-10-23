@@ -12,6 +12,17 @@ export type Style = 'framed' | 'transparent';
 
 export interface Rect { x: number; y: number; w: number; h: number }
 
+/**
+ * Streamlabs canvases the docs and MY-SOURCES.md give numbers for. Every rect here is in 1920x1080 design pixels;
+ * on a 2560x1440 (1440p, "2K") canvas multiply by 4/3. Widgets and scenes size their content from the source's
+ * height, so a scaled source renders crisply rather than being stretched. (public/preview/preview.js has a copy.)
+ */
+export const CANVAS_1440P = { w: 2560, h: 1440, scale: 4 / 3 } as const;
+
+export function scaleRect(r: Rect, scale: number): Rect {
+	return { x: Math.round(r.x * scale), y: Math.round(r.y * scale), w: Math.round(r.w * scale), h: Math.round(r.h * scale) };
+}
+
 export interface WidgetSpec {
 	id: WidgetId;
 	name: string;

@@ -107,13 +107,15 @@ const sourceRows = /** @type {HTMLElement} */ (document.querySelector('#sources 
 /** @param {string} name @param {string} url @param {Rect} r */
 function addSourceRow(name, url, r) {
 	const tr = document.createElement('tr');
-	for (const v of [name, url, r.x, r.y, r.w, r.h]) {
+	// 1920x1080 design pixels, and the same rect on a 2560x1440 canvas (x 4/3; CANVAS_1440P in src/sources.ts)
+	const big = { x: Math.round((r.x * 4) / 3), y: Math.round((r.y * 4) / 3), w: Math.round((r.w * 4) / 3), h: Math.round((r.h * 4) / 3) };
+	for (const v of [name, url, `${r.w} × ${r.h} at ${r.x}, ${r.y}`, `${big.w} × ${big.h} at ${big.x}, ${big.y}`]) {
 		const td = document.createElement('td');
-		if (typeof v === 'string' && v.startsWith('http')) {
+		if (v.startsWith('http')) {
 			const code = document.createElement('code');
 			code.textContent = v;
 			td.append(code);
-		} else td.textContent = String(v);
+		} else td.textContent = v;
 		tr.append(td);
 	}
 	sourceRows.append(tr);

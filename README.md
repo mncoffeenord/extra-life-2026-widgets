@@ -7,16 +7,16 @@ all, and each source is independent. **Framed** widgets draw their own box (plac
 widgets fill a box drawn in your overlay art. `npm run setup` picks the default, and any source can use the other
 with `?style=` (see [URL options](#url-options)). Scenes are full screen and look the same either way.
 
-| Widget | URL path | Framed | Transparent | Shows |
+| Widget | URL path | Framed (1080p / 1440p) | Transparent (1080p / 1440p) | Shows |
 | --- | --- | --- | --- | --- |
-| Stream countdown | `/widgets/countdown` | 494 × 128 | 488 × 82 | `Starts in 2d 04h 12m` → `07:42 of 36:00` (live) → `Overtime 00:12` |
-| My Extra Life goal | `/widgets/participant-goal` | 494 × 128 | 488 × 82 | `$1,250 / $2,000`, %, progress bar |
-| Team goal | `/widgets/team-goal` | 494 × 128 | 488 × 82 | same, for the team |
-| Donations received | `/widgets/donation-rotator` | 320 × 96 | 314 × 58 | Alternates your recent donations and your team's every 45 s. New donations show immediately. |
-| Donations received, with messages (optional) | `/widgets/donation-messages` | 320 × 143 | 314 × 105 | Same, plus the donor's message (2 lines at 13px). Long messages shrink a step, then scroll. The tag line is a footer. |
-| Be Right Back scene (optional) | `/scenes/be-right-back` | 1920 × 1080 | 1920 × 1080 | Full-screen break scene: latest donation, team goal hearts, your goal bar, and a countdown / `GAME TIME` clock. Dark night sky with a crescent moon by default; `?look=light` for the daytime sky with a sun. |
-| Ending scene (optional) | `/scenes/ending` | 1920 × 1080 | 1920 × 1080 | Full-screen "Thanks for watching!" scene with the team's live total (`$raised / $goal`) in the footer. Dark by default; `?look=light` for the daytime look. |
-| Starting Soon scene (optional) | `public/scenes/starting-soon/starting-soon.gif` + Extra Life's tracker | 1920 × 1080 + 1920 × 88 at (0, 992) | same | Animated GIF (Image source) with Extra Life's stock tracker bar over the bottom. No server needed. Steps in INSTALL.md. |
+| Stream countdown | `/widgets/countdown` | 494 × 128 / 659 × 171 | 488 × 82 / 651 × 109 | `Starts in 2d 04h 12m` → `07:42 of 36:00` (live) → `Overtime 00:12` |
+| My Extra Life goal | `/widgets/participant-goal` | 494 × 128 / 659 × 171 | 488 × 82 / 651 × 109 | `$1,250 / $2,000`, %, progress bar |
+| Team goal | `/widgets/team-goal` | 494 × 128 / 659 × 171 | 488 × 82 / 651 × 109 | same, for the team |
+| Donations received | `/widgets/donation-rotator` | 320 × 96 / 427 × 128 | 314 × 58 / 419 × 77 | Alternates your recent donations and your team's every 45 s. New donations show immediately. |
+| Donations received, with messages (optional) | `/widgets/donation-messages` | 320 × 143 / 427 × 191 | 314 × 105 / 419 × 140 | Same, plus the donor's message (2 lines at 13px). Long messages shrink a step, then scroll. The tag line is a footer. |
+| Be Right Back scene (optional) | `/scenes/be-right-back` | 1920 × 1080 / 2560 × 1440 | 1920 × 1080 / 2560 × 1440 | Full-screen break scene: latest donation, team goal hearts, your goal bar, and a countdown / `GAME TIME` clock. Dark night sky with a crescent moon by default; `?look=light` for the daytime sky with a sun. |
+| Ending scene (optional) | `/scenes/ending` | 1920 × 1080 / 2560 × 1440 | 1920 × 1080 / 2560 × 1440 | Full-screen "Thanks for watching!" scene with the team's live total (`$raised / $goal`) in the footer. Dark by default; `?look=light` for the daytime look. |
+| Starting Soon scene (optional) | `public/scenes/starting-soon/starting-soon.gif` + Extra Life's tracker | 1920 × 1080 + 1920 × 88 at (0, 992) / 2560 × 1440 + 2560 × 117 at (0, 1323) | same | Animated GIF (Image source) with Extra Life's stock tracker bar over the bottom. No server needed. Steps in INSTALL.md. |
 
 Why a server instead of widgets calling the API directly (as the 2022 tracker did):
 
@@ -102,18 +102,19 @@ caffeinate -is npm start
 
 ## Add the widgets in Streamlabs
 
-For each widget: **Add Source → Browser Source**, then use the row for its style. Positions are on a 1920 × 1080
-canvas and match the GamePlan42 overlay. A framed source's URL needs `?style=framed` unless framed is your default in
+For each widget: **Add Source → Browser Source**, then use the columns for its style and your Streamlabs canvas
+(**Settings → Video → Base (Canvas) Resolution**): 1920 × 1080 (1080p) or 2560 × 1440 (1440p, "2K"). Positions match
+the GamePlan42 overlay; on a 1440p canvas, stretch overlay art made at 1080p to fill the screen. A framed source's URL needs `?style=framed` unless framed is your default in
 `config.json` (and a transparent one `?style=transparent` unless that is); `MY-SOURCES.md` has the URLs for your
 default.
 
-| Source | URL | Framed: size, position | Transparent: size, position |
-| --- | --- | --- | --- |
-| Stream countdown | `http://localhost:4242/widgets/countdown` | 494 × 128 at 20, 944 | 488 × 82 at 23, 987 |
-| My Extra Life goal | `http://localhost:4242/widgets/participant-goal` | 494 × 128 at 530, 944 | 488 × 82 at 533, 987 |
-| GamePlan42 goal | `http://localhost:4242/widgets/team-goal` | 494 × 128 at 1040, 944 | 488 × 82 at 1043, 987 |
-| Donations received | `http://localhost:4242/widgets/donation-rotator` | 320 × 96 at 1580, 290 | 314 × 58 at 1583, 325 |
-| *or* Donations received, with messages | `http://localhost:4242/widgets/donation-messages` | 320 × 143 at 1580, 290 | 314 × 105 at 1583, 325 |
+| Source | URL | Framed, 1080p | Framed, 1440p | Transparent, 1080p | Transparent, 1440p |
+| --- | --- | --- | --- | --- | --- |
+| Stream countdown | `http://localhost:4242/widgets/countdown` | 494 × 128 at 20, 944 | 659 × 171 at 27, 1259 | 488 × 82 at 23, 987 | 651 × 109 at 31, 1316 |
+| My Extra Life goal | `http://localhost:4242/widgets/participant-goal` | 494 × 128 at 530, 944 | 659 × 171 at 707, 1259 | 488 × 82 at 533, 987 | 651 × 109 at 711, 1316 |
+| GamePlan42 goal | `http://localhost:4242/widgets/team-goal` | 494 × 128 at 1040, 944 | 659 × 171 at 1387, 1259 | 488 × 82 at 1043, 987 | 651 × 109 at 1391, 1316 |
+| Donations received | `http://localhost:4242/widgets/donation-rotator` | 320 × 96 at 1580, 290 | 427 × 128 at 2107, 387 | 314 × 58 at 1583, 325 | 419 × 77 at 2111, 433 |
+| *or* Donations received, with messages | `http://localhost:4242/widgets/donation-messages` | 320 × 143 at 1580, 290 | 427 × 191 at 2107, 387 | 314 × 105 at 1583, 325 | 419 × 140 at 2111, 433 |
 
 A framed widget is the whole box (border, header and body), so it can go anywhere; the positions above are where
 the GamePlan42 overlay has its boxes. A transparent widget fills only the white body of a box in your overlay art,

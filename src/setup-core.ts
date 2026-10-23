@@ -1,7 +1,12 @@
 // Pure pieces of `npm run setup` (kept apart from the prompts so they can be tested).
 
 import type { Config, Titles } from './config.ts';
-import { scenesFor, sourcesFor, STARTING_SOON, startingSoonTrackerUrl } from './sources.ts';
+import { CANVAS_1440P, type Rect, scaleRect, scenesFor, sourcesFor, STARTING_SOON, startingSoonTrackerUrl, WIDGETS } from './sources.ts';
+
+/** "488 × 82 at 23, 987" */
+const at = (r: Rect) => `${r.w} × ${r.h} at ${r.x}, ${r.y}`;
+/** The same rect on a 2560x1440 canvas. */
+const at1440 = (r: Rect) => at(scaleRect(r, CANVAS_1440P.scale));
 import { THEME_KEYS, THEME_PRESETS, type ThemeColors, type ThemeRegistry } from './theme.ts';
 
 export interface SetupAnswers {
@@ -51,6 +56,17 @@ export function colorOverrides(preset: string, colors: ThemeColors, registry: Th
 }
 
 /** MY-SOURCES.md: the browser sources for this setup, ready to copy into Streamlabs or OBS. */
+/** The other style's source sizes, as "countdown 488 × 82 / 651 × 109, ...". */
+function otherSizes(framed: boolean): string {
+	return Object.values(WIDGETS)
+		.map((w) => {
+			const r = framed ? w.body : w.box;
+			const big = scaleRect(r, CANVAS_1440P.scale);
+			return `${w.name} ${r.w} × ${r.h} / ${big.w} × ${big.h}`;
+		})
+		.join('; ');
+}
+
 export function sourcesMarkdown(config: Config, now = new Date()): string {
 	const rows = sourcesFor(config);
 	const framed = config.display.style === 'framed';
@@ -66,15 +82,17 @@ export function sourcesMarkdown(config: Config, now = new Date()): string {
 		'',
 		'Start the server before opening Streamlabs: double-click `start-widgets.command` (Mac) or `start-widgets.bat` (Windows), or run `npm start`.',
 		'',
-		'| Source | URL | Width × Height | Position X, Y (GamePlan42 layout) |',
+		'Sizes and positions (X, Y) for each Streamlabs canvas: check yours under Settings → Video → Base (Canvas) Resolution.',
+		'',
+		'| Source | URL | 1920 × 1080 canvas | 2560 × 1440 canvas |',
 		'| --- | --- | --- | --- |',
-		...rows.map((r) => `| ${r.name} | \`${r.url}\` | ${r.rect.w} × ${r.rect.h} | ${r.rect.x}, ${r.rect.y} |`),
+		...rows.map((r) => `| ${r.name} | \`${r.url}\` | ${at(r.rect)} | ${at1440(r.rect)} |`),
 		'',
 		framed
 			? 'Positions place the boxes where the GamePlan42 overlay has them; with framed widgets you can put them anywhere.'
 			: 'Positions match the GamePlan42 overlay art. On a different overlay, size each source to the white area it should fill.',
 		'',
-		`To use the other style for one source, add \`?style=${framed ? 'transparent' : 'framed'}\` to its URL and use that style's size: framed boxes are 494 × 128 (footer) and 320 × 96 or 320 × 143 (Donations); transparent bodies are 488 × 82 and 314 × 58 or 314 × 105. The preview page lists both.`,
+		`To use the other style for one source, add \`?style=${framed ? 'transparent' : 'framed'}\` to its URL and use that style's size (1080p / 1440p): ${otherSizes(framed)}. The preview page lists them too.`,
 		'',
 		'## In Streamlabs (or OBS)',
 		'',
@@ -83,17 +101,18 @@ export function sourcesMarkdown(config: Config, now = new Date()): string {
 		'- Leave **Local file** off and paste the URL.',
 		'- Set **Width** and **Height** from the table.',
 		'- Leave **Custom CSS** at its default.',
+		'- On a 2560 × 1440 canvas, stretch overlay art made at 1920 × 1080 to fill the screen (right-click → Transform → Stretch to Screen); the 1440p positions line up with it.',
 		'- Turn **Shutdown source when not visible** off.',
-		'- Position it (right-click → Transform → Edit Transform), at 100% scale.',
+		'- Position it (right-click → Transform → Edit Transform), at 100% scale. Use your canvas size\'s column: don\'t scale a 1080p-sized source up.',
 		'',
 		'## Scenes (optional)',
 		'',
 		'Full-screen pages for breaks. Put each on **its own Streamlabs scene** and switch to it when you step away.',
 		'They keep their own colors (the theme does not apply). Each scene comes in two looks (dark and light): use one of its two rows.',
 		'',
-		'| Scene | URL | Width × Height | Position X, Y |',
+		'| Scene | URL | 1920 × 1080 canvas | 2560 × 1440 canvas |',
 		'| --- | --- | --- | --- |',
-		...scenesFor(config).map((s) => `| ${s.name} | \`${s.url}\` | ${s.rect.w} × ${s.rect.h} | ${s.rect.x}, ${s.rect.y} |`),
+		...scenesFor(config).map((s) => `| ${s.name} | \`${s.url}\` | ${at(s.rect)} | ${at1440(s.rect)} |`),
 		'',
 		'Same Browser Source settings as above, plus **FPS** 30. Add `?mock=1` to the URL to check it with sample data.',
 		'',
@@ -101,8 +120,8 @@ export function sourcesMarkdown(config: Config, now = new Date()): string {
 		'',
 		'Not a live page: an animated GIF with Extra Life\'s own tracker bar along the bottom. Make a scene for it with two sources:',
 		'',
-		`1. **+ Add Source → Image**, file \`${STARTING_SOON.gif}\` in this folder. Right-click it → **Transform → Stretch to Screen** (the GIF is 960 × 540; this makes it 1920 × 1080 at 0, 0).`,
-		`2. **+ Add Source → Browser Source** above it, URL \`${startingSoonTrackerUrl(config.extraLife.participantId)}\`, ${STARTING_SOON.trackerRect.w} × ${STARTING_SOON.trackerRect.h}, position ${STARTING_SOON.trackerRect.x}, ${STARTING_SOON.trackerRect.y}.`,
+		`1. **+ Add Source → Image**, file \`${STARTING_SOON.gif}\` in this folder. Right-click it → **Transform → Stretch to Screen** (the GIF is 960 × 540; this fills the canvas at either size).`,
+		`2. **+ Add Source → Browser Source** above it, URL \`${startingSoonTrackerUrl(config.extraLife.participantId)}\`, ${at(STARTING_SOON.trackerRect)} (1080p) or ${at1440(STARTING_SOON.trackerRect)} (1440p).`,
 		'',
 		'The tracker comes from Extra Life, not this server, so it works even when the server is off.',
 		'',

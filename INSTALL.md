@@ -57,24 +57,27 @@ works on its own, all from the same server. For each one, use **+ Add Source →
 - Place it. Framed boxes can go anywhere; the listed positions match the GamePlan42 overlay. To type exact
   positions, use **right-click → Transform → Edit Transform**, at 100% scale.
 
-For reference, the sizes:
+For reference, the sizes. Use the column for your Streamlabs canvas (**Settings → Video → Base (Canvas)
+Resolution**): 1920 × 1080, or 2560 × 1440 (1440p, often called 2K). On a 2560 × 1440 canvas, also stretch overlay art
+made at 1920 × 1080 to fill the screen (right-click → **Transform → Stretch to Screen**). `MY-SOURCES.md` and the
+preview page give the positions for both.
 
-| Widget | URL path | Framed | Transparent |
-| --- | --- | --- | --- |
-| Stream countdown | `/widgets/countdown` | 494 × 128 | 488 × 82 |
-| My Extra Life goal | `/widgets/participant-goal` | 494 × 128 | 488 × 82 |
-| Team goal | `/widgets/team-goal` | 494 × 128 | 488 × 82 |
-| Donations | `/widgets/donation-rotator` | 320 × 96 | 314 × 58 |
-| *or* Donations + messages | `/widgets/donation-messages` | 320 × 143 | 314 × 105 |
+| Widget | URL path | Framed, 1080p | Framed, 1440p | Transparent, 1080p | Transparent, 1440p |
+| --- | --- | --- | --- | --- | --- |
+| Stream countdown | `/widgets/countdown` | 494 × 128 | 659 × 171 | 488 × 82 | 651 × 109 |
+| My Extra Life goal | `/widgets/participant-goal` | 494 × 128 | 659 × 171 | 488 × 82 | 651 × 109 |
+| Team goal | `/widgets/team-goal` | 494 × 128 | 659 × 171 | 488 × 82 | 651 × 109 |
+| Donations | `/widgets/donation-rotator` | 320 × 96 | 427 × 128 | 314 × 58 | 419 × 77 |
+| *or* Donations + messages | `/widgets/donation-messages` | 320 × 143 | 427 × 191 | 314 × 105 | 419 × 140 |
 
 **Be Right Back scene (optional).** A full-screen break scene: latest donation, team goal hearts, your goal bar and
 a countdown to the start (then `GAME TIME`, counting up). Make a new Streamlabs scene for it, for example "Be Right
 Back", and add one Browser Source:
 
-| Scene | URL path | Size | Position |
-| --- | --- | --- | --- |
-| Be Right Back (dark) | `/scenes/be-right-back` | 1920 × 1080 | 0, 0 |
-| *or* Be Right Back (light) | `/scenes/be-right-back?look=light` | 1920 × 1080 | 0, 0 |
+| Scene | URL path | Size, 1080p | Size, 1440p | Position |
+| --- | --- | --- | --- | --- |
+| Be Right Back (dark) | `/scenes/be-right-back` | 1920 × 1080 | 2560 × 1440 | 0, 0 |
+| *or* Be Right Back (light) | `/scenes/be-right-back?look=light` | 1920 × 1080 | 2560 × 1440 | 0, 0 |
 
 Use one of the two looks: dark is a night sky with stars and a crescent moon, light a daytime sky with a sun. Same settings as the
 widgets, plus **FPS** 30. Switch to that scene when you step away. It keeps its own colors, so `?theme=` and
@@ -85,10 +88,10 @@ widgets, plus **FPS** 30. Switch to that scene when you step away. It keeps its 
 stars, with your team's live total (`$raised / $goal`) in the bottom-right corner. Make a new scene for it, for example
 "Ending", and add one Browser Source:
 
-| Scene | URL path | Size | Position |
-| --- | --- | --- | --- |
-| Ending (dark) | `/scenes/ending` | 1920 × 1080 | 0, 0 |
-| *or* Ending (light) | `/scenes/ending?look=light` | 1920 × 1080 | 0, 0 |
+| Scene | URL path | Size, 1080p | Size, 1440p | Position |
+| --- | --- | --- | --- | --- |
+| Ending (dark) | `/scenes/ending` | 1920 × 1080 | 2560 × 1440 | 0, 0 |
+| *or* Ending (light) | `/scenes/ending?look=light` | 1920 × 1080 | 2560 × 1440 | 0, 0 |
 
 Same settings as the Be Right Back scene. To check it without live data, open
 <http://localhost:4242/scenes/ending?mock=1>.
@@ -98,9 +101,9 @@ bar along the bottom, so it works even if the server is off. Make a new Streamla
 and add two sources:
 
 1. **+ Add Source → Image**, and pick `public/scenes/starting-soon/starting-soon.gif` in this folder. Right-click it
-   → **Transform → Stretch to Screen**. The GIF is 960 × 540, so this fills the 1920 × 1080 canvas.
-2. **+ Add Source → Browser Source** on top of it, size **1920 × 88**, position **0, 992** (right-click → Transform →
-   Edit Transform), with this URL, putting **your** participant ID at the end:
+   → **Transform → Stretch to Screen**. The GIF is 960 × 540, so this fills the canvas at either size.
+2. **+ Add Source → Browser Source** on top of it, size **1920 × 88**, position **0, 992** (on a 2560 × 1440 canvas:
+   **2560 × 117** at **0, 1323**; right-click → Transform → Edit Transform), with this URL, putting **your** participant ID at the end:
 
    ```
    https://dd.extra-life.org/index.cfm?fuseaction=donorDrive.streamingOverlay&eventID=553&participantID=YOUR_ID

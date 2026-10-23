@@ -98,7 +98,10 @@ pages to Streamlabs (macOS) as Browser Sources. Owner streams for team GamePlan4
   prints `?theme=` URLs. Prompt helpers shared with setup live in `scripts/prompt.ts`.
 - **Geometry lives in `src/sources.ts`** (box + body per widget, GamePlan42 layout positions). It feeds the injection,
   `/api/display` (the preview builds its stage and source table from it), and setup's `MY-SOURCES.md`. Don't
-  hard-code positions elsewhere.
+  hard-code positions elsewhere. Rects are 1920×1080 design pixels; the owner's Streamlabs canvas is 2560×1440 (output
+  1280×720), so MY-SOURCES, the preview and the docs also give 1440p numbers (`scaleRect(r, CANVAS_1440P.scale)`, ×4/3
+  rounded; the README/INSTALL tables are hand-written copies). Sources render crisply at that size because content
+  scales with source height.
 - **Installer:** `npm run setup` (`scripts/setup.ts` prompts; `src/setup-core.ts` holds the tested pure parts). It
   checks IDs live, writes config.json (backup in config.backup.json, other keys kept), MY-SOURCES.md, and the
   launchers (all git-ignored). It uses its own line queue instead of readline.question() because piped answers
