@@ -18,7 +18,12 @@ export function createPrompter({ interactive }: { interactive: boolean }) {
 		waiting = null;
 	});
 	function readLine(prompt: string): Promise<string> {
-		process.stdout.write(prompt);
+		// Through readline, not a bare write: on a terminal resize readline redraws the line with its own prompt,
+		// which would otherwise be its default "> " and wipe the question.
+		if (rl) {
+			rl.setPrompt(prompt);
+			rl.prompt(true);
+		} else process.stdout.write(prompt);
 		const queued = pendingLines.shift();
 		if (queued !== undefined) return Promise.resolve(queued);
 		if (inputClosed) return Promise.reject(new Error('input ended before the script finished'));
