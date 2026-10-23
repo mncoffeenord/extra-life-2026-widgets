@@ -1,6 +1,8 @@
 // @ts-check
-// Connects a widget to the local server. Uses server-sent events by default; add ?transport=poll to a
-// widget URL to poll /api/state instead (useful if a host limits open connections).
+// Connects a widget or scene to the local server, by server-sent events (instant) or by polling /api/state every
+// 3 s. Widgets default to events; full-screen scenes default to polling, because Streamlabs' browser sources share
+// about 6 open connections per server and a break screen doesn't need instant updates. ?transport=poll or
+// ?transport=sse on a URL overrides the default.
 // The server's clock is tracked so every widget agrees on the countdown (and follows mock time travel).
 
 /**
@@ -19,9 +21,10 @@
 
 /**
  * @param {(snapshot: Snapshot) => void} onSnapshot
+ * @param {{ transport?: 'sse' | 'poll' }} [options] the default transport (scenes pass 'poll')
  * @returns {{ now: () => number }}
  */
-export function connectLive(onSnapshot) {
+export function connectLive(onSnapshot, { transport: defaultTransport = 'sse' } = {}) {
 	let offsetMs = 0;
 
 	// Widgets must treat repeated snapshots as no-ops (polling resends the same state).
@@ -40,7 +43,8 @@ export function connectLive(onSnapshot) {
 		}
 	};
 
-	const transport = new URLSearchParams(location.search).get('transport');
+	const requested = new URLSearchParams(location.search).get('transport');
+	const transport = requested === 'poll' || requested === 'sse' ? requested : defaultTransport;
 	if (transport === 'poll' || typeof EventSource === 'undefined') {
 		void pollState();
 		setInterval(pollState, 3000);

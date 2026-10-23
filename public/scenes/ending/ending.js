@@ -92,5 +92,5 @@ if (mock) {
 		if (!s.team) return;
 		setValue(s.team.raised, s.team.goal, !first);
 		first = false;
-	});
+	}, { transport: 'poll' });
 }

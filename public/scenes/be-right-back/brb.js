@@ -494,7 +494,7 @@ if (mock) {
 		startMs = s.event?.startMs ?? null;
 		apply(brbView(s), !first);
 		first = false;
-	});
+	}, { transport: 'poll' });
 	runClock(live.now, () => startMs);
 }
 

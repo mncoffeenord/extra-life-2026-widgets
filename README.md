@@ -193,7 +193,7 @@ Anything left out uses `config.json` (from `npm run setup`). A bad value is igno
 | `demo` | `1` | Sample data plus a fake donation every 7 s, to see the animations. |
 | `still` | `1` | Stop the ambient motion (bobbing, twinkling, drifting). |
 | `clock` | `game` | Be Right Back only, with `mock` or `demo`: show the clock as during the event (`GAME TIME`). |
-| `transport` | `poll` | As for widgets. |
+| `transport` | `sse` | Scenes ask the server every 3 s by default (updates arrive up to 3 s later), so they don't use up Streamlabs' roughly 6 shared connections per server. `sse` gives a scene a live connection instead. |
 
 Scenes keep their own colors, so `style`, `title` and `theme` don't apply. The Starting Soon scene is an image plus
 Extra Life's tracker, so these don't apply to it either.

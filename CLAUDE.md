@@ -47,7 +47,9 @@ pages to Streamlabs (macOS) as Browser Sources. Owner streams for team GamePlan4
 - **Push via SSE** (`/api/stream`), with polling fallback (`?transport=poll`). Browsers allow about 6 HTTP/1.1
   connections per origin, and each widget holds one. `/preview` polls `/api/health` instead of streaming, to leave
   room. If Phase 2 adds more than about 5 widgets to one browser context, multiplex them (e.g. a SharedWorker) or
-  use `?transport=poll`.
+  use `?transport=poll`. Scenes (BRB, Ending) default to polling every 3 s (`connectLive(..., { transport: 'poll' })`,
+  owner 2026-10-23): Streamlabs' browser sources share the per-origin limit, 4 widgets + 2 scenes already reach 6, and
+  a break screen can be 3 s late. `?transport=sse` / `?transport=poll` override either default.
 - **Clock:** the event start/end in config are wall times in an IANA zone (`America/Chicago`) and are converted with
   `Intl`. Never use fixed offsets: the 2022 config's `-05:00` would be an hour off after DST ends on Nov 1, 2026.
   Widgets tick locally using the server's clock offset, so mock time travel works too.
