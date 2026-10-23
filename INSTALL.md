@@ -36,7 +36,8 @@ launchers. Run it again any time to change something; it keeps your other settin
 ## 2. Start the server (every stream)
 
 Double-click **`start-widgets.command`** (Mac; it also keeps the Mac awake) or **`start-widgets.bat`** (Windows).
-Or run `npm start`. Leave that window open for the whole stream.
+Or run `npm start`. It prints the widget and scene URLs and then waits: that means it's running, not stuck. Leave
+that window open for the whole stream, and press **Ctrl+C** in it to stop the server.
 
 Then open <http://localhost:4242/preview/>. You should see **Live data** and **API OK**, with numbers that match your
 Extra Life page.

@@ -9,6 +9,7 @@ import { parseDonations, parseParticipant, parseTeam } from './extralife/parse.t
 import { createMessageFilter, DEFAULT_BLOCKED_WORDS, hideFlaggedMessages } from './message-filter.ts';
 import { MockApi } from './mock.ts';
 import { Poller, type Resource } from './poller.ts';
+import { SCENES, WIDGETS } from './sources.ts';
 import { Store } from './store.ts';
 
 const root = (p: string) => fileURLToPath(new URL(`../${p}`, import.meta.url));
@@ -97,8 +98,12 @@ server.listen(config.server.port, config.server.host, () => {
 	const base = `http://${config.server.host === '127.0.0.1' ? 'localhost' : config.server.host}:${config.server.port}`;
 	console.log(`Extra Life widgets ${mockMode ? '(MOCK MODE: fake data)' : `(live: participant ${participantId}, team ${teamId})`}`);
 	console.log(`  Preview:  ${base}/preview/`);
-	for (const w of ['countdown', 'participant-goal', 'team-goal', 'donation-rotator']) console.log(`  Widget:   ${base}/widgets/${w}`);
+	for (const w of Object.keys(WIDGETS)) console.log(`  Widget:   ${base}/widgets/${w}`);
+	for (const s of SCENES) console.log(`  Scene:    ${base}/scenes/${s.id}${s.query ? `?${s.query}` : ''}`);
 	console.log(`  Health:   ${base}/api/health`);
+	console.log('');
+	console.log('Running. Leave this window open while you stream (it just waits here); press Ctrl+C to stop.');
+	console.log(`Sizes and positions for each source are in MY-SOURCES.md (from npm run setup).`);
 	poller.start();
 });
 
