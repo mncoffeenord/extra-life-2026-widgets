@@ -3,18 +3,20 @@
 Self-hosted overlay widgets for an [Extra Life](https://www.extra-life.org/) stream. A small local Node.js server
 polls the Extra Life (DonorDrive) API on a schedule and caches the results. Widget pages and full-screen scenes,
 loaded as Streamlabs / OBS **Browser Sources**, get live updates from that server. Use any mix: one server serves them
-all, and each source is independent.
+all, and each source is independent. **Framed** widgets draw their own box (place them anywhere); **transparent**
+widgets fill a box drawn in your overlay art. `npm run setup` picks the default, and any source can use the other
+with `?style=` (see [URL options](#url-options)). Scenes are full screen and look the same either way.
 
-| Widget | URL path | Size | Shows |
-| --- | --- | --- | --- |
-| Stream countdown | `/widgets/countdown` | 488 × 82 | `Starts in 2d 04h 12m` → `07:42 of 36:00` (live) → `Overtime 00:12` |
-| My Extra Life goal | `/widgets/participant-goal` | 488 × 82 | `$1,250 / $2,000`, %, progress bar |
-| Team goal | `/widgets/team-goal` | 488 × 82 | same, for the team |
-| Donations received | `/widgets/donation-rotator` | 314 × 58 | Alternates your recent donations and your team's every 45 s. New donations show immediately. |
-| Donations received, with messages (optional) | `/widgets/donation-messages` | 314 × 105 | Same, plus the donor's message (2 lines at 13px). Long messages shrink a step, then scroll. The tag line is a footer. |
-| Be Right Back scene (optional) | `/scenes/be-right-back` | 1920 × 1080 | Full-screen break scene: latest donation, team goal hearts, your goal bar, and a countdown / `GAME TIME` clock. Dark night sky with a crescent moon by default; `?look=light` for the daytime sky with a sun. |
-| Ending scene (optional) | `/scenes/ending` | 1920 × 1080 | Full-screen "Thanks for watching!" scene with the team's live total (`$raised / $goal`) in the footer. Dark by default; `?look=light` for the daytime look. |
-| Starting Soon scene (optional) | `public/scenes/starting-soon/starting-soon.gif` + Extra Life's tracker | 1920 × 1080 + 1920 × 88 at (0, 992) | Animated GIF (Image source) with Extra Life's stock tracker bar over the bottom. No server needed. Steps in INSTALL.md. |
+| Widget | URL path | Framed | Transparent | Shows |
+| --- | --- | --- | --- | --- |
+| Stream countdown | `/widgets/countdown` | 494 × 128 | 488 × 82 | `Starts in 2d 04h 12m` → `07:42 of 36:00` (live) → `Overtime 00:12` |
+| My Extra Life goal | `/widgets/participant-goal` | 494 × 128 | 488 × 82 | `$1,250 / $2,000`, %, progress bar |
+| Team goal | `/widgets/team-goal` | 494 × 128 | 488 × 82 | same, for the team |
+| Donations received | `/widgets/donation-rotator` | 320 × 96 | 314 × 58 | Alternates your recent donations and your team's every 45 s. New donations show immediately. |
+| Donations received, with messages (optional) | `/widgets/donation-messages` | 320 × 143 | 314 × 105 | Same, plus the donor's message (2 lines at 13px). Long messages shrink a step, then scroll. The tag line is a footer. |
+| Be Right Back scene (optional) | `/scenes/be-right-back` | 1920 × 1080 | 1920 × 1080 | Full-screen break scene: latest donation, team goal hearts, your goal bar, and a countdown / `GAME TIME` clock. Dark night sky with a crescent moon by default; `?look=light` for the daytime sky with a sun. |
+| Ending scene (optional) | `/scenes/ending` | 1920 × 1080 | 1920 × 1080 | Full-screen "Thanks for watching!" scene with the team's live total (`$raised / $goal`) in the footer. Dark by default; `?look=light` for the daytime look. |
+| Starting Soon scene (optional) | `public/scenes/starting-soon/starting-soon.gif` + Extra Life's tracker | 1920 × 1080 + 1920 × 88 at (0, 992) | same | Animated GIF (Image source) with Extra Life's stock tracker bar over the bottom. No server needed. Steps in INSTALL.md. |
 
 Why a server instead of widgets calling the API directly (as the 2022 tracker did):
 
@@ -100,19 +102,24 @@ caffeinate -is npm start
 
 ## Add the widgets in Streamlabs
 
-For each widget: **Add Source → Browser Source**, then:
+For each widget: **Add Source → Browser Source**, then use the row for its style. Positions are on a 1920 × 1080
+canvas and match the GamePlan42 overlay. A framed source's URL needs `?style=framed` unless framed is your default in
+`config.json` (and a transparent one `?style=transparent` unless that is); `MY-SOURCES.md` has the URLs for your
+default.
 
-| Source | URL | Width × Height | Position (X, Y) |
+| Source | URL | Framed: size, position | Transparent: size, position |
 | --- | --- | --- | --- |
-| Stream countdown | `http://localhost:4242/widgets/countdown` | 488 × 82 | 23, 987 |
-| My Extra Life goal | `http://localhost:4242/widgets/participant-goal` | 488 × 82 | 533, 987 |
-| GamePlan42 goal | `http://localhost:4242/widgets/team-goal` | 488 × 82 | 1043, 987 |
-| Donations received | `http://localhost:4242/widgets/donation-rotator` | 314 × 58 | 1583, 325 |
-| *or* Donations received, with messages | `http://localhost:4242/widgets/donation-messages` | 314 × 105 | 1583, 325 |
+| Stream countdown | `http://localhost:4242/widgets/countdown` | 494 × 128 at 20, 944 | 488 × 82 at 23, 987 |
+| My Extra Life goal | `http://localhost:4242/widgets/participant-goal` | 494 × 128 at 530, 944 | 488 × 82 at 533, 987 |
+| GamePlan42 goal | `http://localhost:4242/widgets/team-goal` | 494 × 128 at 1040, 944 | 488 × 82 at 1043, 987 |
+| Donations received | `http://localhost:4242/widgets/donation-rotator` | 320 × 96 at 1580, 290 | 314 × 58 at 1583, 325 |
+| *or* Donations received, with messages | `http://localhost:4242/widgets/donation-messages` | 320 × 143 at 1580, 290 | 314 × 105 at 1583, 325 |
 
-These positions put each widget inside the white body of its overlay box, below the blue header and inside the 3px
-border, on a 1920 × 1080 canvas. The footer sizes assume the taller footer boxes (494 × 128, bottom at y 1072) from
-the 2026-10-21 bottom-bar layer; with the original 116px boxes, use a height of 70. Set the position under **Transform → Edit Transform**, at 100% scale.
+A framed widget is the whole box (border, header and body), so it can go anywhere; the positions above are where
+the GamePlan42 overlay has its boxes. A transparent widget fills only the white body of a box in your overlay art,
+below the blue header and inside the 3px border. The footer sizes assume the taller footer boxes (494 × 128, bottom
+at y 1072) from the 2026-10-21 bottom-bar layer; with the original 116px boxes, use a transparent height of 70. Set
+the position under **Transform → Edit Transform**, at 100% scale.
 
 Browser Source settings:
 
@@ -129,7 +136,7 @@ Use **one** of the two Donations sources. The with-messages version needs a tall
 
 The preview page has the same table with copyable URLs, for the style, Donations box and theme picked in its menus
 (a non-default theme adds `?theme=` to each URL). Text and spacing scale with the source **height**
-(designed at 82px for the footer, 58px for the rotator). If a box in your overlay gets taller, make the source
+(designed at 82px for the footer, 58px for the rotator, or the matching framed box heights). If a box in your overlay gets taller, make the source
 taller to match and the widget grows with it. Very large totals in a tall goal box switch to left-aligned amounts
 so they never run into the percent.
 
