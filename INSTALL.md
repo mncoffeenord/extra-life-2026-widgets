@@ -80,6 +80,18 @@ widgets, plus **FPS** 30. Switch to that scene when you step away. It keeps its 
 `?style=` don't change it. To check it without live data, open
 <http://localhost:4242/scenes/be-right-back?mock=1> (or `?look=light&mock=1`).
 
+**Ending scene (optional).** A full-screen "Thanks for watching!" scene for the end of the stream: Marvin, hearts and
+stars, with your team's live total (`$raised / $goal`) in the bottom-right corner. Make a new scene for it, for example
+"Ending", and add one Browser Source:
+
+| Scene | URL path | Size | Position |
+| --- | --- | --- | --- |
+| Ending (dark) | `/scenes/ending` | 1920 × 1080 | 0, 0 |
+| *or* Ending (light) | `/scenes/ending?look=light` | 1920 × 1080 | 0, 0 |
+
+Same settings as the Be Right Back scene. To check it without live data, open
+<http://localhost:4242/scenes/ending?mock=1>.
+
 **Starting Soon scene (optional).** Not a live page: an animated GIF (Marvin bobbing) with Extra Life's own tracker
 bar along the bottom, so it works even if the server is off. Make a new Streamlabs scene, for example "Starting Soon",
 and add two sources:
@@ -107,7 +119,7 @@ that scene as a source to your other scenes.
 ## 4. Before going live
 
 - [ ] Server is running, and `/preview` shows **API OK**.
-- [ ] All widgets show data in Streamlabs (and the Be Right Back scene, if you use it).
+- [ ] All widgets show data in Streamlabs (and the Be Right Back and Ending scenes, if you use them).
 - [ ] The countdown shows the right time to your start.
 
 Want to rehearse? Stop the server and run `npm run mock` instead. `/preview` then gets buttons for fake donations,
@@ -116,7 +128,7 @@ jumping the clock, and simulating an outage. Stop it and start the server normal
 ## Colors and themes
 
 A theme is a named set of 8 colors. Three are built in (`extra-life`, `midnight`, `mono`), and you can make your own.
-Themes apply to the widgets; the Be Right Back scene keeps its own design colors.
+Themes apply to the widgets; the Be Right Back and Ending scenes keep their own design colors.
 
 **Different colors per source.** Add `?theme=<name>` to a widget's URL, e.g.
 `http://localhost:4242/widgets/countdown?theme=midnight`. One server can show a light widget in one scene and a dark

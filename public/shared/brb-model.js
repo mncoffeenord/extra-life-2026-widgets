@@ -130,3 +130,16 @@ export function brbView(s) {
 		mine: s.participant ? { text: goalText(s.participant), filled: meterSlots(s.participant.raised, s.participant.goal, MY_SEGMENTS) } : null,
 	};
 }
+
+/** The Ending scene's design sample: TEAM GOAL "$3,250 / $5,000". */
+export const ENDING_MOCK = { raised: 3250, goal: 5000 };
+
+/**
+ * The Ending scene's team goal value: "$3,250 / $5,000" in whole dollars rounded down (never overstate), or just the
+ * raised amount when there is no goal. Normalized for the pixel font.
+ * @param {number} raised
+ * @param {number} goal
+ */
+export function endingValueText(raised, goal) {
+	return normalizePixelText(goalText({ name: '', raised, goal, numDonations: 0 }));
+}

@@ -87,7 +87,7 @@ export function sourcesMarkdown(config: Config, now = new Date()): string {
 		'## Scenes (optional)',
 		'',
 		'Full-screen pages for breaks. Put each on **its own Streamlabs scene** and switch to it when you step away.',
-		'They keep their own colors (the theme does not apply). Be Right Back comes in two looks: use one of the two rows.',
+		'They keep their own colors (the theme does not apply). Each scene comes in two looks (dark and light): use one of its two rows.',
 		'',
 		'| Scene | URL | Width × Height | Position X, Y |',
 		'| --- | --- | --- | --- |',

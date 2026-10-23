@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { brbView, goalText, latestDonation, meterSlots, MOCK_VIEW, sceneClock, splitTeamName } from '../public/shared/brb-model.js';
+import { brbView, endingValueText, ENDING_MOCK, goalText, latestDonation, meterSlots, MOCK_VIEW, sceneClock, splitTeamName } from '../public/shared/brb-model.js';
 import type { Snapshot } from '../public/shared/live.js';
 
 const donation = (id: string, createdAt: string, donorName: string | null = 'Sam K.', amount: number | null = 25) => ({
@@ -92,4 +92,12 @@ test('mock view matches the design', () => {
 	assert.equal(MOCK_VIEW.latest?.name, 'SAM K.');
 	assert.equal(MOCK_VIEW.team?.filled, 13);
 	assert.equal(MOCK_VIEW.mine?.filled, 25);
+});
+
+test('endingValueText: the design sample, whole dollars rounded down, over goal and no goal', () => {
+	assert.equal(endingValueText(ENDING_MOCK.raised, ENDING_MOCK.goal), '$3,250 / $5,000');
+	assert.equal(endingValueText(3250.99, 5000), '$3,250 / $5,000');
+	assert.equal(endingValueText(6200, 5000), '$6,200 / $5,000');
+	assert.equal(endingValueText(40, 0), '$40');
+	assert.equal(endingValueText(Number.NaN, 5000), '$0 / $5,000');
 });

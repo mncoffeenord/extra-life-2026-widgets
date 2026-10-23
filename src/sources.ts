@@ -78,11 +78,13 @@ export function sourcesFor(config: Pick<Config, 'server' | 'display'>, style: St
 
 /**
  * Full-screen scenes (public/scenes/). Each goes on its own Streamlabs scene as a 1920x1080 source at 0, 0. They use
- * their own design palettes (BRB has two looks, ?look=light), so ?style= and ?theme= do not apply.
+ * their own design palettes (BRB and Ending each have two looks, ?look=light), so ?style= and ?theme= do not apply.
  */
 export const SCENES = [
 	{ id: 'be-right-back', query: '', name: 'Be Right Back scene', rect: { x: 0, y: 0, w: 1920, h: 1080 } },
 	{ id: 'be-right-back', query: 'look=light', name: 'Be Right Back scene (light)', rect: { x: 0, y: 0, w: 1920, h: 1080 } },
+	{ id: 'ending', query: '', name: 'Ending scene', rect: { x: 0, y: 0, w: 1920, h: 1080 } },
+	{ id: 'ending', query: 'look=light', name: 'Ending scene (light)', rect: { x: 0, y: 0, w: 1920, h: 1080 } },
 ] as const satisfies readonly { id: string; query: string; name: string; rect: Rect }[];
 
 export interface SceneRow {

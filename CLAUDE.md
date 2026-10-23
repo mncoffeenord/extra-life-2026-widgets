@@ -31,7 +31,7 @@ pages to Streamlabs (macOS) as Browser Sources. Owner streams for team GamePlan4
 ## Never commit
 
 - `config.json` (real IDs), `data/` (runtime cache), `local-assets/*` (overlay art with CMN branding; the BRB scene's Marvin is the exception, committed with the
-  owner's OK on 2026-10-22), `scripts/raw/`
+  owner's OK on 2026-10-22, and so is the Ending scene's Extra Life / CMN logo and its reference renders, OK'd 2026-10-22), `scripts/raw/`
   (un-anonymized API recordings).
 - Real names or personal data in fixtures. `scripts/record-fixtures.ts` scrubs names, donor IDs, messages and
   avatars, and remaps IDs. Check the output before committing new fixtures.
@@ -162,6 +162,16 @@ pages to Streamlabs (macOS) as Browser Sources. Owner streams for team GamePlan4
   The URL is the owner's: `eventID=553` (dark bar and white logo that match; 562 restyles it lighter), and the data
   follows `participantID`. `STARTING_SOON` in `src/sources.ts`; setup fills in the ID in MY-SOURCES.md.
 
+- **Ending scene (owner, 2026-10-22):** `/scenes/ending` (`?look=light` for the light art). The owner's final design
+  pages (Asset Library `01 Full-Screen Scenes/Ending - Dark|Light/ending-*-animated.html`) are imported as-is by
+  `scripts/import-ending.ts` into `art-dark.svg` / `art-light.svg` (Marvin and the logo moved to their own files, the
+  placeholder value group `translate(1770 1013)` removed). Only the team goal value is live (owner's spec): BRB pixel
+  font, 5px, yellow, `#253746` shadow offset 3 with a 1px outline, right edge 1770, top 995, tilted -8° about
+  (1770, 1013), shrinking to 4px before reaching the logo; this reproduces the design cell for cell. Counts up over
+  1.2 s on a new donation; the first value is instant. The page loads its art with fetch + DOMParser (same-origin, our
+  own file), never innerHTML. `test/scene-ending.test.ts` diffs each look against the owner's static renders
+  (`test/fixtures/ending-*.png`) and separately checks the value area strictly (it matches at 0.000%).
+
 ## DonorDrive API facts (verified live 2026-10-21)
 
 - Base `https://dd.extra-life.org/api` (the old `www.extra-life.org/api` 301-redirects). Docs: github.com/DonorDrive/PublicAPI.
@@ -176,6 +186,6 @@ pages to Streamlabs (macOS) as Browser Sources. Owner streams for team GamePlan4
 
 - Incentives/milestones: add poll resources (`participants/{id}/incentives`, `.../milestones`). `Donation.incentiveId`
   is already parsed.
-- Scenes (starting soon, end, offline, commercials): full-canvas pages under `public/scenes/`, sharing `live.js`.
-  BRB is built (above); reuse its pixel font and model rather than adding a shell before the designs are decided.
+- Scenes (offline, commercials): full-canvas pages under `public/scenes/`, sharing `live.js`.
+  BRB and Ending are built (above); reuse its pixel font and model rather than adding a shell before the designs are decided.
 - Subteam list: `teams/{id}/participants` resource.

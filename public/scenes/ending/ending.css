@@ -1,0 +1,51 @@
+/* Ending scene. The owner's final art in two looks (?look=dark|light); the motion below is copied from the design pages. */
+html,
+body {
+	margin: 0;
+	height: 100%;
+	overflow: hidden;
+	background: #081521;
+}
+
+html[data-look="light"],
+html[data-look="light"] body {
+	background: #8FD0EE;
+}
+
+.scene {
+	display: block;
+	width: 100vw;
+	height: 100vh;
+}
+
+/* Ambient motion, in steps to stay pixel-snapped: Marvin bobs, hearts wave and rise, stars twinkle, clouds drift. */
+.bob { animation: bob 1.5s steps(6, end) infinite alternate; }
+@keyframes bob { to { transform: translateY(-6px); } }
+
+.wv { animation: wv 3s steps(1, end) infinite; }
+@keyframes wv {
+	0% { transform: translateY(0); }
+	3% { transform: translateY(-8px); }
+	6% { transform: translateY(-16px); }
+	9% { transform: translateY(-8px); }
+	12%, 100% { transform: translateY(0); }
+}
+
+.rise { animation: rise 3s steps(9, end) infinite; }
+@keyframes rise {
+	0% { transform: translateY(0); opacity: 1; }
+	70% { opacity: 1; }
+	100% { transform: translateY(-140px); opacity: 0; }
+}
+
+.tw { animation: tw 3s steps(1, end) infinite; }
+@keyframes tw {
+	0%, 60% { opacity: 1; }
+	60.01%, 80% { opacity: 0.25; }
+	80.01%, 100% { opacity: 1; }
+}
+
+.drift { animation: drift 3s steps(6, end) infinite alternate; }
+@keyframes drift { to { transform: translateX(24px); } }
+
+.still * { animation: none !important; }

@@ -13,6 +13,7 @@ all, and each source is independent.
 | Donations received | `/widgets/donation-rotator` | 314 × 58 | Alternates your recent donations and your team's every 45 s. New donations show immediately. |
 | Donations received, with messages (optional) | `/widgets/donation-messages` | 314 × 105 | Same, plus the donor's message (2 lines at 13px). Long messages shrink a step, then scroll. The tag line is a footer. |
 | Be Right Back scene (optional) | `/scenes/be-right-back` | 1920 × 1080 | Full-screen break scene: latest donation, team goal hearts, your goal bar, and a countdown / `GAME TIME` clock. Dark night sky with a crescent moon by default; `?look=light` for the daytime sky with a sun. |
+| Ending scene (optional) | `/scenes/ending` | 1920 × 1080 | Full-screen "Thanks for watching!" scene with the team's live total (`$raised / $goal`) in the footer. Dark by default; `?look=light` for the daytime look. |
 | Starting Soon scene (optional) | `public/scenes/starting-soon/starting-soon.gif` + Extra Life's tracker | 1920 × 1080 + 1920 × 88 at (0, 992) | Animated GIF (Image source) with Extra Life's stock tracker bar over the bottom. No server needed. Steps in INSTALL.md. |
 
 Why a server instead of widgets calling the API directly (as the 2022 tracker did):
@@ -147,6 +148,19 @@ same plus a sample donation every 7 seconds, or `?still=1` to stop the ambient a
 `?look=light&demo=1`. With `?mock=1` or `?demo=1`, add `&clock=game` to see the clock as it
 looks during the event.
 
+### Ending scene
+
+`http://localhost:4242/scenes/ending` is the owner's final "Thanks for watching!" scene (1920 × 1080, opaque). Only
+one thing on it is live: the team goal in the footer's bottom-right corner, `$raised / $goal` in whole dollars,
+rounded down. It counts up when a donation comes in and keeps the last value if the API is down. Everything else is
+the design as-is, with its ambient motion (Marvin bobs, hearts wave and rise, stars twinkle, clouds drift). Same
+source settings as Be Right Back. `?look=light` is the daytime look; `?mock=1` shows the design's sample value,
+`?demo=1` adds a sample donation every 7 seconds, `?still=1` stops the motion.
+
+The art comes from the design pages: after a design change, re-import it with
+`node scripts/import-ending.ts <ending-dark-animated.html> <ending-light-animated.html>` and refresh the reference
+renders in `test/fixtures/ending-*.png`.
+
 ## Pre-stream checklist
 
 **The day before**
@@ -159,6 +173,8 @@ looks during the event.
       preset (Starts in → Live → Overtime); toggle **Simulate outage** (values stay put, status turns red).
 - [ ] If you use the Be Right Back scene: with mock mode still running, open
       `http://localhost:4242/scenes/be-right-back` and send a fake donation (the card flashes, hearts fill).
+- [ ] If you use the Ending scene: open `http://localhost:4242/scenes/ending` and send a fake team donation (the team
+      goal counts up).
 - [ ] Stop mock mode.
 
 **An hour before**
@@ -219,7 +235,8 @@ src/                server (TypeScript): config, time zones, API client + parser
                     themes, widget geometry, message filter, setup/theme helpers
 public/shared/      browser modules shared with the tests: countdown, format, rotation, live (SSE), frame, theme.css
 public/widgets/     one folder per widget
-public/scenes/      full-screen scenes (be-right-back: page, pixel art, Marvin)
+public/scenes/      full-screen scenes (be-right-back: page, pixel art, Marvin; ending: imported art + live value;
+                    starting-soon: GIF)
 public/preview/     preview page
 themes/             custom color themes (<name>.json), made by npm run theme
 scripts/            setup and theme scripts (interactive), fixture recorder
@@ -232,8 +249,8 @@ See [CLAUDE.md](CLAUDE.md) for conventions and design decisions.
 ## Roadmap (Phase 2)
 
 - Donation incentives (`/participants/{id}/incentives`) shown with matching donations, plus milestones.
-- Offline / end scenes as full-canvas pages under `/scenes/` (Be Right Back is built; Starting Soon is a GIF plus
-  Extra Life's tracker, see INSTALL.md).
+- An offline scene as a full-canvas page under `/scenes/` (Be Right Back and Ending are built; Starting Soon is a GIF
+  plus Extra Life's tracker, see INSTALL.md).
 - Subteam / top participant list (`/teams/{id}/participants`).
 
 ## License and credits

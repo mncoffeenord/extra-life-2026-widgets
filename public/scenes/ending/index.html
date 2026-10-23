@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Thanks for Watching</title>
+	<!-- pick the look before first paint, so a light scene never flashes dark; ?still=1 stops the ambient motion -->
+	<script>
+		document.documentElement.dataset.look = new URLSearchParams(location.search).get('look') === 'light' ? 'light' : 'dark';
+		if (/[?&]still=1/.test(location.search)) document.documentElement.classList.add('still');
+	</script>
+	<link rel="stylesheet" href="ending.css">
+</head>
+<body>
+	<script type="module" src="ending.js"></script>
+</body>
+</html>
