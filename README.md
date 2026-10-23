@@ -13,6 +13,7 @@ all, and each source is independent.
 | Donations received | `/widgets/donation-rotator` | 314 × 58 | Alternates your recent donations and your team's every 45 s. New donations show immediately. |
 | Donations received, with messages (optional) | `/widgets/donation-messages` | 314 × 105 | Same, plus the donor's message (2 lines at 13px). Long messages shrink a step, then scroll. The tag line is a footer. |
 | Be Right Back scene (optional) | `/scenes/be-right-back` | 1920 × 1080 | Full-screen break scene: latest donation, team goal hearts, your goal bar, and a countdown / `GAME TIME` clock. Dark night sky with a crescent moon by default; `?look=light` for the daytime sky with a sun. |
+| Starting Soon scene (optional) | `public/scenes/starting-soon/starting-soon.gif` + Extra Life's tracker | 1920 × 1080 + 1920 × 88 at (0, 992) | Animated GIF (Image source) with Extra Life's stock tracker bar over the bottom. No server needed. Steps in INSTALL.md. |
 
 Why a server instead of widgets calling the API directly (as the 2022 tracker did):
 
@@ -231,8 +232,8 @@ See [CLAUDE.md](CLAUDE.md) for conventions and design decisions.
 ## Roadmap (Phase 2)
 
 - Donation incentives (`/participants/{id}/incentives`) shown with matching donations, plus milestones.
-- Offline / starting soon / end scenes as full-canvas pages under `/scenes/` (Be Right Back is built; the others are
-  not designed yet).
+- Offline / end scenes as full-canvas pages under `/scenes/` (Be Right Back is built; Starting Soon is a GIF plus
+  Extra Life's tracker, see INSTALL.md).
 - Subteam / top participant list (`/teams/{id}/participants`).
 
 ## License and credits

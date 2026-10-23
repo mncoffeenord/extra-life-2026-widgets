@@ -156,6 +156,12 @@ pages to Streamlabs (macOS) as Browser Sources. Owner streams for team GamePlan4
   the lit pixels (not a disc; the owner rejected a halo). Stars within 120px of the moon are not drawn. Static. The
   dark screenshot test skips its corner (`DARK_MOON`).
 
+- **Starting Soon (owner, 2026-10-22):** not a live page. `public/scenes/starting-soon/starting-soon.gif` (the
+  960×540 bob preview from the Asset Library, stretched to the canvas as an Image source) plus Extra Life's stock
+  tracker as a Browser Source at 1920×88, (0, 992), over the plain `#1B4C6E` bar the design leaves at the bottom.
+  The URL is the owner's: `eventID=553` (dark bar and white logo that match; 562 restyles it lighter), and the data
+  follows `participantID`. `STARTING_SOON` in `src/sources.ts`; setup fills in the ID in MY-SOURCES.md.
+
 ## DonorDrive API facts (verified live 2026-10-21)
 
 - Base `https://dd.extra-life.org/api` (the old `www.extra-life.org/api` 301-redirects). Docs: github.com/DonorDrive/PublicAPI.

@@ -54,6 +54,8 @@ test('MY-SOURCES.md lists the right sources and sizes for the style', () => {
 	assert.match(md, /Shutdown source when not visible\*\* off/);
 	assert.match(md, /\| Be Right Back scene \| `http:\/\/localhost:4300\/scenes\/be-right-back` \| 1920 × 1080 \| 0, 0 \|/);
 	assert.match(md, /\| Be Right Back scene \(light\) \| `http:\/\/localhost:4300\/scenes\/be-right-back\?look=light` \| 1920 × 1080 \| 0, 0 \|/);
+	assert.match(md, /Image\*\*, file `public\/scenes\/starting-soon\/starting-soon\.gif`/);
+	assert.match(md, /streamingOverlay&eventID=553&participantID=581000`, 1920 × 88, position 0, 992/);
 
 	const transparent = parseConfig(applyAnswers(example(), answers({ style: 'transparent', donations: 'standard' })));
 	const md2 = sourcesMarkdown(transparent);

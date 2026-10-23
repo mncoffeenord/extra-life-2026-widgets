@@ -1,7 +1,7 @@
 // Pure pieces of `npm run setup` (kept apart from the prompts so they can be tested).
 
 import type { Config, Titles } from './config.ts';
-import { scenesFor, sourcesFor } from './sources.ts';
+import { scenesFor, sourcesFor, STARTING_SOON, startingSoonTrackerUrl } from './sources.ts';
 import { THEME_KEYS, THEME_PRESETS, type ThemeColors, type ThemeRegistry } from './theme.ts';
 
 export interface SetupAnswers {
@@ -94,6 +94,15 @@ export function sourcesMarkdown(config: Config, now = new Date()): string {
 		...scenesFor(config).map((s) => `| ${s.name} | \`${s.url}\` | ${s.rect.w} × ${s.rect.h} | ${s.rect.x}, ${s.rect.y} |`),
 		'',
 		'Same Browser Source settings as above, plus **FPS** 30. Add `?mock=1` to the URL to check it with sample data.',
+		'',
+		'### Starting Soon',
+		'',
+		'Not a live page: an animated GIF with Extra Life\'s own tracker bar along the bottom. Make a scene for it with two sources:',
+		'',
+		`1. **+ Add Source → Image**, file \`${STARTING_SOON.gif}\` in this folder. Right-click it → **Transform → Stretch to Screen** (the GIF is 960 × 540; this makes it 1920 × 1080 at 0, 0).`,
+		`2. **+ Add Source → Browser Source** above it, URL \`${startingSoonTrackerUrl(config.extraLife.participantId)}\`, ${STARTING_SOON.trackerRect.w} × ${STARTING_SOON.trackerRect.h}, position ${STARTING_SOON.trackerRect.x}, ${STARTING_SOON.trackerRect.y}.`,
+		'',
+		'The tracker comes from Extra Life, not this server, so it works even when the server is off.',
 		'',
 		`Check everything at \`http://localhost:${config.server.port}/preview/\` (mock data: \`npm run mock\`).`,
 		'',

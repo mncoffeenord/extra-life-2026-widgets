@@ -80,6 +80,23 @@ widgets, plus **FPS** 30. Switch to that scene when you step away. It keeps its 
 `?style=` don't change it. To check it without live data, open
 <http://localhost:4242/scenes/be-right-back?mock=1> (or `?look=light&mock=1`).
 
+**Starting Soon scene (optional).** Not a live page: an animated GIF (Marvin bobbing) with Extra Life's own tracker
+bar along the bottom, so it works even if the server is off. Make a new Streamlabs scene, for example "Starting Soon",
+and add two sources:
+
+1. **+ Add Source → Image**, and pick `public/scenes/starting-soon/starting-soon.gif` in this folder. Right-click it
+   → **Transform → Stretch to Screen**. The GIF is 960 × 540, so this fills the 1920 × 1080 canvas.
+2. **+ Add Source → Browser Source** on top of it, size **1920 × 88**, position **0, 992** (right-click → Transform →
+   Edit Transform), with this URL, putting **your** participant ID at the end:
+
+   ```
+   https://dd.extra-life.org/index.cfm?fuseaction=donorDrive.streamingOverlay&eventID=553&participantID=YOUR_ID
+   ```
+
+   Your participant ID is the number in your Extra Life page link (`.../participants/581864`). `npm run setup`
+   writes this URL with your ID already filled in to `MY-SOURCES.md`. Keep `eventID=553`: it gives the dark bar and
+   white logo that match the scene. The totals come from your participant ID either way.
+
 Use **one** of the two Donations widgets. Any widget can switch style on its own by adding `?style=framed` or
 `?style=transparent` to its URL, `?title=Your%20Title` sets its header text, and `?theme=midnight` its colors (see
 [Colors and themes](#colors-and-themes)). Combine them with `&`: `?style=framed&theme=midnight`.

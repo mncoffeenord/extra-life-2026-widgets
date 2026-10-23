@@ -96,3 +96,20 @@ export function scenesFor(config: Pick<Config, 'server'>): SceneRow[] {
 	const base = baseUrl(config);
 	return SCENES.map((s) => ({ id: s.id, name: s.name, url: `${base}/scenes/${s.id}${s.query ? `?${s.query}` : ''}`, rect: { ...s.rect } }));
 }
+
+/**
+ * Starting Soon is not a live page: an animated GIF (Image source, stretched to the canvas) with Extra Life's own
+ * stock tracker laid over the plain bar the design leaves at the bottom (1920x88 at 0, 992). The data follows
+ * participantID; eventID only picks the bar's styling. 553 (owner's choice) gives the dark #1A4C6D bar and white logo
+ * the design matches; the real 2026 event, 562, gives a lighter bar and a colour logo. The GIF is a 960x540 preview
+ * render, so it is stretched to 1920x1080.
+ */
+export const STARTING_SOON = {
+	gif: 'public/scenes/starting-soon/starting-soon.gif',
+	trackerRect: { x: 0, y: 992, w: 1920, h: 88 },
+	eventId: '553',
+} as const;
+
+export function startingSoonTrackerUrl(participantId: string): string {
+	return `https://dd.extra-life.org/index.cfm?fuseaction=donorDrive.streamingOverlay&eventID=${STARTING_SOON.eventId}&participantID=${participantId}`;
+}
